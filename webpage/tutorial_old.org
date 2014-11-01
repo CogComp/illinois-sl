@@ -1,0 +1,49 @@
+#+TITLE: Illinois-SL Tutorial
+#+STARTUP: customtime
+#+OPTIONS: tags:nil
+#+INCLUDE: "~/Dropbox/Private/org/revision/my_latex_preamble.org"
+
+* Installation
+You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/][here]].
+* Getting Started
+This is a tutorial for the Illinois-SL package. We will walk you through installation, some simple examples and other relevant details.
+
+In case of problems, you can contact the author at 
+
+* Example - POS Tagging
+We will start with a very simple example - part-of-speech tagging. Firstly, will will set up things and read the data.
+
+#+BEGIN_SRC java
+SLModel model = new SLModel();
+model.lm = new Lexiconer();
+
+SLProblem sp = readStructuredData(trainingDataPath, model.lm);
+
+// Disallow the creation of new features
+model.lm.setAllowNewFeatures(false);
+
+#+END_SRC
+
+Let's break this down one class at a time.
+=SLModel= contains all relevant details about your model. In particular, it contains,
+
+1. The Lexicon for your features - the lexicon manages the mapping from your features to ids (more on it later). The lexicon is implemented in the class =Lexiconer=.
+2. The weight vector for your model.  
+3. Inference Solver 
+
+Now lets read the training data for POS tagging.
+We are going to populate the lexicon as we read the data. We will assume the training data is in the following format,
+#+BEGIN_SRC
+I ate an apple .
+PRP VBD DT NN .
+#+END_SRC
+
+Once you have read all the data, make sure to switch off the addition of new features by calling,
+#+BEGIN_SRC
+// Disallow the creation of new features
+model.lm.setAllowNewFeatures(false);
+#+END_SRC
+This is important.
+
+When you are done training, you can save your model by calling the =saveModel(pathToSave)= method in the =SLModel= class.
+
