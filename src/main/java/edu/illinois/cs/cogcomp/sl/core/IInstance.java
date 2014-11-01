@@ -1,7 +1,7 @@
 package edu.illinois.cs.cogcomp.sl.core;
 
 /**
- * An interface of an input example x. 
+ * An interface of an input example x. For example, in POS tagging, this will represent a sentence.
  * 
  * @author Ming-Wei Chang
  * 

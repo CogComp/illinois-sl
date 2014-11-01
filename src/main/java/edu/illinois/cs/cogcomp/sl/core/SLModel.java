@@ -18,11 +18,6 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 /**
  * The class that allows the future implementations of a learned model.
- * <p>
- * 
- * To save and load of this function, please refer to {@link JLISModelIOManager}
- * <p>
- * 
  * 
  * @author Cogcomp @ UI
  * 
