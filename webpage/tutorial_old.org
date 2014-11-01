@@ -1,6 +1,6 @@
 #+TITLE: Illinois-SL Tutorial
 #+STARTUP: customtime
-#+OPTIONS: tags:nil
+#+OPTIONS: tags:nil num:nil
 #+INCLUDE: "~/Dropbox/Private/org/revision/my_latex_preamble.org"
 
 * Installation
@@ -8,45 +8,101 @@ You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/]
 * Getting Started
 This is a tutorial for the Illinois-SL package. We will walk you through installation, some simple examples and other relevant details.
 
-In case of problems, you can contact the author at 
+In case of problems, you can contact the author at [[mailto:kchang10@illinois.edu][kchang10@illinois.edu]] or [[mailto:upadhya3@illinois.edu][upadhya3@illinois.edu]].
+* Basics
+We need to implement the following classes and methods,
+
+1) The input structure, $\x$
+2) The output structure, $\y$
+3) A procedure InfSolver to perform the loss-augmented inference.
+
+\begin{align*}
+  \argmax_{\y'} \w^T \Phi(\x,\y') + \Delta(\y,\y')
+\end{align*}
+
+At test time, we need to solve 
+\begin{align*}
+  \argmax_{\y'} \w^T \Phi(\x,\y')
+\end{align*}
+
+For this we can just set $\Delta(\y,\y')$ to zero in the InfSolver method.
 
 * Example - POS Tagging
-We will start with a very simple example - part-of-speech tagging. Firstly, will will set up things and read the data.
+  We will start with a very simple example - part-of-speech tagging. 
+  To implement a structured learning algorithm, we need to 
+* Sentence
+For POS Tagging , sentence represents the input structure. Each token in the sentence will be part of the structure. 
+#+BEGIN_SRC
+public class Sentence implements IInstance {
+    public final int[] tokens;
+}
+#+END_SRC
+For each token in the sentence, we just store the id of the token maintained in the lexicon.
+* POS Tag
+The POS tag sequence represents the output structure. 
+#+BEGIN_SRC
+public class POSTag implements IStructure {
+    public final int[] tags;
+    public POSTag(int[] tags){
+        this.tags = tags;
+    }
+}
+#+END_SRC
+* Reading the Training Data
+We will assume the training data is in the following format,
+#+BEGIN_SRC
+I ate an apple .
+PRP VBD DT NN .
+The quick brown fox jumped over the lazy dog .
+DT JJ JJ NN VBD IN DT JJ NN .
+#+END_SRC
+First the tokens of the sentence are listed, followed by the POS tags for each token.
 
-#+BEGIN_SRC java
+As we read the data, we will put the words into the lexicon. 
+#+BEGIN_SRC
+for (int j = 0; j < words.length; j++) {
+    // this will be off at test time, so new words wont be added to the lexicon
+    if (lm.isAllowNewFeatures()) {
+    lm.addFeature("w:" + words[j]);
+}
+if (lm.containFeature("w:" + words[j]))
+    wordIds[j] = lm.getFeatureId("w:" + words[j]);
+else
+    wordIds[j] = lm.getFeatureId("W:unknownword"); 
+    // new word seen at test time, so we map it to unknown.
+    // Note that else condition will only occur at test time.
+}
+#+END_SRC
+
+* Training
+First, we create a new =SLModel= object that will contain all the information relevant to our model.
+In particular, it contains,
+
+1. The Lexicon for your features - the lexicon manages the mapping from your features to ids (more on it later). The lexicon is implemented in the class =Lexiconer=.
+2. The weight vector for your model.  
+3. Inference Solver - the method that you use to solve 
+
+#+BEGIN_SRC
+
 SLModel model = new SLModel();
 model.lm = new Lexiconer();
 
 SLProblem sp = readStructuredData(trainingDataPath, model.lm);
 
-// Disallow the creation of new features
-model.lm.setAllowNewFeatures(false);
-
 #+END_SRC
 
 Let's break this down one class at a time.
-=SLModel= contains all relevant details about your model. In particular, it contains,
-
-1. The Lexicon for your features - the lexicon manages the mapping from your features to ids (more on it later). The lexicon is implemented in the class =Lexiconer=.
-2. The weight vector for your model.  
-3. Inference Solver 
 
 Now lets read the training data for POS tagging.
-We are going to populate the lexicon as we read the data. We will assume the training data is in the following format,
-#+BEGIN_SRC
-I ate an apple .
-PRP VBD DT NN .
-#+END_SRC
-
+We are going to populate the lexicon as we read the data. 
 Once you have read all the data, make sure to switch off the addition of new features by calling,
 #+BEGIN_SRC
 // Disallow the creation of new features
 model.lm.setAllowNewFeatures(false);
 #+END_SRC
-This is important.
-
-Inside =readStructuredData= function, we do the following,
+*This is important*. If you forget to do this, the lexicon will keep on adding new words to the vocabulary during test time!
 
 
-When you are done training, you can save your model by calling the =saveModel(pathToSave)= method in the =SLModel= class.
+When you are done training, you can save your model by calling the =saveModel= method in the =SLModel= class.
 
+* Testing

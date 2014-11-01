@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Illinois-SL Tutorial</title>
-<!-- 2014-11-01 Sat 11:53 -->
+<!-- 2014-11-01 Sat 14:02 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Shyam Upadhyay" />
@@ -134,6 +134,48 @@ for the JavaScript code in this tag.
  }
 /*]]>*///-->
 </script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        // Only one of the two following lines, depending on user settings
+        // First allows browser-native MathML display, second forces HTML/CSS
+        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 100,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        }
+    });
+/*]]>*///-->
+</script>
 </head>
 <body>
 <div id="content">
@@ -142,13 +184,19 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">1. Installation</a></li>
-<li><a href="#sec-2">2. Getting Started</a></li>
-<li><a href="#sec-3">3. Example - POS Tagging</a></li>
+<li><a href="#sec-1">Installation</a></li>
+<li><a href="#sec-2">Getting Started</a></li>
+<li><a href="#sec-3">Basics</a></li>
+<li><a href="#sec-4">Example - POS Tagging</a></li>
+<li><a href="#sec-5">Sentence</a></li>
+<li><a href="#sec-6">POS Tag</a></li>
+<li><a href="#sec-7">Reading the Training Data</a></li>
+<li><a href="#sec-8">All Set, Let's Train!</a></li>
 </ul>
 </div>
 </div>
 {% raw %}
+
 \(
 
 \newcommand{\opt}[1]{{#1}^{*}} 
@@ -180,10 +228,11 @@ for the JavaScript code in this tag.
 \DeclareMathOperator{\implies}{\rightarrow}
 
 \)
+
 {% endraw %}
 
 <div id="outline-container-sec-1" class="outline-2">
-<h2 id="sec-1"><span class="section-number-2">1</span> Installation</h2>
+<h2 id="sec-1">Installation</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 You can download the Illinois-SL package from <a href="http://cogcomp.cs.illinois.edu/">here</a>.
@@ -191,40 +240,132 @@ You can download the Illinois-SL package from <a href="http://cogcomp.cs.illinoi
 </div>
 </div>
 <div id="outline-container-sec-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> Getting Started</h2>
+<h2 id="sec-2">Getting Started</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 This is a tutorial for the Illinois-SL package. We will walk you through installation, some simple examples and other relevant details.
 </p>
 
 <p>
-In case of problems, you can contact the author at 
+In case of problems, you can contact the author at <a href="mailto:kchang10@illinois.edu">kchang10@illinois.edu</a> or <a href="mailto:upadhya3@illinois.edu">upadhya3@illinois.edu</a>.
 </p>
 </div>
 </div>
-
 <div id="outline-container-sec-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Example - POS Tagging</h2>
+<h2 id="sec-3">Basics</h2>
 <div class="outline-text-2" id="text-3">
 <p>
-We will start with a very simple example - part-of-speech tagging. Firstly, will will set up things and read the data.
+We need to implement the following classes and methods,
 </p>
 
-<div class="org-src-container">
+<ol class="org-ol">
+<li>The input structure, \(\x\)
+</li>
+<li>The output structure, \(\y\)
+</li>
+<li>A procedure InfSolver to perform the loss-augmented inference.
+</li>
+</ol>
 
-<pre class="src src-java">SLModel model = new SLModel();
-model.lm = new Lexiconer();
-
-SLProblem sp = readStructuredData(trainingDataPath, model.lm);
-
-// Disallow the creation of new features
-model.lm.setAllowNewFeatures(false);
-</pre>
-</div>
+\begin{align*}
+  \argmax_{\y'} \w^T \Phi(\x,\y') + \Delta(\y,\y')
+\end{align*}
 
 <p>
-Let's break this down one class at a time.
-<code>SLModel</code> contains all relevant details about your model. In particular, it contains,
+At test time, we need to solve 
+</p>
+\begin{align*}
+  \argmax_{\y'} \w^T \Phi(\x,\y')
+\end{align*}
+
+<p>
+For this we can just set \(\Delta(\y,\y')\) to zero in the InfSolver method.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4">Example - POS Tagging</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+We will start with a very simple example - part-of-speech tagging. 
+To implement a structured learning algorithm, we need to 
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5">Sentence</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+For POS Tagging , sentence represents the input structure. Each token in the sentence will be part of the structure. 
+</p>
+<pre class="example">
+public class Sentence implements IInstance {
+    public final int[] tokens;
+}
+</pre>
+<p>
+For each token in the sentence, we just store the id of the token maintained in the lexicon.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6">POS Tag</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+The POS tag sequence represents the output structure. 
+</p>
+<pre class="example">
+public class POSTag implements IStructure {
+    public final int[] tags;
+    public POSTag(int[] tags){
+        this.tags = tags;
+    }
+}
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7">Reading the Training Data</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+We will assume the training data is in the following format,
+</p>
+<pre class="example">
+I ate an apple .
+PRP VBD DT NN .
+The quick brown fox jumped over the lazy dog .
+DT JJ JJ NN VBD IN DT JJ NN .
+</pre>
+<p>
+First the tokens of the sentence are listed, followed by the POS tags for each token.
+</p>
+
+<p>
+As we read the data, we will put the words into the lexicon. 
+</p>
+<pre class="example">
+for (int j = 0; j &lt; words.length; j++) {
+    // this will be off at test time, so new words wont be added to the lexicon
+    if (lm.isAllowNewFeatures()) {
+    lm.addFeature("w:" + words[j]);
+}
+if (lm.containFeature("w:" + words[j]))
+    wordIds[j] = lm.getFeatureId("w:" + words[j]);
+else
+    wordIds[j] = lm.getFeatureId("W:unknownword"); 
+    // new word seen at test time, so we map it to unknown
+}
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8">All Set, Let's Train!</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+First, we create a new <code>SLModel</code> object that will contain all the information relevant to our model.
+In particular, it contains,
 </p>
 
 <ol class="org-ol">
@@ -232,20 +373,24 @@ Let's break this down one class at a time.
 </li>
 <li>The weight vector for your model.  
 </li>
-<li>Inference Solver 
+<li>Inference Solver - the method that you use to solve 
 </li>
 </ol>
 
-<p>
-Now lets read the training data for POS tagging.
-We are going to populate the lexicon as we read the data. We will assume the training data is in the following format,
-</p>
 <pre class="example">
-I ate an apple .
-PRP VBD DT NN .
+SLModel model = new SLModel();
+model.lm = new Lexiconer();
+
+SLProblem sp = readStructuredData(trainingDataPath, model.lm);
 </pre>
 
 <p>
+Let's break this down one class at a time.
+</p>
+
+<p>
+Now lets read the training data for POS tagging.
+We are going to populate the lexicon as we read the data. 
 Once you have read all the data, make sure to switch off the addition of new features by calling,
 </p>
 <pre class="example">
@@ -253,18 +398,19 @@ Once you have read all the data, make sure to switch off the addition of new fea
 model.lm.setAllowNewFeatures(false);
 </pre>
 <p>
-This is important.
+<b>This is important</b>. If you forget to do this, the lexicon will keep on adding new words to the vocabulary during test time!
 </p>
 
+
 <p>
-When you are done training, you can save your model by calling the <code>saveModel(pathToSave)</code> method in the <code>SLModel</code> class.
+When you are done training, you can save your model by calling the <code>saveModel</code> method in the <code>SLModel</code> class.
 </p>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Shyam Upadhyay</p>
-<p class="date">Created: 2014-11-01 Sat 11:53</p>
+<p class="date">Created: 2014-11-01 Sat 14:02</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>

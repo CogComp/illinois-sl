@@ -108,13 +108,15 @@ public class MainClass {
 			int[] wordIds = new int[words.length];
 
 			for (int j = 0; j < words.length; j++) {
+				// this will be off at test time, so new words wont be added to the lexicon
 				if (lm.isAllowNewFeatures()) {
 					lm.addFeature("w:" + words[j]);
 				}
 				if (lm.containFeature("w:" + words[j]))
 					wordIds[j] = lm.getFeatureId("w:" + words[j]);
 				else
-					wordIds[j] = lm.getFeatureId("W:unknwonword");
+					wordIds[j] = lm.getFeatureId("W:unknownword");
+				// new word seen at test time, so we map it to unknown
 			}
 			Sentence x = new Sentence(wordIds);
 			String[] tags = lines.get(i * 2 + 1).split("\\s+");

@@ -10,13 +10,9 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 /**
  * The inference procedure that is used for finding the best structure. This is
- * the place to put the code for calculating argmax. Note that you should only
- * use (extend) this class when you do not have any structured-label example. If
- * you do, you should extend the {@link AbstractLossAugmentedInferenceSolver}
- * class. <p>
+ * the place to put the code for calculating argmax. 
  * 
- * In {@link AbstractLossAugmentedInferenceSolver}, you need to implement two
- * inference procedures. One for argmax (extended from this class) and another
+ * You need to implement two inference procedures. One for argmax (extended from this class) and another
  * one for loss-sensitive argmax procedure.
  * 
  * @author Ming-Wei Chang

@@ -18,7 +18,7 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 /**
  * The class that allows the future implementations of a learned model.
- * 
+ * This class contains your weight vector, feature lexicon and other config details.
  * @author Cogcomp @ UI
  * 
  */

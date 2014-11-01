@@ -11,7 +11,6 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 public class Sentence implements IInstance {
 
 	public final int[] tokens;	// we remember the ids of the words in the vocab. The ids are maintained by a lexiconer
-	Lexiconer lm;
 	int hashCode = 0;
 	public Sentence(int[] tokens) {
 		this.tokens = tokens;
