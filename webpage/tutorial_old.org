@@ -45,5 +45,8 @@ model.lm.setAllowNewFeatures(false);
 #+END_SRC
 This is important.
 
+Inside =readStructuredData= function, we do the following,
+
+
 When you are done training, you can save your model by calling the =saveModel(pathToSave)= method in the =SLModel= class.
 
