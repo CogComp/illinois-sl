@@ -14,7 +14,7 @@ We need to implement the following classes and methods,
 
 1) The input structure, $\x$
 2) The output structure, $\y$
-3) A procedure InfSolver to perform the loss-augmented inference.
+3) A procedure =InferenceSolver= to perform the loss-augmented inference.
 
 \begin{align*}
   \argmax_{\y'} \w^T \Phi(\x,\y') + \Delta(\y,\y')
@@ -38,6 +38,8 @@ public class Sentence implements IInstance {
 }
 #+END_SRC
 For each token in the sentence, we just store the id of the token maintained in the lexicon.
+Note that all input structures should implement the =IInstance= interface.
+
 * POS Tag
 The POS tag sequence represents the output structure. 
 #+BEGIN_SRC
@@ -48,6 +50,7 @@ public class POSTag implements IStructure {
     }
 }
 #+END_SRC
+Again, we just store the ids, as maintained by the lexicon. Note that all output structures should implement =IStructure= interface.
 * Reading the Training Data
 We will assume the training data is in the following format,
 #+BEGIN_SRC
@@ -72,13 +75,72 @@ else
     // new word seen at test time, so we map it to unknown.
     // Note that else condition will only occur at test time.
 }
+Sentence x = new Sentence(wordIds);
 #+END_SRC
 
+Similarly, we read the POS tag sequence, adding the labels to the lexicon,
+#+BEGIN_SRC
+for (int j = 0; j < tags.length; j++) {
+    lm.addLabel("tag:" + tags[j]);
+    tagIds[j] = lm.getLabelId("tag:" + tags[j]);
+}
+POSTag y = new POSTag(tagIds);
+#+END_SRC
+For ease of access, we put both the sentence token ids and the tags ids in the =SLProblem= object. The =SLProblem= class is a wrapper around a list of IInstance and the correponding gold IStructure objects. We add the sentence and POSTag to the =SLProblem= object,
+#+BEGIN_SRC
+sp.addExample(x, y);
+#+END_SRC
+
+Here is the entire code for reading the data,
+#+BEGIN_SRC
+public static SLProblem readStructuredData(String fname, Lexiconer lm)
+throws IOException, DataFormatException {
+    List<String> lines = LineIO.read(fname);
+    SLProblem sp = new SLProblem();
+
+    assert lines.size() % 2 == 0; // must be even; contains labels
+
+    if (lm.isAllowNewFeatures())
+        lm.addFeature("W:unknownword"); 
+        // pre-add the unknown word to the vocab
+
+    for (int i = 0; i < lines.size() / 2; i++) {
+        String[] words = lines.get(i * 2).split("\\s+");
+        int[] wordIds = new int[words.length];
+
+        for (int j = 0; j < words.length; j++) {
+        // this will be off at test time, so new words wont be added to the lexicon
+            if (lm.isAllowNewFeatures()) {
+                lm.addFeature("w:" + words[j]);
+            }
+            if (lm.containFeature("w:" + words[j]))
+                wordIds[j] = lm.getFeatureId("w:" + words[j]);
+            else
+                wordIds[j] = lm.getFeatureId("W:unknownword");
+                // new word seen at test time, so we map it to unknown
+        }
+        Sentence x = new Sentence(wordIds);
+        String[] tags = lines.get(i * 2 + 1).split("\\s+");
+        int[] tagIds = new int[words.length];
+
+        if (words.length != tags.length) {
+            throw new DataFormatException(
+            "The number of tokens and number tags in " + i
+            + "-th sample does not match");
+        }
+        for (int j = 0; j < tags.length; j++) {
+            lm.addLabel("tag:" + tags[j]);
+            tagIds[j] = lm.getLabelId("tag:" + tags[j]);
+        }
+        sp.addExample(x, new POSTag(tagIds));
+    }
+    return sp;
+}
+#+END_SRC
 * Training
 First, we create a new =SLModel= object that will contain all the information relevant to our model.
 In particular, it contains,
-
-1. The Lexicon for your features - the lexicon manages the mapping from your features to ids (more on it later). The lexicon is implemented in the class =Lexiconer=.
+1. The Lexicon - the lexicon manages the mapping from your features to ids and labels to ids. The lexicon is implemented in the class =Lexiconer=.
 2. The weight vector for your model.  
 3. Inference Solver - the method that you use to solve 
 
@@ -90,8 +152,6 @@ model.lm = new Lexiconer();
 SLProblem sp = readStructuredData(trainingDataPath, model.lm);
 
 #+END_SRC
-
-Let's break this down one class at a time.
 
 Now lets read the training data for POS tagging.
 We are going to populate the lexicon as we read the data. 

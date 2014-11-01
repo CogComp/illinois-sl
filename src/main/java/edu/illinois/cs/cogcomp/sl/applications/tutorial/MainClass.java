@@ -100,7 +100,7 @@ public class MainClass {
 		assert lines.size() % 2 == 0; // must be even; contains labels
 
 		if (lm.isAllowNewFeatures())
-			lm.addFeature("W:unknwonword"); // pre-add the unknown word to the
+			lm.addFeature("W:unknownword"); // pre-add the unknown word to the
 											// vocab
 
 		for (int i = 0; i < lines.size() / 2; i++) {

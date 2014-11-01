@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Illinois-SL Tutorial</title>
-<!-- 2014-11-01 Sat 14:02 -->
+<!-- 2014-11-01 Sat 14:58 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Shyam Upadhyay" />
@@ -191,7 +191,8 @@ for the JavaScript code in this tag.
 <li><a href="#sec-5">Sentence</a></li>
 <li><a href="#sec-6">POS Tag</a></li>
 <li><a href="#sec-7">Reading the Training Data</a></li>
-<li><a href="#sec-8">All Set, Let's Train!</a></li>
+<li><a href="#sec-8">Training</a></li>
+<li><a href="#sec-9">Testing</a></li>
 </ul>
 </div>
 </div>
@@ -263,7 +264,7 @@ We need to implement the following classes and methods,
 </li>
 <li>The output structure, \(\y\)
 </li>
-<li>A procedure InfSolver to perform the loss-augmented inference.
+<li>A procedure <code>InferenceSolver</code> to perform the loss-augmented inference.
 </li>
 </ol>
 
@@ -306,9 +307,11 @@ public class Sentence implements IInstance {
 </pre>
 <p>
 For each token in the sentence, we just store the id of the token maintained in the lexicon.
+Note that all input structures should implement the <code>IInstance</code> interface.
 </p>
 </div>
 </div>
+
 <div id="outline-container-sec-6" class="outline-2">
 <h2 id="sec-6">POS Tag</h2>
 <div class="outline-text-2" id="text-6">
@@ -323,6 +326,9 @@ public class POSTag implements IStructure {
     }
 }
 </pre>
+<p>
+Again, we just store the ids, as maintained by the lexicon. Note that all output structures should implement <code>IStructure</code> interface.
+</p>
 </div>
 </div>
 <div id="outline-container-sec-7" class="outline-2">
@@ -354,22 +360,88 @@ if (lm.containFeature("w:" + words[j]))
     wordIds[j] = lm.getFeatureId("w:" + words[j]);
 else
     wordIds[j] = lm.getFeatureId("W:unknownword"); 
-    // new word seen at test time, so we map it to unknown
+    // new word seen at test time, so we map it to unknown.
+    // Note that else condition will only occur at test time.
+}
+Sentence x = new Sentence(wordIds);
+</pre>
+
+<p>
+Similarly, we read the POS tag sequence, adding the labels to the lexicon,
+</p>
+<pre class="example">
+for (int j = 0; j &lt; tags.length; j++) {
+    lm.addLabel("tag:" + tags[j]);
+    tagIds[j] = lm.getLabelId("tag:" + tags[j]);
+}
+POSTag y = new POSTag(tagIds);
+</pre>
+<p>
+For ease of access, we put both the sentence token ids and the tags ids in the <code>SLProblem</code> object. The <code>SLProblem</code> class is a wrapper around a list of IInstance and the correponding gold IStructure objects. We add the sentence and POSTag to the <code>SLProblem</code> object,
+</p>
+<pre class="example">
+sp.addExample(x, y);
+</pre>
+
+<p>
+Here is the entire code for reading the data,
+</p>
+<pre class="example">
+public static SLProblem readStructuredData(String fname, Lexiconer lm)
+throws IOException, DataFormatException {
+    List&lt;String&gt; lines = LineIO.read(fname);
+    SLProblem sp = new SLProblem();
+
+    assert lines.size() % 2 == 0; // must be even; contains labels
+
+    if (lm.isAllowNewFeatures())
+        lm.addFeature("W:unknownword"); 
+        // pre-add the unknown word to the vocab
+
+    for (int i = 0; i &lt; lines.size() / 2; i++) {
+        String[] words = lines.get(i * 2).split("\\s+");
+        int[] wordIds = new int[words.length];
+
+        for (int j = 0; j &lt; words.length; j++) {
+        // this will be off at test time, so new words wont be added to the lexicon
+            if (lm.isAllowNewFeatures()) {
+                lm.addFeature("w:" + words[j]);
+            }
+            if (lm.containFeature("w:" + words[j]))
+                wordIds[j] = lm.getFeatureId("w:" + words[j]);
+            else
+                wordIds[j] = lm.getFeatureId("W:unknownword");
+                // new word seen at test time, so we map it to unknown
+        }
+        Sentence x = new Sentence(wordIds);
+        String[] tags = lines.get(i * 2 + 1).split("\\s+");
+        int[] tagIds = new int[words.length];
+
+        if (words.length != tags.length) {
+            throw new DataFormatException(
+            "The number of tokens and number tags in " + i
+            + "-th sample does not match");
+        }
+        for (int j = 0; j &lt; tags.length; j++) {
+            lm.addLabel("tag:" + tags[j]);
+            tagIds[j] = lm.getLabelId("tag:" + tags[j]);
+        }
+        sp.addExample(x, new POSTag(tagIds));
+    }
+    return sp;
 }
 </pre>
 </div>
 </div>
-
 <div id="outline-container-sec-8" class="outline-2">
-<h2 id="sec-8">All Set, Let's Train!</h2>
+<h2 id="sec-8">Training</h2>
 <div class="outline-text-2" id="text-8">
 <p>
 First, we create a new <code>SLModel</code> object that will contain all the information relevant to our model.
 In particular, it contains,
 </p>
-
 <ol class="org-ol">
-<li>The Lexicon for your features - the lexicon manages the mapping from your features to ids (more on it later). The lexicon is implemented in the class <code>Lexiconer</code>.
+<li>The Lexicon - the lexicon manages the mapping from your features to ids and labels to ids. The lexicon is implemented in the class <code>Lexiconer</code>.
 </li>
 <li>The weight vector for your model.  
 </li>
@@ -383,10 +455,6 @@ model.lm = new Lexiconer();
 
 SLProblem sp = readStructuredData(trainingDataPath, model.lm);
 </pre>
-
-<p>
-Let's break this down one class at a time.
-</p>
 
 <p>
 Now lets read the training data for POS tagging.
@@ -407,10 +475,14 @@ When you are done training, you can save your model by calling the <code>saveMod
 </p>
 </div>
 </div>
+
+<div id="outline-container-sec-9" class="outline-2">
+<h2 id="sec-9">Testing</h2>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Shyam Upadhyay</p>
-<p class="date">Created: 2014-11-01 Sat 14:02</p>
+<p class="date">Created: 2014-11-01 Sat 14:58</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
