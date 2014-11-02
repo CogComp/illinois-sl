@@ -1,7 +1,6 @@
 package edu.illinois.cs.cogcomp.sl.applications.sequence;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
-import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -138,10 +137,10 @@ public class SequenceInferenceSolver extends
 	}
 	@Override
 	public float getLoss(IInstance ins, IStructure goldStructure,  IStructure structure){
-		POSTag goldLabeledSeq = (POSTag) goldStructure;
+		SequenceLabel goldLabeledSeq = (SequenceLabel) goldStructure;
 		float loss = 0;
 		for (int i = 0; i < goldLabeledSeq.tags.length; i++)
-			if (((POSTag) structure).tags[i] != goldLabeledSeq.tags[i])
+			if (((SequenceLabel) structure).tags[i] != goldLabeledSeq.tags[i])
 				loss += 1.0f;
 		return loss;
 	}
