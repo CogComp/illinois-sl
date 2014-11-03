@@ -1,35 +1,46 @@
 #+TITLE: Illinois-SL Tutorial
 #+STARTUP: customtime
-#+OPTIONS: tags:nil num:nil
+#+OPTIONS: num:nil
 #+INCLUDE: "~/Dropbox/Private/org/revision/my_latex_preamble.org"
 
-* Installation
-You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/][here]].
 * Getting Started
-This is a tutorial for the Illinois-SL package. We will walk you through installation, some simple examples and other relevant details.
+Illinois-SL is a general purpose JAVA library for performing structured learning. 
+It houses learning algorithms like averaged Structured Perceptron and Structured SVM with L-2 Loss, and provides a minimal interface for your structured learning needs.
 
-In case of problems, you can contact the author at [[mailto:kchang10@illinois.edu][kchang10@illinois.edu]] or [[mailto:upadhya3@illinois.edu][upadhya3@illinois.edu]].
+In this tutorial, we will walk you through installation, some simple examples on how to use this package.
+* Download and Installation
+You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/][here]].
 * Basics
-We need to implement the following classes and methods,
+We need to implement the following,
 
-1) The input structure, $\x$
-2) The output structure, $\y$
-3) A procedure =InferenceSolver= to perform the loss-augmented inference.
-
-\begin{align*}
-  \argmax_{\y'} \w^T \Phi(\x,\y') + \Delta(\y,\y')
-\end{align*}
+1) The input structure, $\x$. This should implement the =IInstance= interface.
+2) The output structure, $\y$. This should implement the =IStructure= interface.
+3) A procedure to compute the feature vector $\Phi(\x,\y)$. For this you need to extned the =AbstractFeatureGenerator= class and override its =getFeatureVector= method.
+4) A procedure =InferenceSolver= to perform the loss-augmented inference,
+   \begin{align*}
+   \argmax_{\y'} \w^T \Phi(\x,\y') + \Delta(\y,\y')
+   \end{align*}
+   For this you need to extend the =AbstractInferenceSolver= class.
 
 At test time, we need to solve 
 \begin{align*}
   \argmax_{\y'} \w^T \Phi(\x,\y')
 \end{align*}
-
-For this we can just set $\Delta(\y,\y')$ to zero in the InfSolver method.
+We will call this the MAP inference problem.
+For this we can just set $\Delta(\y,\y')$ to zero in the loss-augmented inference solver.
 
 * Example - POS Tagging
   We will start with a very simple example - part-of-speech tagging. 
-  To implement a structured learning algorithm, we need to 
+
+We will work under the usual markovian assumption, so the POS tags will be the hidden states. We will have features based on transistion probabilities, emission probabilities and the initial probabilities for each state.
+
+  We will define our loss to be the hamming distance between the predicted POS tags for the sentence and the gold POS tag sequence for the sentence. Note that this loss decomposes over the structure, so we can use the same inference solver to solve loss-augmented inference and the MAP inference problem.
+
+  For the case of POS Tagging, the components that we need to implement are,
+  1. The sentence (this will be the $\x$).
+  2. The POS tags for the sentence (this will be the $\y$).
+  3. Our features will encode the transistion probabilities, emission probabilities and the initial state probabilities.
+  4. An inference solver. We will use the Viterbi Inference method. 
 * Sentence
 For POS Tagging , sentence represents the input structure. Each token in the sentence will be part of the structure. 
 #+BEGIN_SRC
@@ -51,6 +62,31 @@ public class POSTag implements IStructure {
 }
 #+END_SRC
 Again, we just store the ids, as maintained by the lexicon. Note that all output structures should implement =IStructure= interface.
+* TODO Features
+
+#+BEGIN_SRC
+public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
+    FeatureVectorBuffer fv = new FeatureVectorBuffer();
+    Sentence ins = (Sentence) x;
+    int[] tags = ((POSTag) y).tags;
+
+    // add emission features
+    for (int i = 0; i < ins.tokens.length; i++)
+        fv.addFeature(ins.tokens[i] +  lm.getNumOfFeature() * tags[i], 1.0f);
+
+    // add prior features 
+    fv.addFeature(lm.getNumOfFeature() * lm.getNumOfLabels() + tags[0], 1.0f);
+
+    // add transition features
+    int priorEmissionOffset = lm.getNumOfFeature() * lm.getNumOfLabels() + lm.getNumOfLabels();
+    // calculate transition features
+    for (int i = 1; i < ins.tokens.length; i++)
+        fv.addFeature(priorEmissionOffset + tags[i - 1] * lm.getNumOfLabels() + tags[i], 1.0f);
+
+    return fv.toFeatureVector(); 
+}
+#+END_SRC
+* TODO Parameters
 * Reading the Training Data
 We will assume the training data is in the following format,
 #+BEGIN_SRC
@@ -166,3 +202,25 @@ model.lm.setAllowNewFeatures(false);
 When you are done training, you can save your model by calling the =saveModel= method in the =SLModel= class.
 
 * Testing
+Testing is as easy as training. We simply load the =SLModel= object that we obtained from training and read the test data into a =SLProblem=. We access each test instance using the =instanceList= field in the =SLProblem= object, and output the best structure as our prediction.
+#+BEGIN_SRC
+SLModel model = SLModel.loadModel(modelPath);
+SLProblem sp = readStructuredData(testDataPath, model.lm);
+
+double acc = 0.0;
+double total = 0.0;
+
+for (int i = 0; i < sp.instanceList.size(); i++) {
+
+    POSTag gold = (POSTag) sp.goldStructureList.get(i);
+    POSTag prediction = (POSTag) model.infSolver.getBestStructure(model.wv, sp.instanceList.get(i));
+
+    for (int j = 0; j < prediction.tags.length; j++) {
+        total += 1.0;
+        if (prediction.tags[j] == gold.tags[j]) {
+        acc += 1.0;
+    }
+}
+#+END_SRC
+* Contact
+You can contact the authors at [[mailto:kchang10@illinois.edu][kchang10@illinois.edu]] or [[mailto:upadhya3@illinois.edu][upadhya3@illinois.edu]] in case you have a bug to report or have any comments/feedback.
