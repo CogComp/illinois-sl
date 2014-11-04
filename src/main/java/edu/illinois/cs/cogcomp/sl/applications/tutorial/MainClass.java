@@ -7,11 +7,13 @@ import java.util.zip.DataFormatException;
 import edu.illinois.cs.cogcomp.core.io.LineIO;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
 import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
-import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
+import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
+import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMDCDSolver;
+import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
 public class MainClass {
@@ -43,7 +45,9 @@ public class MainClass {
 			Learner learner = LearnerFactory.getLearner(model.infSolver, fg,
 					para);
 			model.wv = learner.train(sp);
-
+			
+			if(learner instanceof L2LossSSVMLearner)
+				System.out.println("Primal objective:" + ((L2LossSSVMLearner)learner).getPrimalObjective(sp, model.wv, model.infSolver, para.C_FOR_STRUCTURE));
 			// save the model
 			model.saveModel(modelPath);
 		}
@@ -64,8 +68,6 @@ public class MainClass {
 						model.wv, sp.instanceList.get(i));
 
 				for (int j = 0; j < prediction.tags.length; j++) {
-					// System.out.println(prediction.tags[j] +" "+ gold.tags[j]
-					// );
 					total += 1.0;
 					if (prediction.tags[j] == gold.tags[j]) {
 						acc += 1.0;

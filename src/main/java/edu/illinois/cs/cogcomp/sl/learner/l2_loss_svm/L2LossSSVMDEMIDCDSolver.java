@@ -9,8 +9,8 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
+import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
@@ -97,14 +97,8 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 				StructuredInstanceWithAlphas.L2SolverInfo si = new StructuredInstanceWithAlphas.L2SolverInfo(); // Inner stopping condition.
 					
 				for(StructuredInstanceWithAlphas ex : examples){
-					if (ex.getLock().tryLock()) {
-						try{
-							ex.solveSubProblemAndUpdateW(si, wv);
-						}
-						finally{
-							ex.getLock().unlock();
-						}
-					}	
+						ex.solveSubProblemAndUpdateW(si, wv);
+					
 					if (!firstIteration && si.PGMaxNew - si.PGMinNew <= parameters.STOP_CONDITION || stop) {
 						if(numNewStructures() ==0){
 							stop = true;
@@ -122,14 +116,13 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 				if (parameters.CLEAN_CACHE && iter % parameters.CLEAN_CACHE_ITER == 0) {
 					logger.trace("Cleaning cache....");
 					for(StructuredInstanceWithAlphas ex : examples) {
-						if (ex.getLock().tryLock()) {
 							try{
 								ex.cleanCache(wv);
 							} 
 							finally{
-								ex.getLock().unlock();
+								
 							}
-						}
+
 					}
 				}
 				
@@ -202,18 +195,13 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 				}
 				for (StructuredInstanceWithAlphas ex : alphaInsList) {
 					// positive h has already been fixed
-					if (ex.getLock().tryLock()) {
-						try{					
-							numNewStruct += ex.updateRepresentationCollection(wv, infSolver, parameters);
-						}
-						catch (Exception e) {
-							e.printStackTrace();
-							System.exit(1);
-						}
-						finally{
-							ex.getLock().unlock();
-						}
-					}		
+					try {
+						numNewStruct += ex.updateRepresentationCollection(wv, infSolver, parameters);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+						
 					if(numInstanceParsed % parameters.DEMIDCD_NUMBER_OF_INF_PARSE_BEFORE_UPDATE_WV ==0){
 						wv.setDenseVector(wvBuffer);
 						if(stop){

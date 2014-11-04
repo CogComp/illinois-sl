@@ -206,5 +206,8 @@ public class SLParameters implements Serializable {
 				"0.01"));
 		DECAY_LEARNING_RATE = Boolean.parseBoolean(props.getProperty(
 				"DECAY_LEARNING_RATE", "false"));
+		
+		int b = Integer.parseInt(props.getProperty("NUMBER_OF_FEATURE_BITS","30"));
+		HAHSING_MASK = (1<<b)-1;
 	}
 }

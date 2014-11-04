@@ -1,7 +1,7 @@
 package edu.illinois.cs.cogcomp.sl.learner;
 
-import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
+import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;

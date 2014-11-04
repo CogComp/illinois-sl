@@ -2,17 +2,14 @@ package edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -28,81 +25,70 @@ public class StructuredInstanceWithAlphas{
 	static Logger logger = LoggerFactory.getLogger(StructuredInstanceWithAlphas.class);
 	protected static int MAX_DCD_INNNER_ITER = 10;
 	protected static float DCD_INNNER_STOP = 0.1f;
-	public static int cacheYHeuristicCount = 0;
 
 	protected final static float UPDATE_CONDITION = 1e-12f;
 
-
 	protected IInstance ins = null;
 	protected float sC = 0.0f;
-
-	protected Lock lock;
+	float alphaSum;
 
 	public static class L2SolverInfo {
 		public float PGMaxNew = Float.NEGATIVE_INFINITY;
 		public float PGMinNew = Float.POSITIVE_INFINITY;
 	}
 
+	public static class AlphaStruct{
+		float alpha;
+		float loss;
+		IFeatureVector alphaFeactureVector;
+		IStructure struct;
+	}
 
+	protected L2LossSSVMDCDSolver basedSolver = null;
 	protected IStructure goldStructure;
 	protected IFeatureVector goldFeatureVector;
-	private List<IStructure> candidateStructureList;	// list of structures found using loss augmented inference currently in the working set
-	protected List<Pair<float[], IFeatureVector>> alphaFeatureVectorList;	
-	// each pair contains first float: alpha, second float: loss
-	// the Feature vector is the difference of the gold feature and the features of the candidate structure.
+	public List<AlphaStruct> candidateAlphas;
+	// the following two arrays are designed for avoiding ConcurrentModificationException
+	// when using DEMI-DCD.
 	
-	protected L2LossSSVMDCDSolver basedSolver = null;
-	protected Set<IStructure> structuredSet = Collections.newSetFromMap(new ConcurrentHashMap<IStructure, Boolean>());
+	public List<AlphaStruct> newCandidateAlphas;
+	protected Set<IStructure> candidateSet = Collections.newSetFromMap(new HashMap<IStructure, Boolean>());
 
 	protected StructuredInstanceWithAlphas(IInstance ins,
 			IStructure goldStruct, float C, L2LossSSVMDCDSolver solver) {
 		this.goldStructure = goldStruct;
 		this.ins = ins;
 		this.goldFeatureVector = solver.featureGenerator.getFeatureVector(ins, goldStruct);	// 
-		
-		
-		candidateStructureList = new ArrayList<IStructure>();
-		alphaFeatureVectorList = new ArrayList<Pair<float[], IFeatureVector>>();
+		candidateAlphas = new ArrayList<AlphaStruct>();
+		newCandidateAlphas = Collections.synchronizedList(new ArrayList<AlphaStruct>());
 		sC = C;
-		lock = new ReentrantLock();
 		basedSolver = solver;
-		
 	}
 
-	
-	protected float getAlphaSum() {
-		float sum_alpha = 0f;
-		for (Pair<float[], IFeatureVector> p : alphaFeatureVectorList) {
-			sum_alpha += p.getFirst()[0];
-		}
-		return sum_alpha;
-	}
-	static public long accumulateTime = 0;
-	
 	/*
-	 * performs the update as mentioned in algorithm 1 in the paper.
+	 * Update an alpha element and w.
 	 */
 	protected void solveSubProblemAndUpdateW(L2SolverInfo si, WeightVector wv) {
-		float sum_alpha = getAlphaSum();
-		// solve subproblem over alphas corresponding to an instance and update w.
+		// solve sub-problem over alphas associated with an instance.
 		int i = 0;
 		float stop;
+		candidateAlphas.addAll(newCandidateAlphas);
+		newCandidateAlphas.clear();
 		while(true){
 			i++;
 			float inner_PGmax_new = Float.NEGATIVE_INFINITY;
 			float inner_PGmin_new = Float.POSITIVE_INFINITY;
-			
+
 			// this loop performs the update for each alpha separately
-			for (Pair<float[], IFeatureVector> p : alphaFeatureVectorList){
+			for(AlphaStruct as: candidateAlphas){
+				float alpha = as.alpha;
+				float loss = as.loss;
 
-				float alpha = p.getFirst()[0];
-				float loss = p.getFirst()[1];
-
-				IFeatureVector fv = p.getSecond();	// get the difference vector 
+				IFeatureVector fv = as.alphaFeactureVector;	// get the difference vector 
 				float dot_product = wv.dotProduct(fv);
 				float xij_norm2 = fv.getSquareL2Norm();	
 
-				float NG = (loss - dot_product) - sum_alpha / (2.0f * sC);
+				float NG = (loss - dot_product) - alphaSum / (2.0f * sC);
 
 				float PG = -NG;
 				if (alpha == 0)
@@ -113,16 +99,11 @@ public class StructuredInstanceWithAlphas{
 
 				if (Math.abs(PG) > UPDATE_CONDITION) {
 
-					float step = NG / (xij_norm2 + 1.0f / (2.0f * sC));	// line 3 in algorithm
+					float step = NG / (xij_norm2 + 1.0f / (2.0f * sC));
 					float new_alpha = Math.max(alpha + step, 0);
-					sum_alpha += (new_alpha - alpha);
-					long timeStart = System.currentTimeMillis();
+					alphaSum += (new_alpha - alpha);
 					wv.addSparseFeatureVector(fv, (new_alpha - alpha));
-					accumulateTime += System.currentTimeMillis()-timeStart;	
-					
-					float[] alpha_loss = p.getFirst();	// update alpha in the working set too
-					alpha_loss[0] = new_alpha;
-					p.setFirst(alpha_loss);
+					as.alpha = new_alpha;
 				}
 			}
 
@@ -140,42 +121,21 @@ public class StructuredInstanceWithAlphas{
 		}
 	}
 
-	protected void cleanCache(WeightVector wv) {
-		List<IStructure> removeSet = new ArrayList<IStructure>();
-		for (int i = 0; i < candidateStructureList.size(); i++) {
-			IStructure saved_h = candidateStructureList.get(i);
-
-			// not in the workingSet
-			if (alphaFeatureVectorList.get(i).getFirst()[0] <= 1e-6) 
-			{
-				removeSet.add(saved_h);
-				// remove it if I haven't remove it
-				/*if (!removedStructure.contains(saved_h)) { 
-					removedStructure.add(saved_h);
-					removeSet.add(saved_h);
-				}*/
+	protected  void cleanCache(WeightVector wv) {
+		Iterator<AlphaStruct> iterator = candidateAlphas.iterator();
+		while(iterator.hasNext()){
+			AlphaStruct as = iterator.next();
+			if(as.alpha <=1e-6){
+				iterator.remove();
+				candidateSet.remove(as.struct);
 			}
 		}
-		candidateStructureList.removeAll(removeSet);
-		alphaFeatureVectorList.removeAll(removeSet);
-		/*
-		for (IStructure remove_h : removeSet) {
-			
-			for (int i = 0; i < candidateStructureList.size(); i++) {
-				if (remove_h == candidateStructureList.get(i)) {
-					candidateStructureList.remove(i);
-					alphaFeatureVectorList.remove(i);
-					break;
-				}
-			}
-		}*/
-
 	}
-	
+
 	/**
 	 * changes the working set, returns 1 if the instance is added, 0 otherwise
 	 * @param wv
-	 * @param infSolver
+	 * synchronized@param infSolver
 	 * @param parameters
 	 * @return
 	 * @throws Exception
@@ -184,56 +144,47 @@ public class StructuredInstanceWithAlphas{
 			AbstractInferenceSolver infSolver, SLParameters parameters) throws Exception {
 
 		float C = sC;
-			
+
 		IStructure h = infSolver
 				.getLossAugmentedBestStructure(wv, ins, goldStructure);
 		float loss = infSolver.getLoss(ins, goldStructure, h);
-		
+
 
 		IFeatureVector best_features = basedSolver.featureGenerator.getFeatureVector(ins, h);
 		IFeatureVector diff = goldFeatureVector.difference(best_features);
 
-		float xi = getAlphaSum() / (2.0f * C);
+		float xi = alphaSum / (2.0f * C);
 		float dotProduct = wv.dotProduct(diff);
 		float score = (loss - dotProduct) - xi;	// line 6 in DCD-SSVM (algorithm 3 in paper)
-		// implement a looser condition
-		// System.out.println("cache size:" + alphafv_map.size());
-		// if (!alphafv_map.containsKey(h)) {
-		
 
 		if(parameters.CHECK_INFERENCE_OPT) {
-			// float check if the code is right
 			float max_score_in_cache = Float.NEGATIVE_INFINITY;
-			for (int i = 0; i < candidateStructureList.size(); i++) {
-				Pair<float[], IFeatureVector> tmp_alpha_loss = alphaFeatureVectorList.get(i);
-			// IStructure f= structure_list.get(i);
-
-			float s = tmp_alpha_loss.getFirst()[1]
-					- wv.dotProduct(tmp_alpha_loss.getSecond()) - xi;
-			if (max_score_in_cache < s)
-				max_score_in_cache = s;
+			for(AlphaStruct as:new ArrayList<AlphaStruct>(candidateAlphas)){
+				float s = as.loss - wv.dotProduct(as.alphaFeactureVector) - xi;
+				if (max_score_in_cache < s)
+					max_score_in_cache = s;
 			}
 
-			if (score < max_score_in_cache - 1e-4) {
+			if (score < max_score_in_cache - 1e-6) {
 				if(logger.isErrorEnabled()){
 					printErrorLogForIncorrectInference(wv, loss, h, xi, dotProduct, score,
-						max_score_in_cache);
+							max_score_in_cache);
 				}
 				throw new Exception(
-					"The inference procedure is not correct! The max solution is worse than some of the solution in the cache! "
-							+ "If you want to use atmp_alpha_lossn approximated inference. Check JLISParameter.check_inference_opt ");
+						"The inference procedure obtains a sub-optimal solution!"
+								+ "If you want to use an approximate inference solver, set SLParameter.check_inference_opt = false.");
 			}
 		}
-		
+
 		if (score < parameters.STOP_CONDITION) // not enough contribution
 			return 0;
-		if(!structuredSet.contains(h)){
-			float[] alpha_loss = new float[2];
-			alpha_loss[0] = 0.0f;
-			alpha_loss[1] = loss;
-			candidateStructureList.add(h);
-			alphaFeatureVectorList.add(new Pair<float[], IFeatureVector>(alpha_loss, diff));
-			structuredSet.add(h);
+		if(!candidateSet.contains(h)){
+			AlphaStruct as = new AlphaStruct();
+			as.alpha = 0.0f;
+			as.loss = loss;
+			as.alphaFeactureVector = diff;
+			newCandidateAlphas.add(as);
+			candidateSet.add(h);
 		}
 		return 1;
 
@@ -243,31 +194,13 @@ public class StructuredInstanceWithAlphas{
 	private void printErrorLogForIncorrectInference(WeightVector wv, float loss, IStructure h,
 			float xi, float dotProduct, float score,
 			float max_score_in_cache) {
-		logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		logger.error("The inference procedure is not correct!");
-		logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-		logger.error("Pred: " + h);
-		logger.error("docproduct on pred: "
-				+ basedSolver.featureGenerator.decisionValue(wv, ins, h)); 
-		logger.error("dotproduct on diff: " + dotProduct);
-		logger.error("loss: " + loss);
-		logger.error("xi: " + xi);
-		logger.error("Warning: the inference (argmax) code is not right......");
+		logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		logger.error("The inference procedure finds a sub-optimal solution.");
+		logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		logger.error("If you want to use an approximate inference solver, set SLParameter.check_inference_opt = false.");
+		
 		logger.error("score: " + score);
-		logger.error("max score in cache: " + max_score_in_cache);
-
-		for (int i = 0; i < candidateStructureList.size(); i++) {
-			IStructure f = candidateStructureList.get(i);
-			Pair<float[], IFeatureVector> pair = alphaFeatureVectorList.get(i);
-			logger.error(">>>" + f + " alpha: " + pair.getFirst()[0]
-					+ " loss: " + pair.getFirst()[1]);
-			logger.error(">>> (dot) "
-					+ wv.dotProduct(pair.getSecond()));
-		}
-		logger.error("[GOLD]" + goldStructure);
-		logger.error("gold dot product: "
-				+ basedSolver.featureGenerator.decisionValue(wv, ins, goldStructure));
+		logger.error("max score of the cached structure: " + max_score_in_cache);
 	}
 
 	/**
@@ -275,11 +208,9 @@ public class StructuredInstanceWithAlphas{
 	 * @return
 	 */
 	protected float getLossWeightAlphaSum() {
-
 		float sum_alpha = 0f;
-		for (Pair<float[], IFeatureVector> p : alphaFeatureVectorList) {
-			float[] alpha_loss = p.getFirst();
-			sum_alpha += alpha_loss[0] * alpha_loss[1];
+		for(AlphaStruct as: candidateAlphas){
+			sum_alpha += as.loss*as.alpha;
 		}
 		return sum_alpha;
 
@@ -289,24 +220,18 @@ public class StructuredInstanceWithAlphas{
 		return sC;
 	}
 
-	public Lock getLock() {
-		return lock;
-	}
 
 	@Deprecated
 	protected void fillWeightVector(WeightVector w) {
-		for (Pair<float[], IFeatureVector> p : alphaFeatureVectorList) {
-			float alpha = p.getFirst()[0];
-			IFeatureVector fv = p.getSecond();			
-			w.addSparseFeatureVector(fv, alpha);
+		for(AlphaStruct as: candidateAlphas){			
+			w.addSparseFeatureVector(as.alphaFeactureVector, as.alpha);
 		}
 	}
 	@Deprecated
 	protected int getMaxIdx() {
 		int max_idx = -1;
-		for (Pair<float[], IFeatureVector> p : alphaFeatureVectorList) {
-			IFeatureVector fv = p.getSecond();
-			int curidx = fv.getMaxIdx();
+		for(AlphaStruct as: candidateAlphas){
+			int curidx = as.alphaFeactureVector.getMaxIdx();
 			if (curidx > max_idx)
 				max_idx = curidx;
 		}

@@ -1,11 +1,8 @@
 package edu.illinois.cs.cogcomp.sl.applications.sequence;
 
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
-import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 /**
@@ -33,103 +30,58 @@ public class SequenceInferenceSolver extends
 		SequenceLabel goldLabeledSeq = (SequenceLabel) gold;
 		
 		// initialization
-		SequenceInstance sen = (SequenceInstance) input;
+		SequenceInstance seq = (SequenceInstance) input;
 		
 		int numOflabels = SequenceIOManager.numLabels;
-		int numOfTokens = sen.baseFeatures.length;
+		int numOfTokens = seq.baseFeatures.length;
 		int numOfEmissionFeatures = SequenceIOManager.numFeatures;
 		
-		double[][] emissionScores = new double[numOfTokens][numOflabels];
-		double[] priorScores = new double[numOflabels];
-		double[][] transitionScores = new double[numOflabels][numOflabels];
-		double[][] dpTable = new double[numOfTokens][numOflabels];
+		float[][] dpTable = new float[2][numOflabels];
 		int[][] path = new int[numOfTokens][numOflabels];
-
-		// fill in the score tables 
 		
-		// emission score table
-		for (int i = 0; i < numOfTokens; i++) {
-			IFeatureVector fv = sen.baseFeatures[i]; 
-			for (int j = 0; j < numOflabels; j++) {				
-				emissionScores[i][j] = wv.dotProduct(fv, j*numOfEmissionFeatures);				
-			}
-		}
-		
-		
-		// We only have one transition feature to identify if tag_{i-1}->tag_{i} appears
-		IFeatureVector transFv = new SparseFeatureVector(new int[]{1}, new float[]{1.0f});
-
-		// fill in prior score table
-		int offset = numOfEmissionFeatures * numOflabels;
-		for (int j = 0; j < numOflabels; j++) {
-			priorScores[j] = wv.dotProduct(transFv, offset);
-			offset += 1;
-		}
-
-		// fill in transition score table
-		if(numOfTokens>1){
-			for (int k = 0; k < numOflabels; k++) {
-				for (int j = 0; j < numOflabels; j++) {
-					int tr_s = offset + (j * numOflabels + k);						
-					transitionScores[k][j] = wv.dotProduct(transFv, tr_s);
-				}
-			}
-		}
-		
-		// for loss augmented inference, we add Hamming loss into the score table
-		if(gold != null) {
-			for (int i = 0; i < numOfTokens; i++) {
-				for (int j = 0; j < numOflabels; j++) {
-					if (j != goldLabeledSeq.tags[i])
-						emissionScores[i][j] += 1.0; // Hamming loss
-				}
-			}
-		}		
+		int offset = (numOfEmissionFeatures+1) * numOflabels;
 		
 		// Viterbi algorithm
 		for (int j = 0; j < numOflabels; j++) {
-			double priorScore = priorScores[j];
-			double zeroOrderScore = emissionScores[0][j];
-			dpTable[0][j] = priorScore + zeroOrderScore;
+			float priorScore = wv.get(numOfEmissionFeatures * numOflabels + j);
+			float zeroOrderScore = wv.dotProduct(seq.baseFeatures[0], j*numOfEmissionFeatures)+
+					((gold !=null && j != goldLabeledSeq.tags[0])?1:0);
+			dpTable[0][j] = priorScore + zeroOrderScore; 	 
 			path[0][j] = -1;
 		}
+		
 		for (int i = 1; i < numOfTokens; i++) {
 			for (int j = 0; j < numOflabels; j++) {
-				double zeroOrderScore = emissionScores[i][j];
-				double bestScore = Double.NEGATIVE_INFINITY;
+				float zeroOrderScore =  wv.dotProduct(seq.baseFeatures[i], j*numOfEmissionFeatures)
+						+ ((gold!=null && j != goldLabeledSeq.tags[i])?1:0);
+				
+				float bestScore = Float.NEGATIVE_INFINITY;
 				for (int k = 0; k < numOflabels; k++) {
-					double candidateScore = dpTable[i - 1][k]
-							+  transitionScores[j][k];
+					float candidateScore = dpTable[(i-1)%2][k] +  wv.get(offset + (k * numOflabels + j));
 					if (candidateScore > bestScore) {
 						bestScore = candidateScore;
 						path[i][j] = k;
 					}
 				}
-				dpTable[i][j] = zeroOrderScore + bestScore;
+				dpTable[i%2][j] = zeroOrderScore + bestScore;
 			}
 		}
 		
 		// find the best sequence		
 		int[] tags = new int[numOfTokens];
-		double maxScore = Double.NEGATIVE_INFINITY;
-		int maxTag = -1;
-
-		for (int i = 0; i < numOflabels; i++) {
-			if (dpTable[numOfTokens - 1][i] > maxScore) {
-				maxScore = dpTable[numOfTokens - 1][i];
+		
+		int maxTag = 0;
+		for (int i = 0; i < numOflabels; i++)
+			if (dpTable[(numOfTokens - 1)%2][i] > dpTable[(numOfTokens - 1)%2][maxTag]) 
 				maxTag = i;
-			}
-		}
+		
 		tags[numOfTokens - 1] = maxTag;
-
-		int curTag = maxTag;
-		for (int i = numOfTokens - 1; i >= 1; i--) {
-			curTag = path[i][curTag]; // trace back one step;
-			tags[i - 1] = curTag;
-		}
-		return new SequenceLabel(sen, tags);
+		
+		for (int i = numOfTokens - 1; i >= 1; i--) 
+			tags[i-1] = path[i][tags[i]];
+		return new SequenceLabel(tags);
 	}
-
+		
 	@Override
 	public IStructure getBestStructure(WeightVector wv,
 			IInstance input) throws Exception {

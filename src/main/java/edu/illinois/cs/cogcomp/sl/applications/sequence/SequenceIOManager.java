@@ -98,7 +98,7 @@ public class SequenceIOManager {
 				sp.instanceList.add(seq);
 				for(int i=0; i<labels.size(); i++)
 					labelArray[i] = labels.get(i);
-				sp.goldStructureList.add(new SequenceLabel(seq, labelArray));
+				sp.goldStructureList.add(new SequenceLabel(labelArray));
 			}
 			System.out.println(numFeatures);
 			System.out.println(indeices.size());

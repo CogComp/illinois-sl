@@ -5,7 +5,6 @@ import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
-import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
 public class SequenceFeatureGenerator extends AbstractFeatureGenerator {
 	/**
@@ -32,17 +31,14 @@ public class SequenceFeatureGenerator extends AbstractFeatureGenerator {
 		// add prior features
 		int numOfLabels = SequenceIOManager.numLabels;
 		int emissionOffset = numOfEmissionFeatures * numOfLabels;
-		IFeatureVector transFv = new SparseFeatureVector(new int[]{1}, new float[]{1.0f});
-		int priorOffset = emissionOffset + tags[0]; 
-		fv.addFeature(transFv, priorOffset);			
+		fv.addFeature(emissionOffset + tags[0], 1.0);
 
 		// add transition features
 		int priorEmissionOffset = emissionOffset + numOfLabels;
 		// calculate transition features
 		for (int i = 1; i < len; i++) {
-			int transOffset = priorEmissionOffset + (tags[i - 1] * 
-					numOfLabels + tags[i]);
-			fv.addFeature(transFv, transOffset);					
+			fv.addFeature(priorEmissionOffset + (tags[i - 1] * 
+					numOfLabels + tags[i]), 1.0f);					
 		}
 		return fv.toFeatureVector(); 		
 	}

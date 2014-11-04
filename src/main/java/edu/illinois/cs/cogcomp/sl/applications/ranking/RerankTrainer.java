@@ -1,7 +1,7 @@
 package edu.illinois.cs.cogcomp.sl.applications.ranking;
 
-import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
+import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
