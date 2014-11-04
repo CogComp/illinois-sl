@@ -75,7 +75,7 @@ public class DenseVector implements Serializable, Cloneable{
 			}
 		} else {
 			for(int i=0; i< fv.getNumActiveFeatures(); i++){
-					res += u[fv.getIdx(i)] * fv.getValue(i);
+						res += u[fv.getIdx(i)] * fv.getValue(i);
 				}
 		}
 		return res;

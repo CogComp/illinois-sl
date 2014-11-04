@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
-import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
+import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
@@ -241,7 +239,7 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 		for (int i = 0; i < alphaInsList.length; i++) {
 			StructuredInstanceWithAlphas instanceWithAlphas = alphaInsList[i];
 			float w_sum = instanceWithAlphas.getLossWeightAlphaSum();
-			float sum = instanceWithAlphas.getAlphaSum();
+			float sum = instanceWithAlphas.alphaSum;
 			float C = instanceWithAlphas.getC();
 			obj -= w_sum;
 			obj += (1.0 / (4.0 * C)) * sum * sum;
@@ -256,7 +254,8 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 		int n_ex = alphaInsList.length;
 		for (int i = 0; i < n_ex; i++) {
 			StructuredInstanceWithAlphas alphaIns = alphaInsList[i];
-			n_total_alphas += alphaIns.alphaFeatureVectorList.size();
+			//n_total_alphas += alphaIns.alphaFeatureVectorList.size();
+			n_total_alphas += alphaIns.candidateAlphas.size();
 		}
 
 		logger.trace("Number of ex: " + alphaInsList.length);

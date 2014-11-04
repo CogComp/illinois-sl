@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
-import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
+import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
@@ -127,7 +127,7 @@ public class L2LossSSVMParalleDCDSolver extends L2LossSSVMDCDSolver {
 			logger.trace("Thread: structure udpates = "	+ numOfNewStructures);
 		}
 	}
-
+	
 	private WeightVector trainSSVM(
 			WeightVector wv, final AbstractInferenceSolver[] infSolvers,
 			SLProblem sp, SLParameters parameters) throws Exception {		
@@ -186,7 +186,6 @@ public class L2LossSSVMParalleDCDSolver extends L2LossSSVMDCDSolver {
 
 			iter++;
 		}
-		System.out.println("Total assignment Time:" + StructuredInstanceWithAlphas.accumulateTime);
 		return wv;
 	}
 

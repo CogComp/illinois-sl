@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
 import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
-import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
+import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
@@ -34,8 +34,6 @@ public class MainClass {
 			model.config =  new HashMap<String, String>();
 			model.config.put("numFeatures", String.valueOf(SequenceIOManager.numFeatures));
 			model.config.put("numLabels", String.valueOf(SequenceIOManager.numLabels));
-			//System.out.println("Finish. Primal Objective Function Value is " + 
-			//L2LossSSVMLearner.getPrimalObjective(sp, model.wv, model.infSolver, para.C_FOR_STRUCTURE));
 			
 			// save the model
 			model.saveModel(modelPath);

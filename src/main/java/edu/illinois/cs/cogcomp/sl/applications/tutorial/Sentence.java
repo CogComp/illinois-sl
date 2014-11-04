@@ -2,7 +2,6 @@ package edu.illinois.cs.cogcomp.sl.applications.tutorial;
 
 
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
-import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
 /**
  * An implementation of IInstance for sequential tagging task 

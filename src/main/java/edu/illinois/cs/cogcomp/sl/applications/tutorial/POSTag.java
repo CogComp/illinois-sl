@@ -1,7 +1,6 @@
 package edu.illinois.cs.cogcomp.sl.applications.tutorial;
 
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
 public class POSTag implements IStructure {
 	public final int[] tags;
