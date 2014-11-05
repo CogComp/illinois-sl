@@ -5,7 +5,7 @@ import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
-public class RerankerBestItemFinder extends AbstractInferenceSolver{
+public class RankerInferenceSolver extends AbstractInferenceSolver{
 
 	private static final long serialVersionUID = 1L;
 
@@ -14,8 +14,8 @@ public class RerankerBestItemFinder extends AbstractInferenceSolver{
 	public IStructure getLossAugmentedBestStructure(
 			WeightVector weight, IInstance ins, IStructure goldStructure)
 			throws Exception {
-		RerankingInstance ri = (RerankingInstance) ins;
-		LabeledRerankingIns lri = (LabeledRerankingIns) goldStructure;
+		RankingInstance ri = (RankingInstance) ins;
+		RankingLabel lri = (RankingLabel) goldStructure;
 		int max_index = -1;
 		double max_score = Double.NEGATIVE_INFINITY;
 		
@@ -35,7 +35,7 @@ public class RerankerBestItemFinder extends AbstractInferenceSolver{
 		}
 		assert max_index != -1;
 		
-		LabeledRerankingIns pred = new LabeledRerankingIns(ri, max_index);
+		RankingLabel pred = new RankingLabel(max_index);
 		//System.out.println("pred: " + max_index + " gold: " + lri.pred_item);
 		return pred;
 	}
@@ -43,7 +43,7 @@ public class RerankerBestItemFinder extends AbstractInferenceSolver{
 	@Override
 	public IStructure getBestStructure(WeightVector weight, IInstance ins)
 			throws Exception {
-		RerankingInstance ri = (RerankingInstance) ins;
+		RankingInstance ri = (RankingInstance) ins;
 		int max_index = -1;
 		double max_score = Double.NEGATIVE_INFINITY;
 		
@@ -56,13 +56,13 @@ public class RerankerBestItemFinder extends AbstractInferenceSolver{
 		}
 		assert max_index != -1;
 		
-		return new LabeledRerankingIns(ri, max_index);
+		return new RankingLabel(max_index);
 	}
 	@Override
 	public float getLoss(IInstance ins, IStructure goldStructure,  IStructure structure){
-		RerankingInstance ri = (RerankingInstance) ins;
-		LabeledRerankingIns lri = (LabeledRerankingIns) goldStructure;
-		LabeledRerankingIns pri = (LabeledRerankingIns) structure;
+		RankingInstance ri = (RankingInstance) ins;
+		RankingLabel lri = (RankingLabel) goldStructure;
+		RankingLabel pri = (RankingLabel) structure;
 		return -ri.score_list.get(pri.pred_item)+ ri.score_list.get(lri.pred_item);
 	}
 }

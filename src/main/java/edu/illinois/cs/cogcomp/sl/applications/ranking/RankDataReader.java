@@ -7,7 +7,7 @@ import edu.illinois.cs.cogcomp.core.io.LineIO;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
-public class RerankDataReader {
+public class RankDataReader {
 	public static SLProblem readFeatureFile(String fea_file_name)
 			throws IOException {
 		int index = 0;
@@ -15,7 +15,7 @@ public class RerankDataReader {
 		ArrayList<String> fea_lines = LineIO.read(fea_file_name);
 
 		while (index < fea_lines.size()) {
-			RerankingInstance ri = new RerankingInstance();
+			RankingInstance ri = new RankingInstance();
 
 			String[] tokens = fea_lines.get(index).split("\\s+");
 			index++;
@@ -54,8 +54,8 @@ public class RerankDataReader {
 
 			}
 			
-			LabeledRerankingIns labeledRerankingIns = new LabeledRerankingIns(
-					ri, best_item);
+			RankingLabel labeledRerankingIns = new RankingLabel(
+					best_item);
 
 			sp.addExample(ri, labeledRerankingIns);
 		}

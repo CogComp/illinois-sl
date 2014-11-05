@@ -30,7 +30,7 @@ public class RerankTrainer {
 		System.out.println("Initializing Solvers...");
 		System.out.flush();
 		
-		model.infSolver = new RerankerBestItemFinder();
+		model.infSolver = new RankerInferenceSolver();
 		
 		System.out.println("Done!");
 		System.out.flush();
@@ -46,18 +46,18 @@ public class RerankTrainer {
 	public static double getTOP1Score(SLProblem sp) throws Exception {
 		double pred_loss = 0.0;
 		for (int i = 0; i < sp.size(); i++) {
-			RerankingInstance ri = (RerankingInstance) sp.instanceList.get(i);			
+			RankingInstance ri = (RankingInstance) sp.instanceList.get(i);			
 			pred_loss += ri.score_list.get(0);
 		}
 		return pred_loss/sp.size();
 	}
 
 	public static double getPredictedScore(SLProblem sp,
-			RerankerBestItemFinder s_finder, WeightVector wv) throws Exception {
+			RankerInferenceSolver s_finder, WeightVector wv) throws Exception {
 		double pred_loss = 0.0;
 		for (int i = 0; i < sp.size(); i++) {
-			RerankingInstance ri = (RerankingInstance) sp.instanceList.get(i);
-			LabeledRerankingIns pred = (LabeledRerankingIns) s_finder
+			RankingInstance ri = (RankingInstance) sp.instanceList.get(i);
+			RankingLabel pred = (RankingLabel) s_finder
 					.getBestStructure(wv, ri);
 			pred_loss += ri.score_list.get(pred.pred_item);
 		}

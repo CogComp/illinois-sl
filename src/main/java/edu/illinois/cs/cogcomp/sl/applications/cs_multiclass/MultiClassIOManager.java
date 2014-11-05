@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.applications.multiclass;
+package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import edu.illinois.cs.cogcomp.core.io.LineIO;
 import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
-public class MultiClassSparseLabeledDataReader {
+public class MultiClassIOManager {
 
 	public static float[][] getCostMatrix(Map<String, Integer> labels_maping,String fname) throws Exception{
 		int n_lab = labels_maping.size();
@@ -198,11 +198,10 @@ public class MultiClassSparseLabeledDataReader {
 
 			String lab = tokens[0];
 			if (labels_maping.containsKey(lab)) {
-				res.sp.goldStructureList.add(new LabeledMulticlassStructure(mi,
-						labels_maping.get(lab)));
+				res.sp.goldStructureList.add(new MulticlassLabel(labels_maping.get(lab)));
 			} else {
 				// only design for unknown classes in the test data
-				res.sp.goldStructureList.add(new LabeledMulticlassStructure(mi, -1));
+				res.sp.goldStructureList.add(new MulticlassLabel(-1));
 			}
 		}
 	}

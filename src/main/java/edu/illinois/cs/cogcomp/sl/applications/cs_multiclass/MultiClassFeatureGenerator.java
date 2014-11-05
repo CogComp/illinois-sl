@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.applications.multiclass;
+package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
@@ -17,10 +17,9 @@ public class MultiClassFeatureGenerator extends AbstractFeatureGenerator {
 	@Override
 	public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
 		MultiClassInstance mx = (MultiClassInstance) x;
-		LabeledMulticlassStructure my = (LabeledMulticlassStructure)y;
+		MulticlassLabel my = (MulticlassLabel)y;
 		FeatureVectorBuffer fvb = new FeatureVectorBuffer(mx.base_fv);
 		fvb.shift(my.output * mx.base_n_fea);
 		return fvb.toFeatureVector();
 	}
-
 }

@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.applications.multiclass;
+package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
@@ -6,7 +6,7 @@ import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 
-public class MultiClassStructureFinder extends AbstractInferenceSolver{
+public class MultiClassInferenceSolver extends AbstractInferenceSolver{
 
 	/**
 	 * 
@@ -21,11 +21,11 @@ public class MultiClassStructureFinder extends AbstractInferenceSolver{
 	 */	
 	public float[][] distance_matrix = null;
 	
-	public MultiClassStructureFinder(){
+	public MultiClassInferenceSolver(){
 		
 	}
 	
-	public MultiClassStructureFinder(float[][] loss_matrix){
+	public MultiClassInferenceSolver(float[][] loss_matrix){
 		this.distance_matrix = loss_matrix;
 	}
 
@@ -35,16 +35,15 @@ public class MultiClassStructureFinder extends AbstractInferenceSolver{
 			throws Exception {
 		
 		MultiClassInstance mi = (MultiClassInstance) ins;
-		LabeledMulticlassStructure lmi = (LabeledMulticlassStructure) goldStructure;
+		MulticlassLabel lmi = (MulticlassLabel) goldStructure;
 		
 		int best_output = -1;
 		float best_score = Float.NEGATIVE_INFINITY;
 		
 		for(int i=0; i < mi.number_of_class ; i ++){
-			LabeledMulticlassStructure cand = new LabeledMulticlassStructure(mi, i);
-			float score = weight.dotProduct(cand.getFeatureVector());
+			float score = weight.dotProduct(mi.base_fv,mi.base_n_fea*i);
 			
-			if (i != lmi.output){
+			if (lmi!=null && i != lmi.output){
 				if(distance_matrix == null)
 					score += 1.0;
 				else{
@@ -59,33 +58,18 @@ public class MultiClassStructureFinder extends AbstractInferenceSolver{
 		}
 					
 		assert best_output >= 0 ;
-		return new LabeledMulticlassStructure(mi, best_output);		
+		return new MulticlassLabel(best_output);		
 	}
 
 	@Override
 	public IStructure getBestStructure(WeightVector weight,
 			IInstance ins) throws Exception {
-		MultiClassInstance mi = (MultiClassInstance) ins;
-		
-		int best_output = -1;
-		float best_score = Float.NEGATIVE_INFINITY;
-		
-		for(int i=0; i < mi.number_of_class ; i ++){
-			LabeledMulticlassStructure cand = new LabeledMulticlassStructure(mi, i);
-			float score = weight.dotProduct(cand.getFeatureVector());
-			if (score > best_score){
-				best_output = i;
-				best_score = score;
-			}
-		}
-				
-		assert best_output >= 0 ;
-		return new LabeledMulticlassStructure(mi, best_output);
+		return getLossAugmentedBestStructure(weight, ins, null);
 	}
 	public float getLoss(IInstance ins, IStructure gold,  IStructure pred){
 		float distance = 0f;
-		LabeledMulticlassStructure lmi = (LabeledMulticlassStructure) gold;
-		LabeledMulticlassStructure pmi = (LabeledMulticlassStructure) pred;
+		MulticlassLabel lmi = (MulticlassLabel) gold;
+		MulticlassLabel pmi = (MulticlassLabel) pred;
 		if (pmi.output != lmi.output){
 		    if(distance_matrix == null)
 		    	distance = 1.0f;

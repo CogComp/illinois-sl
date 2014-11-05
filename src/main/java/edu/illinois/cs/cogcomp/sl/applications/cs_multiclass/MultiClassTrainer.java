@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.applications.multiclass;
+package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
 import java.util.List;
 import java.util.Random;
@@ -17,9 +17,9 @@ public class MultiClassTrainer {
 		int[] gold = new int[test.sp.size()];
 		int[] pred = new int[test.sp.size()];
 		for (int i = 0; i < test.sp.size(); i++) {
-			LabeledMulticlassStructure prediction = (LabeledMulticlassStructure) model.infSolver
+			MulticlassLabel prediction = (MulticlassLabel) model.infSolver
 					.getBestStructure(model.wv, test.sp.instanceList.get(i));
-			gold[i] = ((LabeledMulticlassStructure) test.sp.goldStructureList
+			gold[i] = ((MulticlassLabel) test.sp.goldStructureList
 					.get(i)).output;
 			pred[i] = prediction.output;			
 		}
@@ -90,7 +90,7 @@ public class MultiClassTrainer {
 		System.out.flush();
 		AbstractInferenceSolver[] s_finder_list = new AbstractInferenceSolver[n_thread];
 		for (int i = 0; i < s_finder_list.length; i++) {
-			s_finder_list[i] = new MultiClassStructureFinder();
+			s_finder_list[i] = new MultiClassInferenceSolver();
 		}
 		System.out.println("Done!");
 		System.out.flush();
@@ -125,7 +125,7 @@ public class MultiClassTrainer {
 		System.out.flush();
 		AbstractInferenceSolver[] s_finder_list = new AbstractInferenceSolver[n_thread];
 		for (int i = 0; i < s_finder_list.length; i++) {
-			s_finder_list[i] = new MultiClassStructureFinder(cost_matrix);
+			s_finder_list[i] = new MultiClassInferenceSolver(cost_matrix);
 		}
 		System.out.println("Done!");
 		System.out.flush();

@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.applications.multiclass;
+package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
