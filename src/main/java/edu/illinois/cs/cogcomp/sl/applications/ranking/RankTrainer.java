@@ -8,7 +8,7 @@ import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 
-public class RerankTrainer {
+public class RankTrainer {
 	public static SLModel trainRerankerModel(float C, int n_thread,
 			SLProblem train) throws Exception {
 		SLModel model = new SLModel();
