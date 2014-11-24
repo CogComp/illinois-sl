@@ -33,8 +33,8 @@ public class MainClass {
 			// initialize the inference solver
 			model.infSolver = new ViterbiInferenceSolver(model.lm);
 
-			SLParameters para = new SLParameters();
 			POSManager fg = new POSManager(model.lm);
+			SLParameters para = new SLParameters();
 			para.loadConfigFile(configFilePath);
 			para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature()
 					* model.lm.getNumOfLabels() + model.lm.getNumOfLabels()
