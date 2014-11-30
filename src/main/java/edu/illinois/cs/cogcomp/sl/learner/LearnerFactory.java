@@ -6,7 +6,7 @@ import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
-import edu.illinois.cs.cogcomp.sl.learner.structured_percpetron.StructuredPerceptron;
+import edu.illinois.cs.cogcomp.sl.learner.structured_perceptron.StructuredPerceptron;
 
 /**
  * This class generate a learner from {@link SLParameters}. 

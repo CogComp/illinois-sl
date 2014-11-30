@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.learner.structured_percpetron;
+package edu.illinois.cs.cogcomp.sl.learner.structured_perceptron;
 
 
 import java.util.Random;

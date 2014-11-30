@@ -49,6 +49,8 @@ public class MainClass {
 			if(learner instanceof L2LossSSVMLearner)
 				System.out.println("Primal objective:" + ((L2LossSSVMLearner)learner).getPrimalObjective(sp, model.wv, model.infSolver, para.C_FOR_STRUCTURE));
 			// save the model
+//			for(float f:model.wv.getInternalArray())
+//				System.out.println(f);
 			model.saveModel(modelPath);
 		}
 
