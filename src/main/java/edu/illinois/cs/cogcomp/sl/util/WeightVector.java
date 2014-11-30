@@ -80,4 +80,15 @@ public class WeightVector extends DenseVector {
 	public float[] getWeightArray(){
 		return super.getInternalArray();
 	}
+	
+	public static void printSparsity(WeightVector wv) {
+		int nzeroes=0;
+		System.out.println("SIZE: "+wv.getLength());
+		for(float f:wv.getInternalArray())
+		{
+			if(f!=0.0)
+				nzeroes++;
+		}
+		System.out.println("NZ values: "+nzeroes);
+	}
 }
