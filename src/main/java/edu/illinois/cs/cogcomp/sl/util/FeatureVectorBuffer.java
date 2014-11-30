@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * 
  * Here is a short example:
  *  	FeatureVector fv1 = new FeatureVector(new int[]{1,2,3}, new float[]{1,2,3});
- *  	FeatureVector fv2 = new FeatureVector(new int[]{1,2,3}, new float[]{4,5,6});
+ *  	FeatureVector fv2 = new FeatureVector(new int[]{4,5,6}, new float[]{4,5,6});
  *  	FeatureVector fv3 = new FeatureVector(new int[]{7,8,9}, new float[]{7,8,9});
  *  	FeatureVectorBuffer fvb = new FeatureVectorBuffer(fv1);
  *  	fvb.addFeature(fv2,3); // shift fv2 by 3 and add to fvb;
