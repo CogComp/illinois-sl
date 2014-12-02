@@ -38,6 +38,7 @@ public class RankTrainer {
 		System.out.flush();
 		
 		model.infSolver = new RankerInferenceSolver();
+		model.featureGenerator = new RankingFeatureGenerator();
 		
 		System.out.println("Done!");
 		System.out.flush();

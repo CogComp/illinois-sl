@@ -1,5 +1,6 @@
 package edu.illinois.cs.cogcomp.sl.applications.ranking;
 
+import edu.illinois.cs.cogcomp.sl.applications.tutorial.ViterbiInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -64,5 +65,10 @@ public class RankerInferenceSolver extends AbstractInferenceSolver{
 		RankingLabel lri = (RankingLabel) goldStructure;
 		RankingLabel pri = (RankingLabel) structure;
 		return -ri.score_list.get(pri.pred_item)+ ri.score_list.get(lri.pred_item);
+	}
+	
+	@Override
+	public Object clone(){
+		return new RankerInferenceSolver();
 	}
 }
