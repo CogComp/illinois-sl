@@ -160,9 +160,11 @@ public class StructuredInstanceWithAlphas{
 		if(parameters.CHECK_INFERENCE_OPT) {
 			float max_score_in_cache = Float.NEGATIVE_INFINITY;
 			for(AlphaStruct as:new ArrayList<AlphaStruct>(candidateAlphas)){
-				float s = as.loss - wv.dotProduct(as.alphaFeactureVector) - xi;
-				if (max_score_in_cache < s)
-					max_score_in_cache = s;
+				if(as !=null){
+					float s = as.loss - wv.dotProduct(as.alphaFeactureVector) - xi;
+					if (max_score_in_cache < s)
+						max_score_in_cache = s;
+				}
 			}
 
 			if (score < max_score_in_cache - 1e-6) {
