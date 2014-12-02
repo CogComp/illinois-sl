@@ -14,7 +14,13 @@ public class RankTrainer {
 	
 	public static void main(String[] args) throws Exception {
 		SLProblem prob = RankDataReader.readFeatureFile("data/reranking/rerank.train");
-		trainRerankerModel(0.1f, 1, prob);
+		SLModel model = trainRerankerModel(0.1f, 1, prob);
+		SLProblem prob2 = RankDataReader.readFeatureFile("data/reranking/rerank.test");
+		testRerankerModel(model,prob2);
+	}
+	private static void testRerankerModel(SLModel model, SLProblem prob) throws Exception {
+		System.out.println(getTOP1Score(prob));
+		System.out.println(getPredictedScore(prob, (RankerInferenceSolver)model.infSolver, model.wv));
 	}
 	public static SLModel trainRerankerModel(float C, int n_thread,
 			SLProblem train) throws Exception {
