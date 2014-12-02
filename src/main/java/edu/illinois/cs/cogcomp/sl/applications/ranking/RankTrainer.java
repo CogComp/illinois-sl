@@ -15,13 +15,15 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 public class RankTrainer {
 	
 	public static void main(String[] args) throws Exception {
-		SLProblem prob = RankDataReader.readFeatureFile("data/reranking/rerank.train");
-		SLModel model = trainRerankerModel(0.1f, 0, prob);
-		SLProblem prob2 = RankDataReader.readFeatureFile("data/reranking/rerank.test");
-		testRerankerModel(model,prob2);
+		SLProblem train = RankDataReader.readFeatureFile("data/reranking/rerank.train");
+		SLModel model = trainRerankerModel(0.1f, 0, train);
+		SLProblem test = RankDataReader.readFeatureFile("data/reranking/rerank.test");
+		testRerankerModel(model,test);
 	}
 	private static void testRerankerModel(SLModel model, SLProblem prob) throws Exception {
+		// before reranking
 		System.out.println(getTOP1Score(prob));
+		// after reranking (should be higher)
 		System.out.println(getPredictedScore(prob, (RankerInferenceSolver)model.infSolver, model.wv));
 	}
 	public static SLModel trainRerankerModel(float C, int n_thread,
@@ -35,8 +37,8 @@ public class RankTrainer {
 		// train.n_base_feature_in_train;
 		model.para.C_FOR_STRUCTURE = C;
 		model.para.TRAINMINI = true;
-		model.para.LEARNING_MODEL=LearningModelType.L2LossSSVM;
-		model.para.L2_LOSS_SSVM_SOLVER_TYPE = SolverType.DCDSolver;
+//		model.para.LEARNING_MODEL=LearningModelType.L2LossSSVM;
+//		model.para.L2_LOSS_SSVM_SOLVER_TYPE = SolverType.DCDSolver;
 		// play with the following two parameters if you want to solve SSVM more
 		// tightly
 		
