@@ -5,8 +5,10 @@ import java.io.IOException;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+import edu.illinois.cs.cogcomp.sl.core.SLParameters.LearningModelType;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
+import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner.SolverType;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 
@@ -14,7 +16,7 @@ public class RankTrainer {
 	
 	public static void main(String[] args) throws Exception {
 		SLProblem prob = RankDataReader.readFeatureFile("data/reranking/rerank.train");
-		SLModel model = trainRerankerModel(0.1f, 1, prob);
+		SLModel model = trainRerankerModel(0.1f, 0, prob);
 		SLProblem prob2 = RankDataReader.readFeatureFile("data/reranking/rerank.test");
 		testRerankerModel(model,prob2);
 	}
@@ -33,7 +35,8 @@ public class RankTrainer {
 		// train.n_base_feature_in_train;
 		model.para.C_FOR_STRUCTURE = C;
 		model.para.TRAINMINI = true;
-
+		model.para.LEARNING_MODEL=LearningModelType.L2LossSSVM;
+		model.para.L2_LOSS_SSVM_SOLVER_TYPE = SolverType.DCDSolver;
 		// play with the following two parameters if you want to solve SSVM more
 		// tightly
 		
