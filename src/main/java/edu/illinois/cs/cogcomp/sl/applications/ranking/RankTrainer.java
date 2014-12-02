@@ -1,5 +1,7 @@
 package edu.illinois.cs.cogcomp.sl.applications.ranking;
 
+import java.io.IOException;
+
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
@@ -9,6 +11,11 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 
 public class RankTrainer {
+	
+	public static void main(String[] args) throws Exception {
+		SLProblem prob = RankDataReader.readFeatureFile("data/reranking/rerank.train");
+		trainRerankerModel(0.1f, 1, prob);
+	}
 	public static SLModel trainRerankerModel(float C, int n_thread,
 			SLProblem train) throws Exception {
 		SLModel model = new SLModel();
