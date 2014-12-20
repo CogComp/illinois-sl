@@ -2,6 +2,11 @@ package edu.illinois.cs.cogcomp.sl.applications.tutorial;
 
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 
+/**
+ * Part of speech tag sequence 
+ * @author kchang10
+ */
+
 public class POSTag implements IStructure {
 	public final int[] tags;
 	public POSTag(int[] tags){

@@ -26,7 +26,7 @@ public class StructuredInstanceWithAlphas{
 	protected static int MAX_DCD_INNNER_ITER = 10;
 	protected static float DCD_INNNER_STOP = 0.1f;
 
-	protected final static float UPDATE_CONDITION = 1e-12f;
+	protected final static float UPDATE_CONDITION = 1e-8f;
 
 	protected IInstance ins = null;
 	protected float sC = 0.0f;
@@ -125,9 +125,10 @@ public class StructuredInstanceWithAlphas{
 		Iterator<AlphaStruct> iterator = candidateAlphas.iterator();
 		while(iterator.hasNext()){
 			AlphaStruct as = iterator.next();
-			if(as.alpha <=1e-6){
+			if(as.alpha <=1e-8){
 				iterator.remove();
 				candidateSet.remove(as.struct);
+				
 			}
 		}
 	}
@@ -167,7 +168,7 @@ public class StructuredInstanceWithAlphas{
 				}
 			}
 
-			if (score < max_score_in_cache - 1e-6) {
+			if (score < max_score_in_cache - 1e-4) {
 				if(logger.isErrorEnabled()){
 					printErrorLogForIncorrectInference(wv, loss, h, xi, dotProduct, score,
 							max_score_in_cache);
@@ -185,10 +186,12 @@ public class StructuredInstanceWithAlphas{
 			as.alpha = 0.0f;
 			as.loss = loss;
 			as.alphaFeactureVector = diff;
+			as.struct = h;
 			newCandidateAlphas.add(as);
 			candidateSet.add(h);
+			return 1;
 		}
-		return 1;
+		return 0;
 
 
 	}

@@ -1,7 +1,6 @@
-package edu.illinois.cs.cogcomp.sl.applications.ranking;
+package edu.illinois.cs.cogcomp.sl.applications.reranking;
 
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 
 
 public class RankingLabel implements IStructure{
@@ -23,9 +22,9 @@ public class RankingLabel implements IStructure{
 		// cast to native object is now safe
 		RankingLabel that =  (RankingLabel) aThat;
 	
-
-		if (this.pred_item != that.pred_item)
-			return false;
-		return true;
+		if (this.pred_item == that.pred_item)
+			return true;
+		
+		return false;
 	}
 }

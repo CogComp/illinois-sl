@@ -6,12 +6,9 @@ import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 /**
- * This class is an implementation of AbstractInferenceSolver for sequential
- * tagging tasks with Hamming loss. The inference problem is solved by Viterbi
- * algorithm.
+ * A Viterbi inference solver
  * 
  * @author kchang10
- *
  */
 public class SequenceInferenceSolver extends
 		AbstractInferenceSolver {

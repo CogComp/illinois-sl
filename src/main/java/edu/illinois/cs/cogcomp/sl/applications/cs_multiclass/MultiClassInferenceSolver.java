@@ -15,18 +15,14 @@ public class MultiClassInferenceSolver extends AbstractInferenceSolver{
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * loss matrix: first dimension is gold, the second dimension is prediction
-	 * loss_matrix[i][i] = 0
-	 * loss_matrix[i][j] represents the cost of predict j while the gold lab is i
+	 * lossMatrix: first dimension is gold, the second dimension is prediction
+	 * lossMatrix[i][i] = 0
+	 * lossMatrix[i][j] represents the cost of predict j while the gold lab is i
 	 */	
-	public float[][] distance_matrix = null;
+	public float[][] lossMatrix = null;
 	
-	public MultiClassInferenceSolver(){
-		
-	}
-	
-	public MultiClassInferenceSolver(float[][] loss_matrix){
-		this.distance_matrix = loss_matrix;
+	public MultiClassInferenceSolver(float[][] lossMatrix){
+		this.lossMatrix = lossMatrix;
 	}
 
 	@Override
@@ -35,30 +31,29 @@ public class MultiClassInferenceSolver extends AbstractInferenceSolver{
 			throws Exception {
 		
 		MultiClassInstance mi = (MultiClassInstance) ins;
-		MulticlassLabel lmi = (MulticlassLabel) goldStructure;
+		MultiClassLabel lmi = (MultiClassLabel) goldStructure;
 		
-		int best_output = -1;
-		float best_score = Float.NEGATIVE_INFINITY;
+		int bestOutput = -1;
+		float bestScore = Float.NEGATIVE_INFINITY;
 		
 		for(int i=0; i < mi.number_of_class ; i ++){
 			float score = weight.dotProduct(mi.base_fv,mi.base_n_fea*i);
 			
 			if (lmi!=null && i != lmi.output){
-				if(distance_matrix == null)
+				if(lossMatrix == null)
 					score += 1.0;
-				else{
-					score += distance_matrix[lmi.output][i];
-				}
+				else
+					score += lossMatrix[lmi.output][i];
 			}								
 			
-			if (score > best_score){
-				best_output = i;
-				best_score = score;
+			if (score > bestScore){
+				bestOutput = i;
+				bestScore = score;
 			}
 		}
 					
-		assert best_output >= 0 ;
-		return new MulticlassLabel(best_output);		
+		assert bestOutput >= 0 ;
+		return new MultiClassLabel(bestOutput);		
 	}
 
 	@Override
@@ -66,17 +61,23 @@ public class MultiClassInferenceSolver extends AbstractInferenceSolver{
 			IInstance ins) throws Exception {
 		return getLossAugmentedBestStructure(weight, ins, null);
 	}
+	
+	@Override
 	public float getLoss(IInstance ins, IStructure gold,  IStructure pred){
-		float distance = 0f;
-		MulticlassLabel lmi = (MulticlassLabel) gold;
-		MulticlassLabel pmi = (MulticlassLabel) pred;
+		float loss = 0f;
+		MultiClassLabel lmi = (MultiClassLabel) gold;
+		MultiClassLabel pmi = (MultiClassLabel) pred;
 		if (pmi.output != lmi.output){
-		    if(distance_matrix == null)
-		    	distance = 1.0f;
+		    if(lossMatrix == null)
+		    	loss = 1.0f;
 		    else
-		    	distance = distance_matrix[lmi.output][pmi.output];		    
+		    	loss = lossMatrix[lmi.output][pmi.output];		    
 		}
-		return distance;
+		return loss;
 	}
-
+	
+	@Override
+	public Object clone(){
+		return new MultiClassInferenceSolver(lossMatrix);
+	}
 }

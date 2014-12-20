@@ -34,7 +34,7 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 	Random rnd = new Random(0);
 	boolean stop = false;
 	int[] numNewStructFromInfThread;
-	boolean firstIteration = true;
+	int learningIter  = 0;
 	
 	
 	private WeightVector wvBuffer;
@@ -54,9 +54,9 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 	 */
 	public L2LossSSVMDEMIDCDSolver(AbstractInferenceSolver infSolver, AbstractFeatureGenerator fg, int numThreads) {
 		super(infSolver, fg);
-		infSolvers = new AbstractInferenceSolver[numThreads];
+		infSolvers = new AbstractInferenceSolver[numThreads-1];
 		
-		for(int i=0; i<numThreads; i++){
+		for(int i=0; i<numThreads-1; i++){
 			infSolvers[i] = (AbstractInferenceSolver) infSolver.clone();
 		}
 		this.numThreads = numThreads;
@@ -90,39 +90,33 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 		@Override
 		public void run() {	
 			int numUpdate = 0;
-			int iter = 0;
+			learningIter = 0;
 			stop = false;
-			for(; iter < parameters.MAX_NUM_ITER; iter++) {
+			for(; learningIter < parameters.MAX_NUM_ITER; learningIter++) {
 				Collections.shuffle(examples);
 				StructuredInstanceWithAlphas.L2SolverInfo si = new StructuredInstanceWithAlphas.L2SolverInfo(); // Inner stopping condition.
-					
+									
 				for(StructuredInstanceWithAlphas ex : examples){
-						ex.solveSubProblemAndUpdateW(si, wv);
-					
-					if (!firstIteration && si.PGMaxNew - si.PGMinNew <= parameters.STOP_CONDITION || stop) {
-						if(numNewStructures() ==0){
-							stop = true;
-							logger.info("Done: Stopping condition: " + parameters.STOP_CONDITION + " projected gradient range: " + (si.PGMaxNew - si.PGMinNew));
-							logger.info("total number of iteration " + iter);
-							return;
-						}
-					}
-
+					ex.solveSubProblemAndUpdateW(si, wv);
 					if(numUpdate % parameters.DEMIDCD_NUMBER_OF_UPDATES_BEFORE_UPDATE_BUFFER ==0){
 						wvBuffer.setDenseVector(wv);
 					}
 					numUpdate++;
 				}
-				if (parameters.CLEAN_CACHE && iter % parameters.CLEAN_CACHE_ITER == 0) {
+				if (si.PGMaxNew - si.PGMinNew <= parameters.STOP_CONDITION) {
+					if(numNewStructures() ==0){
+						stop = true;
+						logger.info("Done: Stopping condition: " + parameters.STOP_CONDITION + " projected gradient range: " + (si.PGMaxNew - si.PGMinNew));
+						logger.info("total number of iteration " + learningIter);
+						return;
+					}
+				}
+
+
+				if (parameters.CLEAN_CACHE && learningIter % parameters.CLEAN_CACHE_ITER == 0) {
 					logger.trace("Cleaning cache....");
 					for(StructuredInstanceWithAlphas ex : examples) {
-							try{
-								ex.cleanCache(wv);
-							} 
-							finally{
-								
-							}
-
+						ex.cleanCache(wv);
 					}
 				}
 				
@@ -130,8 +124,8 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 					printTotalNumberofAlphas(examples.toArray(new StructuredInstanceWithAlphas[examples.size()]));
 				}
 				
-				if((iter+1) % parameters.PROGRESS_REPORT_ITER == 0) {
-					logger.info("Iteration: " + iter
+				if((learningIter+1) % parameters.PROGRESS_REPORT_ITER == 0) {
+					logger.info("Iteration: " + learningIter
 							+ ": Add " + numNewStructures()
 							+ " candidate structures into the working set.");
 					logger.info("negative dual obj = " + -getDualObjective(
@@ -144,10 +138,14 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 							e.printStackTrace();
 						}
 				}
+				
 			}
+			
 			stop = true;
 			logger.info("Done: reach maximal number of iterations: "  + parameters.MAX_NUM_ITER);
-			logger.info("total number of iteration " + iter);
+			logger.info("total number of iteration " + learningIter);
+			logger.info("negative dual obj = " + -getDualObjective(
+					examples.toArray(new StructuredInstanceWithAlphas[examples.size()]), wv));
 			
 		}
 
@@ -160,8 +158,6 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 			}
 			return totalAddStruct;
 		}
-		
-		
 	}
 	// Each inference thread keeps finding new non-zero alpha
 	class InferenceThread extends Thread {
@@ -169,6 +165,7 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 		private StructuredInstanceWithAlphas[] alphaInsList;
 		private WeightVector wv;
 		private int threadId;
+		private int oldLearningIter = 0;
 		private SLParameters parameters;
 
 		public InferenceThread(
@@ -188,11 +185,11 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 			int numInstanceParsed = 0;
 			int numNewStruct = 0;
 			while(!stop){
-				numNewStruct = 0;
-				if(stop){
-					logger.trace("Inference thread stops");
-					return;
+				if(oldLearningIter!= learningIter){
+					numNewStruct = 0;
+					oldLearningIter = learningIter;
 				}
+				
 				for (StructuredInstanceWithAlphas ex : alphaInsList) {
 					// positive h has already been fixed
 					try {
@@ -212,7 +209,6 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 					numInstanceParsed++;
 				}
 				logger.trace("Thread: (b,s) udpate");
-				firstIteration = false;
 				numNewStructFromInfThread[threadId] = numNewStruct;
 			}
 			logger.trace("Inference thread stops");
@@ -229,7 +225,6 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 	
 		int numThreads = parameters.NUMBER_OF_THREADS;
 		stop = false;
-		firstIteration = true;
 		List<SLProblem>  subProbs= sp.splitData(numThreads-1);
 		List<StructuredInstanceWithAlphas> allIns = new ArrayList<StructuredInstanceWithAlphas>();
 		InferenceThread[] infRunnerList = new InferenceThread[numThreads-1];
@@ -245,7 +240,7 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 		// run the threads
 		for (int i = 0; i < numThreads-1; i++) {
 			infRunnerList[i].start();
-			numNewStructFromInfThread[i] = 0;
+			numNewStructFromInfThread[i] = -1;
 		}
 		learner.start();
 

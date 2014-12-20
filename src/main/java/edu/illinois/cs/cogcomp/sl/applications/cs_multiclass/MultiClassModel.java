@@ -1,13 +1,17 @@
 package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 
-public class MulticlassModel extends SLModel{
+public class MultiClassModel extends SLModel{
 	private static final long serialVersionUID = -2919690450966535216L;
+	public final Map<String, Integer> label_mapping;
+	public int numFeatures;
 	
-	public MulticlassModel() {		
+	public MultiClassModel() {		
+		label_mapping = new HashMap<String, Integer>();
 	}	
 	
 	public int numOfBaseFeatures; // number of features appeared in the training time

@@ -10,9 +10,7 @@ import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 
 /**
  * This class represents a structured problem. A structured problem is a
- * collection of the (input-structure) pairs. By default, the structured problem
- * is stored in memory. However, with using FileBackedStructuredProblem, we support
- * to store the data on disk
+ * collection of input-structure pairs.
  * 
  * @author Cogcomp @ UI
  * 
@@ -28,7 +26,7 @@ public class SLProblem implements Iterable<Pair<IInstance, IStructure>>{
 	 */
 	public List<IInstance> instanceList;
 	/**
-	 * The weight list. Our JLIS implementation allows using different values of
+	 * The weight list. Our implementation allows using different values of
 	 * C for different examples! If this list is null. It means that every
 	 * example should be treated equally. If it is not null, it should have the
 	 * same number of elements as that of input/output_list.

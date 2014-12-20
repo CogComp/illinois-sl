@@ -1,15 +1,13 @@
 package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
-import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 
 
 
-public class MulticlassLabel implements IStructure{
+public class MultiClassLabel implements IStructure{
 	public int output = -1;
 	
-	public MulticlassLabel(int y){
+	public MultiClassLabel(int y){
 		output = y;
 		assert output > -1;
 	}
@@ -26,14 +24,15 @@ public class MulticlassLabel implements IStructure{
 		if (this == aThat)
 			return true;
 
-		if (!(aThat instanceof MulticlassLabel))
+		if (!(aThat instanceof MultiClassLabel))
 			return false;
 
 		// cast to native object is now safe
-		MulticlassLabel that = (MulticlassLabel) aThat;
-		if (this.output != that.output)
-			return false;
-		return true;
+		MultiClassLabel that = (MultiClassLabel) aThat;
+		if (this.output == that.output){
+			return true;
+		}
+		return false;
 	}
 
 

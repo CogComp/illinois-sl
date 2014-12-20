@@ -7,12 +7,8 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 /**
- * This class is an implementation of AbstractInferenceSolver for sequential
- * tagging tasks with Hamming loss. The inference problem is solved by Viterbi
- * algorithm.
- * 
+ * An implementation of the Viterbi algorithm
  * @author kchang10
- *
  */
 public class ViterbiInferenceSolver extends
 		AbstractInferenceSolver {
@@ -22,11 +18,6 @@ public class ViterbiInferenceSolver extends
 
 	public ViterbiInferenceSolver(Lexiconer lm) {		
 		this.lm = lm;
-	}
-	
-	@Override
-	public Object clone(){
-		return new ViterbiInferenceSolver(lm);
 	}
 	
 	@Override
@@ -89,6 +80,7 @@ public class ViterbiInferenceSolver extends
 		
 		return new POSTag(tags);
 	}
+	
 	@Override
 	public float getLoss(IInstance ins, IStructure goldStructure,  IStructure structure){
 		POSTag goldLabeledSeq = (POSTag) goldStructure;
@@ -105,4 +97,8 @@ public class ViterbiInferenceSolver extends
 		return getLossAugmentedBestStructure(wv, input, null);
 	}
 
+	@Override
+	public Object clone(){
+		return new ViterbiInferenceSolver(lm);
+	}
 }

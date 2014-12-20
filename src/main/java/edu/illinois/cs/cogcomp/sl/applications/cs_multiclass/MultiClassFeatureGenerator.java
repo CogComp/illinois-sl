@@ -17,7 +17,7 @@ public class MultiClassFeatureGenerator extends AbstractFeatureGenerator {
 	@Override
 	public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
 		MultiClassInstance mx = (MultiClassInstance) x;
-		MulticlassLabel my = (MulticlassLabel)y;
+		MultiClassLabel my = (MultiClassLabel)y;
 		FeatureVectorBuffer fvb = new FeatureVectorBuffer(mx.base_fv);
 		fvb.shift(my.output * mx.base_n_fea);
 		return fvb.toFeatureVector();

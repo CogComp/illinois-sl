@@ -94,6 +94,7 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 			final AbstractInferenceSolver infSolver, SLProblem sp,
 			SLParameters parameters) throws Exception {
 		int size = sp.size();
+		float dualObj = 0;
 
 		WeightVector wv = new WeightVector(oldWv);
 
@@ -117,8 +118,11 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 			if (NumOfNewStructures == 0) {
 				if (finished == false)
 					resolved = true;
-				logger.info("Met the stopping condition; Exit Inner loop");
-				break;
+				else{
+					logger.info("Met the stopping condition; Exit Inner loop");
+					logger.info("negative dual obj = " + dualObj);
+					break;
+				}
 			}
 
 			// update weight vector and alphas based on the working set
@@ -138,9 +142,11 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 			if (resolved) {
 				finished = true;
 				logger.info("(Resolved) Met the stopping condition; Exit Inner loop");
+				logger.info("negative dual obj = " + res.getFirst());
 				break;
 			} else {
 				finished = res.getSecond();
+				dualObj = res.getFirst();
 			}
 			
 			if(logger.isTraceEnabled()){

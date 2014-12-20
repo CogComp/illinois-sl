@@ -241,9 +241,13 @@ public class DenseVector implements Serializable, Cloneable{
 	 *            the dense vector
 	 */
 	public synchronized void setDenseVector(DenseVector v) {
-		if (this.isExtendable())
-			this.expandFor(v.getLength());
-		System.arraycopy(v.getInternalArray(), 0, u, 0, v.size);
+		try {
+			if (this.isExtendable())
+				this.expandFor(v.getLength());
+			System.arraycopy(v.getInternalArray(), 0, u, 0, v.size);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		size = v.size;
 	}
 	

@@ -12,7 +12,6 @@ import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
-import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMDCDSolver;
 import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
@@ -20,8 +19,9 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 public class MainClass {
 
 	public static class AllTest {
-		@CommandDescription(description = "testSequenceModel trainingDataPath ConfigFilePath modelPath")
-		public static void trainSequenceModel(String trainingDataPath,
+		
+		@CommandDescription(description = "trainPOSModel trainingDataPath ConfigFilePath modelPath")
+		public static void trainPOSModel(String trainingDataPath,
 				String configFilePath, String modelPath) throws Exception {
 			SLModel model = new SLModel();
 			model.lm = new Lexiconer();
@@ -40,6 +40,7 @@ public class MainClass {
 			para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature()
 					* model.lm.getNumOfLabels() + model.lm.getNumOfLabels()
 					+ model.lm.getNumOfLabels() * model.lm.getNumOfLabels();
+			
 			// numLabels*numLabels for transition features
 			// numWordsInVocab*numLabels for emission features
 			// numLabels for prior on labels
@@ -49,13 +50,14 @@ public class MainClass {
 			WeightVector.printSparsity(model.wv);
 			if(learner instanceof L2LossSSVMLearner)
 				System.out.println("Primal objective:" + ((L2LossSSVMLearner)learner).getPrimalObjective(sp, model.wv, model.infSolver, para.C_FOR_STRUCTURE));
+
 			// save the model
 			model.saveModel(modelPath);
 		}
 		
 		
-		@CommandDescription(description = "testSequenceModel modelPath testDataPath")
-		public static void testSequenceModel(String modelPath,
+		@CommandDescription(description = "testPOSModel modelPath testDataPath")
+		public static void testPOSModel(String modelPath,
 				String testDataPath) throws Exception {
 			SLModel model = SLModel.loadModel(modelPath);
 			SLProblem sp = readStructuredData(testDataPath, model.lm);
@@ -101,11 +103,11 @@ public class MainClass {
 		List<String> lines = LineIO.read(fname);
 		SLProblem sp = new SLProblem();
 
-		assert lines.size() % 2 == 0; // must be even; contains labels
+		assert lines.size() % 2 == 0;
 
+		// w:unknownword indicates out-of-vocabulary words in test phase
 		if (lm.isAllowNewFeatures())
-			lm.addFeature("W:unknownword"); // pre-add the unknown word to the
-											// vocab
+			lm.addFeature("w:unknownword"); 
 
 		for (int i = 0; i < lines.size() / 2; i++) {
 			String[] words = lines.get(i * 2).split("\\s+");
@@ -119,8 +121,8 @@ public class MainClass {
 				if (lm.containFeature("w:" + words[j]))
 					wordIds[j] = lm.getFeatureId("w:" + words[j]);
 				else
-					wordIds[j] = lm.getFeatureId("W:unknownword");
-				// new word seen at test time, so we map it to unknown
+					wordIds[j] = lm.getFeatureId("w:unknownword");
+
 			}
 			Sentence x = new Sentence(wordIds);
 			String[] tags = lines.get(i * 2 + 1).split("\\s+");

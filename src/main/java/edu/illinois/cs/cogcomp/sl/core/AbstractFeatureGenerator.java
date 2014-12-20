@@ -1,9 +1,17 @@
 package edu.illinois.cs.cogcomp.sl.core;
 
+import java.io.Serializable;
+
 import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
-public abstract class AbstractFeatureGenerator {
+public abstract class AbstractFeatureGenerator implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 
 	/**
 	 * Feature generating function

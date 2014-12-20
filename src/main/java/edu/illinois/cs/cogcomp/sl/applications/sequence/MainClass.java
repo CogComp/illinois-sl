@@ -14,7 +14,8 @@ import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
 public class MainClass {
 	
 	public static class AllTest{
-		@CommandDescription(description="testSequenceModel trainingDataPath ConfigFilePath modelPath")
+		
+		@CommandDescription(description="trainSequenceModel trainingDataPath ConfigFilePath modelPath")
 		public static void trainSequenceModel(String trainingDataPath, String configFilePath, String modelPath)
 				throws Exception {
 			SLModel model = new SLModel();
@@ -34,8 +35,6 @@ public class MainClass {
 			model.config =  new HashMap<String, String>();
 			model.config.put("numFeatures", String.valueOf(SequenceIOManager.numFeatures));
 			model.config.put("numLabels", String.valueOf(SequenceIOManager.numLabels));
-			
-			// save the model
 			model.saveModel(modelPath);
 		}
 		@CommandDescription(description="testSequenceModel modelPath testDataPath")
@@ -52,37 +51,7 @@ public class MainClass {
 			SLProblem sp = SequenceIOManager.readProblem(testDataPath, true);
 			
 			System.out.println("Acc = " + Evaluator.evaluate(sp, model.wv, model.infSolver,predictionFileName));
-		}
-		
-		@CommandDescription(description="holdoutExp trainDataPath testDataPath  configFilePath modelPath")
-		public static void holdoutExp(String trainingDataPath, String testDataPath, String configFilePath, String modelPath)
-				throws Exception {
-			SLModel model = new SLModel();
-			SLProblem sp = SequenceIOManager.readProblem(trainingDataPath, false);
-			SLProblem testSp = SequenceIOManager.readProblem(testDataPath, true);
-			// initialize the inference solver
-			model.infSolver = new SequenceInferenceSolver();
-			
-			SLParameters para = new SLParameters();
-			para.loadConfigFile(configFilePath);
-			para.TOTAL_NUMBER_FEATURE = SequenceIOManager.numFeatures * SequenceIOManager.numLabels + SequenceIOManager.numLabels +
-					SequenceIOManager.numLabels *SequenceIOManager.numLabels;
-			
-			Evaluator eval = new Evaluator(para.PROGRESS_REPORT_ITER);
-			SequenceFeatureGenerator fg = new SequenceFeatureGenerator();
-			Learner learner = LearnerFactory.getLearner(model.infSolver, fg, para);
-			learner.runWhenReportingProgress(eval);
-			model.wv = learner.train(sp);
-			
-			model.config =  new HashMap<String, String>();
-			model.config.put("numFeatures", String.valueOf(SequenceIOManager.numFeatures));
-			model.config.put("numLabels", String.valueOf(SequenceIOManager.numLabels));
-			System.out.println(SequenceIOManager.numFeatures);
-			System.out.println(SequenceIOManager.numLabels);
-			System.out.println(Evaluator.evaluate(testSp, model.wv, model.infSolver,null));
-			eval.postEvaluation(testSp, new SequenceInferenceSolver());
-			model.saveModel(modelPath);
-		}
+		}	
 	}
 
 	public static void main(String[] args) throws Exception{

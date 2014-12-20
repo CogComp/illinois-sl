@@ -13,9 +13,4 @@ public class MultiClassInstance implements IInstance {
 		this.base_n_fea = total_n_fea; 
 		this.number_of_class = total_number_class;
 	}
-	
-	public int  size() {
-		return 1;
-	}
-
 }

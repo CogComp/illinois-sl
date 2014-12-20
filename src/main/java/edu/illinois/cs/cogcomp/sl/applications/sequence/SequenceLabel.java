@@ -3,6 +3,11 @@ package edu.illinois.cs.cogcomp.sl.applications.sequence;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 
+/**
+ * Tag sequence 
+ * @author kchang10
+ */
+
 public class SequenceLabel implements IStructure {	
 	public final int[] tags;
 	IFeatureVector f = null;

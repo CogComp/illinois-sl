@@ -5,9 +5,10 @@ import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 
 /**
- * An implementation of IInstance for sequential tagging task 
+ * Sequence instance 
  * @author kchang10
  */
+
 public class SequenceInstance implements IInstance {
 
 	public final IFeatureVector baseFeatures[];

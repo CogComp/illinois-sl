@@ -23,7 +23,7 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
  * over all the training samples parallely. The parallel version is especially 
  * useful when the inference takes large amount of time.  
  * <p>
- * Please see the following papers for deatils:
+ * Please see the following papers for details:
  * Ming-Wei Chang and Wen-tau Yih, Dual Coordinate Descent Algorithms for 
  * Efficient Large Margin Structured Prediction, TACL, 2013.
  * 
@@ -140,10 +140,16 @@ public class L2LossSSVMParalleDCDSolver extends L2LossSSVMDCDSolver {
 
 		resolved = false;
 		finished = false;
+		List<List<StructuredInstanceWithAlphas>> subsets = new ArrayList<List<StructuredInstanceWithAlphas>>();
+		for(int i=0; i< parameters.NUMBER_OF_THREADS; i++)
+			subsets.add(new ArrayList<StructuredInstanceWithAlphas>());
+		for (int j = 0; j < alphaInsList.length; j++) {
+				subsets.get(j%parameters.NUMBER_OF_THREADS).add(alphaInsList[j]);
+		}
 		for (int iter = 0; iter < parameters.MAX_NUM_ITER; iter++) {
-			// update structured labeled data
+			// update structured labeled data1L
 			int numOfNewStructures = updateStructuresUsingMultiThreads(
-					alphaInsList, wv, parameters);
+					subsets, wv, parameters);
 
 			// no more update is necessary, exit the internal loop
 			if (iter != 0 && numOfNewStructures == 0) {
@@ -161,6 +167,7 @@ public class L2LossSSVMParalleDCDSolver extends L2LossSSVMDCDSolver {
 			if (resolved) {
 				finished = true;
 				logger.info("(Resolved) Met the stopping condition; Exit Inner loop");
+				logger.info("negative dual obj = " + res.getFirst());
 				break;
 
 			} else {
@@ -170,7 +177,7 @@ public class L2LossSSVMParalleDCDSolver extends L2LossSSVMDCDSolver {
 			if(iter % parameters.PROGRESS_REPORT_ITER == 0) {
 				logger.info("Iteration: " + iter
 						+ ": Add " + numOfNewStructures
-						+ "candidate structures into the working set.");
+						+ " candidate structures into the working set.");
 				logger.info("negative dual obj = " + res.getFirst());
 				if(f!=null)
 						f.run(wv, (AbstractInferenceSolver)infSolvers[0].clone());
@@ -191,20 +198,15 @@ public class L2LossSSVMParalleDCDSolver extends L2LossSSVMDCDSolver {
 
 
 	private int updateStructuresUsingMultiThreads (
-			StructuredInstanceWithAlphas[] alphaInsList, WeightVector wv, SLParameters parameters)
+			List<List<StructuredInstanceWithAlphas>>  subsets, WeightVector wv, SLParameters parameters)
 					throws InterruptedException {
 
 		// initialize thread
 		int NumOfThreads = infSolvers.length;
 		StructInferenceHandler[] infRunnerList = new StructInferenceHandler[NumOfThreads];
 		for (int i = 0; i < NumOfThreads; i++) {
-			List<StructuredInstanceWithAlphas> subset = new ArrayList<StructuredInstanceWithAlphas>();
-			for (int j = 0; j < alphaInsList.length; j++) {
-				if (j % NumOfThreads == i)
-					subset.add(alphaInsList[j]);
-			}
 			infRunnerList[i] = new StructInferenceHandler(
-					infSolvers[i], subset, wv, parameters);
+					infSolvers[i], subsets.get(i), wv, parameters);
 		}
 
 		// run the thread
