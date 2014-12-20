@@ -5,4 +5,4 @@
 # 2) A cost value needs to be positive
 -1 +1 1
 # hope to bias toward to positive lab
-+1 -1 1
++1 -1 3

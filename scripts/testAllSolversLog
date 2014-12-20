@@ -1,8 +1,123 @@
 config/DCD.config
+run tutorial...
+SIZE: 255781
+NZ values: 45730
+Primal objective:4758.5483
+This experiment took 57.567 secs
+Acc = 0.8670106719831124
+This experiment took 0.815 secs
+run sequence...
+This experiment took 49.674 secs
+Acc = 0.8457343202181535
+This experiment took 0.419 secs
+run multiclass...
+Label Mapping: {-1==>0, +1==>1}
+number of features:15
+Done!
+Primal Obj Value: 341.12122
+This experiment took 1.751 secs
+Loss = 0.3
+This experiment took 0.187 secs
+run raranking...
+This experiment took 3.978 secs
+Loss = 0.6876386593369876
+This experiment took 0.827 secs
+
+config/DCD.config~
+run tutorial...
+SIZE: 255781
+NZ values: 52329
+Primal objective:2384.74
+This experiment took 23.98 secs
+Acc = 0.8645479066494663
+This experiment took 0.718 secs
+run sequence...
+This experiment took 22.616 secs
+Acc = 0.8324892871055707
+This experiment took 0.317 secs
+run multiclass...
+Label Mapping: {-1==>0, +1==>1}
+number of features:15
+Done!
+Primal Obj Value: 35.902634
+This experiment took 0.726 secs
+Loss = 0.2571428571428571
+This experiment took 0.127 secs
+run raranking...
+This experiment took 2.24 secs
+Loss = 0.7074062095469787
+This experiment took 0.616 secs
 
 config/DEMIParallelDCD.config
+run tutorial...
+SIZE: 255775
+NZ values: 56823
+Primal objective:4732.4985
+This experiment took 26.595 secs
+Acc = 0.8666197568507877
+This experiment took 0.703 secs
+run sequence...
+This experiment took 11.952 secs
+Acc = 0.8461238800155824
+This experiment took 0.326 secs
+run multiclass...
+Label Mapping: {-1==>0, +1==>1}
+number of features:15
+Done!
+Primal Obj Value: 341.10535
+This experiment took 0.721 secs
+Loss = 0.2571428571428571
+This experiment took 0.356 secs
+run raranking...
+This experiment took 12.458 secs
+Loss = 0.6890498904871339
+This experiment took 0.605 secs
 
 config/ParallelDCD.config
+run tutorial...
+SIZE: 255775
+NZ values: 46577
+Primal objective:4775.464
+This experiment took 64.653 secs
+Acc = 0.8662679332316954
+This experiment took 0.697 secs
+run sequence...
+This experiment took 58.177 secs
+Acc = 0.8449552006232957
+This experiment took 0.311 secs
+run multiclass...
+Label Mapping: {-1==>0, +1==>1}
+number of features:15
+Done!
+Primal Obj Value: 341.1101
+This experiment took 1.222 secs
+Loss = 0.3
+This experiment took 0.121 secs
+run raranking...
+This experiment took 5.812 secs
+Loss = 0.6855204787324457
+This experiment took 0.6 secs
 
 config/StrcturedPerceptron.config
+run tutorial...
+SIZE: 320000
+NZ values: 67416
+This experiment took 50.93 secs
+Acc = 0.8689652476447364
+This experiment took 0.718 secs
+run sequence...
+This experiment took 47.314 secs
+Acc = 0.8449552006232957
+This experiment took 0.298 secs
+run multiclass...
+Label Mapping: {-1==>0, +1==>1}
+number of features:15
+Done!
+This experiment took 0.799 secs
+Loss = 0.2857142857142857
+This experiment took 0.142 secs
+run raranking...
+This experiment took 2.276 secs
+Loss = 0.6965660530729454
+This experiment took 0.616 secs
 

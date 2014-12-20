@@ -24,10 +24,10 @@ public class MainClass {
 			LabeledMultiClassData sp = MultiClassIOManager.readTrainingData(trainingDataPath);
 			model.labelMapping = sp.labelMapping;
 			model.numFeatures = sp.numFeatures;
-			float[][] costMatrix = MultiClassIOManager.getCostMatrix(sp.labelMapping,costMatrixPath);
+			model.cost_matrix = MultiClassIOManager.getCostMatrix(sp.labelMapping,costMatrixPath);
 
 			// initialize the inference solver
-			model.infSolver = new MultiClassInferenceSolver(costMatrix);
+			model.infSolver = new MultiClassInferenceSolver(model.cost_matrix);
 
 			SLParameters para = new SLParameters();
 			para.loadConfigFile(configFilePath);
@@ -36,18 +36,17 @@ public class MainClass {
 			Learner learner = LearnerFactory.getLearner(model.infSolver, model.featureGenerator, para);
 			model.wv = learner.train(sp);
 			model.config =  new HashMap<String, String>();
-			System.out.println("Primal Obj Value: "+((L2LossSSVMLearner)learner).getPrimalObjective(sp, model.wv, model.infSolver, para.C_FOR_STRUCTURE));
-
+			
 			// save the model
 			model.saveModel(modelPath);
 		}
-		@CommandDescription(description="testMulticlassModel modelPath testDataPath")
-		public static void testMulticlassModel(String modelPath, String testDataPath) throws Exception{
-			testMulticlassModel(modelPath, testDataPath, null);
+		@CommandDescription(description="testMultiClassModel modelPath testDataPath")
+		public static void testMultiClassModel(String modelPath, String testDataPath) throws Exception{
+			testMultiClassModel(modelPath, testDataPath, null);
 		}
 
-		@CommandDescription(description="testMulticlassModel modelPath testDataPath prediction")
-		public static void testMulticlassModel(String modelPath, String testDataPath, String predictionFileName)
+		@CommandDescription(description="testMultiClassModel modelPath testDataPath prediction")
+		public static void testMultiClassModel(String modelPath, String testDataPath, String predictionFileName)
 				throws Exception {
 			MultiClassModel model = (MultiClassModel)SLModel.loadModel(modelPath);
 			SLProblem sp = MultiClassIOManager.readTestingData(testDataPath, model.labelMapping, model.numFeatures);
@@ -61,8 +60,9 @@ public class MainClass {
 			for (int i = 0; i < sp.size(); i++) {
 				MultiClassInstance ri = (MultiClassInstance) sp.instanceList.get(i);
 				MultiClassLabel pred = (MultiClassLabel) model.infSolver.getBestStructure(model.wv, ri);
-				pred_loss += model.cost_matrix[((MultiClassLabel)sp.goldStructureList.get(i)).output][pred.output]; 
-				writer.write(pred.output+ "\n");
+				pred_loss += model.cost_matrix[((MultiClassLabel)sp.goldStructureList.get(i)).output][pred.output];
+				if(writer!=null)
+					writer.write(pred.output+ "\n");
 			}
 			System.out.println("Loss = " + pred_loss/sp.size());
 

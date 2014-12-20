@@ -57,7 +57,8 @@ public class MainClass {
 				RankingInstance ri = (RankingInstance) sp.instanceList.get(i);
 				RankingLabel pred = (RankingLabel) infSolver.getBestStructure(model.wv, ri);
 				pred_loss += ri.scoreList.get(pred.pred_item);
-				writer.write(pred.pred_item+ "\n");
+				if(writer!=null)
+					writer.write(pred.pred_item+ "\n");
 			}
 			System.out.println("Loss = " + pred_loss/sp.size());
 
