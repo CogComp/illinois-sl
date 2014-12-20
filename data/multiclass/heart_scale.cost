@@ -1,0 +1,8 @@
+# format: gold prediction cost
+# Assume the gold lab is i and prediction is j.
+# The cost means that if I mispredict j while the gold lab is i, how much cost should I pay
+# 1) when gold and prediction are the same: the cost needs to be zero
+# 2) A cost value needs to be positive
+-1 +1 1
+# hope to bias toward to positive lab
++1 -1 1
