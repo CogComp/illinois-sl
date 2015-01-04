@@ -1,16 +1,12 @@
 package edu.illinois.cs.cogcomp.sl.applications.latentsvm;
 
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.math.Permutations;
-import edu.illinois.cs.cogcomp.indsup.inference.AbstractLatentLossSensitiveStructureFinder;
 import edu.illinois.cs.cogcomp.sl.applications.latentsvm.Instance2.Dataset;
-import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
-@SuppressWarnings("serial")
-public class AInference extends AbstractInferenceSolver{
+public class AInference extends AbstractLatentInferenceSolver{
 
 	private int nBits;
 
@@ -109,13 +105,6 @@ public class AInference extends AbstractInferenceSolver{
 		for (int i = 0; i < is.length; i++)
 			b[i] = is[i] == 1;
 		return b;
-	}
-
-	@Override
-	public IStructure getBestStructure(WeightVector weight, IInstance ins)
-			throws Exception {
-		return getLossAugmentedBestStructure(weight, ins, null);
-
 	}
 
 }
