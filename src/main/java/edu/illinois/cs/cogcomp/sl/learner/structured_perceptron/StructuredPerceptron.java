@@ -150,6 +150,9 @@ public class StructuredPerceptron extends Learner{
 			boolean shouldUpdate = false;
 
 			prediction = this.inference.getLossAugmentedBestStructure(w, example, gold);	// the predicted structure
+			//NOTE: this is loss augmented, so that you can train loss augmented variants too.
+			// if you want the usual behavior, where inference returns best structure, just write your loss augmented inference to ignore the loss.
+			// this was done to support general behavior.
 
 			shouldUpdate = this.inference.getLoss(example, gold, prediction) > 0;	// we will update if the loss is non-zero for this example
 
