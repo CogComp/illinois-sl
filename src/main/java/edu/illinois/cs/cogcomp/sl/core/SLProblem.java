@@ -10,7 +10,7 @@ import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 
 /**
  * This class represents a structured problem. A structured problem is a
- * collection of input-structure pairs.
+ * collection of input-structure (X_i,Y_i) pairs.
  * 
  * @author Cogcomp @ UI
  * 

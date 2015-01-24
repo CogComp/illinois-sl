@@ -18,14 +18,13 @@ public class LatentLearner {
 			SLProblem problem, AbstractLatentInferenceSolver inference)
 			throws Exception {
 
-		WeightVector w = baseLearner.train(problem);
+		WeightVector w = baseLearner.train(problem); // init w
 
 		for (int outerIter = 0; outerIter < numOuterIters; outerIter++) {
 
 			SLProblem new_prob = runLatentStructureInference(problem, w,
-					inference);
-
-			w = baseLearner.train(new_prob);
+					inference); // returns structured problem with (x_i,h_i)
+			w = baseLearner.train(new_prob, w); // update weight vector
 
 		}
 
@@ -40,7 +39,10 @@ public class LatentLearner {
 		for (int i = 0; i < problem.size(); i++) {
 			IInstance x = problem.instanceList.get(i);
 			IStructure gold = problem.goldStructureList.get(i);
-			IStructure y = inference.getBestLatentStructure(w, x, gold);
+			IStructure y = inference.getBestLatentStructure(w, x, gold); // best
+																			// explaining
+																			// latent
+																			// structure
 
 			p.instanceList.add(x);
 			p.goldStructureList.add(y);

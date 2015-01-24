@@ -66,6 +66,7 @@ public abstract class Learner {
 	 */
 	abstract public WeightVector train(final SLProblem sp) throws Exception;
 	
+	abstract public WeightVector train(final SLProblem sp, WeightVector init) throws Exception;
 	
 	/*Getter and Setter Function */
 	public SLParameters getParameters() {

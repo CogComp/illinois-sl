@@ -66,6 +66,7 @@ public class StructuredPerceptron extends Learner{
 	 * @return w	The weight vector learnt from the training data	
 	 * @throws Exception
 	 */
+	@Override
 	public WeightVector train(SLProblem problem, WeightVector init)
 			throws Exception {
 
