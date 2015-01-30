@@ -156,7 +156,7 @@ public class StructuredInstanceWithAlphas{
 
 		float xi = alphaSum / (2.0f * C);
 		float dotProduct = wv.dotProduct(diff);
-		float score = (loss - dotProduct) - xi;	// line 6 in DCD-SSVM (algorithm 3 in paper)
+		float score = (loss - dotProduct) - xi;	// line 12 in DCD-SSVM (algorithm 3 in paper)
 
 		if(parameters.CHECK_INFERENCE_OPT) {
 			float max_score_in_cache = Float.NEGATIVE_INFINITY;

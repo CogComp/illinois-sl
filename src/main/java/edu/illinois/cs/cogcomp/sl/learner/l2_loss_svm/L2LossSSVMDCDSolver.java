@@ -225,6 +225,8 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 					throws Exception {
 		int numNewStructures = 0;
 
+		// update working set for each training example
+		// line 10-16 in Algorithm 3 DCD-SSVM
 		for (int i = 0; i < alphaInsList.length; i++) {
 			float score = alphaInsList[i].updateRepresentationCollection(
 					wv, infSolver, parameters);
