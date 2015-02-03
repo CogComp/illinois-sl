@@ -90,7 +90,7 @@ public class StructuredInstanceWithAlphas{
 
 				float NG = (loss - dot_product) - alphaSum / (2.0f * sC);
 
-				float PG = -NG;
+				float PG = -NG;	// projected gradient
 				if (alpha == 0)
 					PG = Math.min(-NG, 0);
 
