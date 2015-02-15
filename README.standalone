@@ -60,9 +60,10 @@ The download contains the following files:
 - config/ : a set of sample configuration files
 - scripts/ : scripts for testing the package
 - data/ : sample data sets
-- lib/ : dependencies
 - pom.xml : Maven pom file
 - webpage/tutorial.html : a tutorial about how to use this package as a library
+- webpage/apidocs : java API
+
 The details are shown later.
 
 -------------------------- 4 Using the jar ----------------------------
