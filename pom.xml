@@ -2,7 +2,8 @@
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <groupId>edu.illinois.cs.cogcomp</groupId>
-  <version>0.1-SNAPSHOT</version>		
+  <version>0.2</version>		
+  <artifactId>illinois-sl</artifactId>
 
   <repositories>
     <repository>
@@ -14,7 +15,6 @@
 
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>IllinoisSL</artifactId>
   <distributionManagement>
     <repository>
       <id>CogcompSoftware</id>
@@ -39,6 +39,7 @@
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-source-plugin</artifactId>
+	<version>2.4</version>
 	<executions>
 	  <execution>
 	    <id>attach-sources</id>
@@ -47,8 +48,21 @@
 	    </goals>
 	  </execution>
 	</executions>
-      </plugin>
-    </plugins>
+   </plugin>
+   <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <configuration>
+        <archive>
+          <manifest>
+            <mainClass>fully.qualified.MainClass</mainClass>
+          </manifest>
+        </archive>
+        <descriptorRefs>
+          <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
+      </configuration>
+    </plugin>
+  </plugins>
   </build>
 
   <reporting>
@@ -80,13 +94,14 @@
     <dependency>
       <groupId>edu.illinois.cs.cogcomp</groupId>
       <artifactId>coreUtilities</artifactId>
-      <version>0.1.9</version>
+      <version>0.2.6</version>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>1.6.1</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 </project>
