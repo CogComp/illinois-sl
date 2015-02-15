@@ -1,0 +1,217 @@
+Illinois Structured Learning Package v0.2
+
+(C) 2015 Kai-Wei Chang, Upadhyay Shyam, Ming-Wei Chang, Vivek Srikumar and Dan Roth, 
+Cognitive Computation Group, University of Illinois at Urbana-Champaign.
+
+Table of Contents
+=================
+1 README  
+	1.1  Purpose 
+	1.2  License 
+2 System requirements 
+3 Download contents 
+4 Using the jar 
+	4.1  Command line scripts
+	4.2  Running a simple test
+5 Using the Source Files 
+6 Additional Documentation/ Citation 
+7 Contact Information 
+
+
+-------------------------- 1 README  ----------------------------
+
+1.1 ____ Purpose ____
+
+Illinois Structured Learning Package (Illinois-SL) is a general purpose JAVA 
+library for performing structured learning. It houses learning algorithms like
+averaged Structured Perceptron and Structured SVM with L2-Loss, and provides 
+a minimal interface for your structured learning needs. The training algorithm 
+employed for training SSVM is dual coordinate descent(DCD), which has been 
+proven to have very good convergence properties. Illinois-SL comes with an 
+efficient implementation of DCD with support for multi-threading. Illinois-SL 
+is a simplified version of JLIS, a multi-purpose structural learning library. 
+
+1.2 ____ License ____
+
+The Illinois Structured Learning Package is available under a Research
+and Academic use license. For more details, visit the Curator website 
+and click the download link.
+
+
+-------------------------- 2 System requirements ----------------------------
+
+The Illinois Structured Learning Package was developed on and for GNU/Linux,
+specifically CENTOS (2.6.18-238.12.1.el5) and Scientific Linux 
+(2.6.32-279.5.2.el6.x86_64). There are no guarantees for running it under any
+other operating system. The instructions below assume a Linux OS. We assume
+that the package is installed on a machine with sufficient memory. The actual
+requirement of the memory depends on the task. 
+
+-------------------------- 3 Download contents ----------------------------
+
+The download contains the following files:
+- dist/illinois-sl-0.2-jar-with-dependencies.jar :  the jar file with dependencies.
+- dist/illinois-sl-0.2-sources.jar : the jar file
+- dist/illinois-sl-0.2.jar : the archive of source files
+- README.standalone : this file
+- config/ : a set of sample configuration files
+- scripts/ : scripts for testing the package
+- data/ : sample data sets
+- lib/ : dependencies
+- pom.xml : Maven pom file
+- webpage/tutorial.html : a tutorial about how to use this package as a library
+The details are shown later.
+
+-------------------------- 4 Using the jar ----------------------------
+
+4.1 ____ Command line scripts ____
+
+Illinois-SL supports three types of applications -- cost-sensitive multi-class
+classification, reranking, and sequential tagging. Besides, these three 
+applications, Illinois-SL also contains a simple part-of-speech tagger 
+implementation, which takes less than 400 lines of code under 
+'edu.illinois.cs.cogcomp.sl.applications.tutorial'. These applications are 
+served as examples for using the Illinois-SL library. We provide the following 
+scripts for running these applications.
+
+- scripts/run_tutorial.sh
+- scripts/run_sequence.sh
+- scripts/run_multiclass.sh
+- scripts/run_reranking.sh
+
+The sample data set for each application 
+We describe the usage of these scripts below. 
+
+4.1.1 __ scripts/run_tutorial.sh __
+
+The following comment trains a part of speech tagger model 'posModel' on 
+'data/tutorial/big.train' with DEMIParallelDCD solver:
+
+> ./scripts/run_tutorial.sh trainPOSModel data/tutorial/big.train  config/DEMIParallelDCD.config posModel
+
+One can use other structured learning solvers by simply specifying corresponding config file in 'config/'
+Currently, we provide the following options:
+- DCD.config : a single thread dual coordinate descent approach for Structured SVM.
+- DEMIParallelDCD.config: DEMIDCD approach for Structured SVM. (see the ECML paper below)
+- ParallelDCD.config: a master-slave implementation for Structured SVM.
+- StrcturedPerceptron.config: a Structured Perceptron implementation.
+
+The following script evaluates the performance of 'posModel' on 
+'data/tutorial/big.test' data:
+
+>./scripts/run_tutorial.sh testPOSModel posModel data/tutorial/big.test
+
+4.1.2 __ scripts/run_sequence.sh __
+
+
+The following comment trains sequential model 'seqModel' on 
+'data/tutorial/wsj.sub.train' with DEMIParallelDCD solver:
+
+> ./scripts/run_sequence.sh trainSequenceModel data/sequence/wsj.sub.train  config/DEMIParallelDCD.config seqModel
+
+Again, one can choose another structured learning approach to train the model 
+by using a different config file. Each line in input file follows the following format 
+
+[Tag] qid:[example_id] [feature1_index]:[feature1_value] [feature2_index]:[feature2_value] ...
+
+[Tag] is a positive integer represent the label. All lines with the same [example_id] belong
+to the same structured example. 
+
+The following comment is used to test 'seqModel" on 'data/sequence/wsj.sub.test' data set.
+> ./scripts/run_sequence.sh testSequenceModel seqModel data/sequence/wsj.sub.test
+
+
+4.1.2 __ scripts/run_multiclass.sh __
+
+The following comment trains a multiclass model 'multiModel' on 
+'data/multiclass/heart_scale.train' data with a cost matrix specified in 
+'data/multiclass/heart_scale.cost' using DEMIParallelDCD solver:
+
+> ./scripts/run_multiclass.sh trainMultiClassModel data/multiclass/heart_scale.train data/multiclass/heart_scale.cost config/DEMIParallelDCD.config multiModel
+
+Each line of the input data represents one instance, and it follows the following format:
+
+[Tag] [feature1_index]:[feature1_value] [feature2_index]:[feature2_value] ...
+
+where [Tag] is an integer representing label.
+
+The cost matrix file specifies the loss of the wrong predictions.
+Each line in the file follows the following format:
+
+[gold_label] [predicted_label] [cost]
+
+The cost needs to be positive, and it needs to be 0 when [gold_label]=[predicted_label].
+
+To test the performance of 'multiModel' on 'data/multiclass/heart_scale.test', use
+
+> ./scripts/run_multiclass.sh testMultiClassModel multiModel data/multiclass/heart_scale.test
+
+
+4.1.3 __scripts/run_reranking.sh__
+
+
+Use the following comment to train a re-ranker on 'data/reranking/rank.train' with  Strctured Perceptron
+
+> ./scripts/run_reranking.sh trainRankingModel data/reranking/rerank.train config/StructuredPerceptron.config  rankModel
+
+and the following comment to test the re-ranker model on 'data/reranking/rerank.test'
+> ./scripts/run_reranking.sh testRankingModel rankModel data/reranking/rerank.test
+
+
+
+4.2 ____ Running a simple test ____
+
+You can run a simple test script to check that your installation is correct. 
+You should see two directories named 'test/' and 'scripts/' in the main 
+directory. The script 'scripts/runTest.sh' calls 
+run_{tutorial sequence, multiclass, reranking}.sh with pre-selected arguments, 
+using the files in 'data/' and 'config/' and directs the output to 'test/'. 
+The test script diffs the tool output with reference output, and reports any 
+problems it encounters or differences it finds.
+
+If the test succeeds, you should see the following output (after a 
+lot of progress info):
+
+>  ./scripts/runTest.sh: Test passed: no difference between new output and reference output.
+
+These scripts should be runnable on installation; However, it is possible, 
+depending on your system configuration, that you will first need to modify
+the permissions on the scripts to allow you to execute them:
+
+> chmod 744 scripts/*sh
+
+---------------------- 5 Using the Source Files -----------------------
+
+COMMAND LINE USAGE
+The command lines given at the top of this README.
+
+
+IMPORTING IN YOUR PROJECT
+Please refer to 'webpage/tutorial.html' for detailed usage of Illinois-SL
+library. 
+
+NOTE:
+When running your project, if working with a large dataset,
+you may need to invoke your project using the -Xmx1G and -XX:MaxPermSize=1G
+JVM command line parameters. You may need even more memory to run a
+Ontonotes coreference classifier.
+
+------------- 6 Additional Documentation/ Citation ---------------------
+
+Additional documentation is available in the JavaDoc located in doc/index.html
+
+
+Please cite the following papers when using this library
+
+M.-W. Chang, V. Srikumar, D. Goldwasser and Dan Roth. 
+Structured output learning with indirect supervision. 
+ICML, 2010.
+
+K.-W. Chang, V. Srikumar, D. Roth. 
+Multi-core Structural SVM Training.
+ECML, 2013.
+
+----------- 9 Contact Information ------------
+
+Please send a message to illinois-ml-nlp-users@cs.uiuc.edu for any
+questions about installing or using the Curator.
