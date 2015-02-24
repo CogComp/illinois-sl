@@ -86,9 +86,14 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 			wv = new WeightVector(8192);
 			wv.setExtendable(true);
 		}
-		return DCDForL2LossSSVM(wv, infSolver, sp, params);
+		return train(sp,params,wv);
 	}
 	
+	@Override
+	public WeightVector train(SLProblem sp, SLParameters parameters,
+			WeightVector init) throws Exception {
+		return DCDForL2LossSSVM(init, infSolver, sp, parameters);
+	}
 
 	protected WeightVector DCDForL2LossSSVM(WeightVector oldWv,
 			final AbstractInferenceSolver infSolver, SLProblem sp,
@@ -317,5 +322,7 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 		}
 		return currentWv;
 	}
+
+	
 
 }

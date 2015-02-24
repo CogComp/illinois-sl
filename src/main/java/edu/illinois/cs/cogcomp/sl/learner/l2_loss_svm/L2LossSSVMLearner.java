@@ -23,6 +23,7 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 public class L2LossSSVMLearner extends Learner {
 	interface IL2LossSSVMSolver{ 
 		public WeightVector train(SLProblem sp, SLParameters parameters) throws Exception;
+		public WeightVector train(SLProblem sp, SLParameters parameters, WeightVector init) throws Exception;
 		public void runWhenReportingProgress(ProgressReportFunction f);
 	}
 	
@@ -103,6 +104,11 @@ public class L2LossSSVMLearner extends Learner {
 
 	@Override
 	public WeightVector train(SLProblem sp) throws Exception {
+		return solver.train(sp, parameters);
+	}
+
+	@Override
+	public WeightVector train(SLProblem sp, WeightVector init) throws Exception {
 		return solver.train(sp, parameters);
 	}
 }
