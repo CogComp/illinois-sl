@@ -109,6 +109,6 @@ public class L2LossSSVMLearner extends Learner {
 
 	@Override
 	public WeightVector train(SLProblem sp, WeightVector init) throws Exception {
-		return solver.train(sp, parameters);
+		return solver.train(sp, parameters,init);
 	}
 }
