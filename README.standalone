@@ -11,8 +11,6 @@ Table of Contents
 2 System requirements 
 3 Download contents 
 4 Using the jar 
-	4.1  Command line scripts
-	4.2  Running a simple test
 5 Using the Source Files 
 6 Additional Documentation/ Citation 
 7 Contact Information 
@@ -68,7 +66,6 @@ The details are shown later.
 
 -------------------------- 4 Using the jar ----------------------------
 
-4.1 ____ Command line scripts ____
 
 Illinois-SL supports three types of applications -- cost-sensitive multi-class
 classification, reranking, and sequential tagging. Besides, these three 
@@ -160,24 +157,6 @@ Use the following comment to train a re-ranker on 'data/reranking/rank.train' wi
 
 Use the following comment to test the re-ranker model on 'data/reranking/rerank.test'
 > ./scripts/run_reranking.sh testRankingModel rankModel data/reranking/rerank.test
-
-Please check 'data/reranking/rerank-README.txt' for more details.
-
-
-4.2 ____ Running a simple test ____
-
-You can run a simple test script to check that your installation is correct. 
-You should see two directories named 'test/' and 'scripts/' in the main 
-directory. The script 'scripts/runTest.sh' calls 
-run_{tutorial sequence, multiclass, reranking}.sh with pre-selected arguments, 
-using the files in 'data/' and 'config/' and directs the output to 'test/'. 
-The test script diffs the tool output with reference output, and reports any 
-problems it encounters or differences it finds.
-
-If the test succeeds, you should see the following output (after a 
-lot of progress info):
-
->  ./scripts/runTest.sh: Test passed: no difference between new output and reference output.
 
 These scripts should be runnable on installation; However, it is possible, 
 depending on your system configuration, that you will first need to modify
