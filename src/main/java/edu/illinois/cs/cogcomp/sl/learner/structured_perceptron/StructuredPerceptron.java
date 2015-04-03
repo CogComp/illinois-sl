@@ -139,7 +139,8 @@ public class StructuredPerceptron extends Learner{
 	protected int doOneIteration(WeightVector w, WeightVector avg,
 			SLProblem problem, int epoch, int count) throws Exception {
 		int numExamples = problem.size();
-		
+
+		epochUpdateCount = 0;
 		problem.shuffle(random); // shuffle your training data after every iteration
 
 		for (int exampleId = 0; exampleId < numExamples; exampleId++) {
