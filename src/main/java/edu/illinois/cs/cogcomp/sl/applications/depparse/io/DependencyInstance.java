@@ -6,9 +6,16 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
+
 public class DependencyInstance implements Serializable {
 
-  public FeatureVector fv;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1738430545985436659L;
+
+public SparseFeatureVector fv;
 
   public String actParseTree;
 
@@ -54,17 +61,17 @@ public class DependencyInstance implements Serializable {
     this.actParseTree = source.actParseTree;
   }
 
-  public DependencyInstance(String[] forms, FeatureVector fv) {
+  public DependencyInstance(String[] forms, SparseFeatureVector fv) {
     this.forms = forms;
     this.fv = fv;
   }
 
-  public DependencyInstance(String[] forms, String[] postags, FeatureVector fv) {
+  public DependencyInstance(String[] forms, String[] postags, SparseFeatureVector fv) {
     this(forms, fv);
     this.postags = postags;
   }
 
-  public DependencyInstance(String[] forms, String[] postags, String[] labs, FeatureVector fv) {
+  public DependencyInstance(String[] forms, String[] postags, String[] labs, SparseFeatureVector fv) {
     this(forms, postags, fv);
     this.deprels = labs;
   }
@@ -98,7 +105,7 @@ public class DependencyInstance implements Serializable {
     this.confidenceScores = confidenceScores;
   }
 
-  public void setFeatureVector(FeatureVector fv) {
+  public void setFeatureVector(SparseFeatureVector fv) {
     this.fv = fv;
   }
 
