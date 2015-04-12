@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+
 
 /**
  * A class that defines common behavior and abstract methods for writers for different formats.

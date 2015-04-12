@@ -15,6 +15,8 @@ package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+
 /**
  * A writer to create files in CONLL format.
  * 
