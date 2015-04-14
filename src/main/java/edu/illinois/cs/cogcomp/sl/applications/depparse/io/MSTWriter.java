@@ -14,6 +14,9 @@ package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
 
 import java.io.IOException;
 
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.Util;
+
 
 /**
  * A writer to create files in MST format.

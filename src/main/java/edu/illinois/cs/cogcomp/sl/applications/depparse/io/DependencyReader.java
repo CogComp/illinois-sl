@@ -17,8 +17,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+
 /**
- * A class that defines common behavior and abstract methods for readers for different formats.
+ * A class that defines common behavior and abstract methods for readers for
+ * different formats.
  * 
  * <p>
  * Created: Sat Nov 10 15:25:10 2001
@@ -29,56 +33,95 @@ import java.io.InputStreamReader;
  */
 public abstract class DependencyReader {
 
-  protected BufferedReader inputReader;
+	protected BufferedReader inputReader;
 
-  protected boolean labeled = true;
+	protected boolean labeled = true;
 
-  protected boolean confScores = false;
+	protected boolean confScores = false;
 
-  public static DependencyReader createDependencyReader(String format, boolean discourseMode)
-          throws IOException {
+	public static DependencyReader createDependencyReader(String format,
+			boolean discourseMode) throws IOException {
 
-    if (format.equals("MST")) {
-      return new MSTReader();
-    } else if (format.equals("CONLL")) {
-      return new CONLLReader(discourseMode);
-    } else {
-      System.out.println("!!!!!!!  Not a supported format: " + format);
-      System.out.println("********* Assuming CONLL format. **********");
-      return new CONLLReader(discourseMode);
-    }
-  }
+		if (format.equals("MST")) {
+			return new MSTReader();
+		} else if (format.equals("CONLL")) {
+			return new CONLLReader(discourseMode);
+		} else {
+			System.out.println("!!!!!!!  Not a supported format: " + format);
+			System.out.println("********* Assuming CONLL format. **********");
+			return new CONLLReader(discourseMode);
+		}
+	}
 
-  public static DependencyReader createDependencyReader(String format) throws IOException {
+	public static DependencyReader createDependencyReader(String format)
+			throws IOException {
 
-    return createDependencyReader(format, false);
-  }
+		return createDependencyReader(format, false);
+	}
 
-  public static DependencyReader createDependencyReaderWithConfidenceScores(String format)
-          throws IOException {
-    DependencyReader reader = createDependencyReader(format);
-    reader.confScores = true;
-    return reader;
-  }
+	public static DependencyReader createDependencyReaderWithConfidenceScores(
+			String format) throws IOException {
+		DependencyReader reader = createDependencyReader(format);
+		reader.confScores = true;
+		return reader;
+	}
 
-  public boolean startReading(String file) throws IOException {
-    labeled = fileContainsLabels(file);
-    inputReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
-    return labeled;
-  }
+	public boolean startReading(String file) throws IOException {
+		labeled = fileContainsLabels(file);
+		inputReader = new BufferedReader(new InputStreamReader(
+				new FileInputStream(file), "UTF8"));
+		return labeled;
+	}
 
-  public boolean isLabeled() {
-    return labeled;
-  }
+	public boolean isLabeled() {
+		return labeled;
+	}
 
-  public abstract DependencyInstance getNext() throws IOException;
+	public abstract DependencyInstance getNext() throws IOException;
 
-  protected abstract boolean fileContainsLabels(String filename) throws IOException;
+	protected abstract boolean fileContainsLabels(String filename)
+			throws IOException;
 
-  protected String normalize(String s) {
-    if (s.matches("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+"))
-      return "<num>";
+	protected String normalize(String s) {
+		if (s.matches("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+"))
+			return "<num>";
 
-    return s;
-  }
+		return s;
+	}
+
+	public static void main(String[] args) throws IOException {
+		DependencyReader depReader = DependencyReader.createDependencyReader(
+				"CONLL", false);
+		depReader.startReading("data/depparse/english_train.conll");
+		SLProblem problem = new SLProblem();
+		
+		DependencyInstance instance = depReader.getNext();
+		int num1 = 0;
+
+		System.out.println("Creating Feature Vector Instances: ");
+		while (instance != null) {
+
+			System.out.print(num1 + " ");
+			System.out.println(instance.toString());
+			String[] labs = instance.deprels;
+			int[] heads = instance.heads;
+
+			StringBuffer spans = new StringBuffer(heads.length * 5);
+			for (int i = 1; i < heads.length; i++) {
+				 spans.append(heads[i]).append("|").append(i).append(":")
+				 .append(labs[i]).append(" ");
+			}
+			instance.actParseTree = spans.substring(0, spans.length() - 1);
+			goldParse
+//			System.out.println(instance.actParseTree);
+			// lengths.add(instance.length());
+			problem.addExample(instance, goldParse);
+			instance = null;
+
+			instance = depReader.getNext();
+
+			num1++;
+		}
+		
+	}
 }

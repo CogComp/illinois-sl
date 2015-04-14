@@ -80,7 +80,7 @@
     <dependency>
       <groupId>edu.illinois.cs.cogcomp</groupId>
       <artifactId>coreUtilities</artifactId>
-      <version>0.1.9</version>
+      <version>0.2.7</version>
     </dependency>
     <dependency>
       <groupId>net.sf.trove4j</groupId>

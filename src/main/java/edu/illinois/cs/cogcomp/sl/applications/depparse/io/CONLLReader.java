@@ -17,6 +17,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.RelationalFeature;
+
 
 /**
  * A reader for files in CoNLL format.
