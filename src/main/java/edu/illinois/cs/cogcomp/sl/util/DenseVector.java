@@ -193,6 +193,24 @@ public class DenseVector implements Serializable, Cloneable{
 	}
 	
 	/**
+	 * wi = wi + alphai * dvi
+	 * To allow for adagrad like updates
+	 * 
+	 * @param dv
+	 *            the dense vector
+	 * @param alpha
+	 *            the scalar
+	 */
+	public synchronized void addDenseVector(DenseVector dv, float[] alpha) {
+		if (this.isExtendable())
+			this.expandFor(dv.getLength());
+
+		int n = dv.getLength();
+		for (int i = 0; i < n; i++) {
+			u[i] += alpha[i] * dv.u[i];
+		}
+	}
+	/**
 	 * w = w + dv
 	 * 
 	 * @param dv
