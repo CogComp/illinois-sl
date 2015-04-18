@@ -58,49 +58,6 @@ public abstract class DependencyReader {
 		return s;
 	}
 	
-	public SparseFeatureVector createFeatureVector(DependencyInstance instance) {
-
-	    final int instanceLength = instance.length();
-
-	    String[] labs = instance.deprels;
-	    int[] heads = instance.heads;
-
-	    SparseFeatureVector fv = null;
-	    HashMap<String, Float> featMap = new HashMap<String,Float>();
-	    for (int i = 0; i < instanceLength; i++) {
-	      if (heads[i] == -1) {
-	        continue;
-	      }
-	      int small = i < heads[i] ? i : heads[i];
-	      int large = i > heads[i] ? i : heads[i];
-	      boolean attR = i < heads[i] ? false : true;
-	      addCoreFeatures(instance, small, large, attR, featMap);
-	    }
-	    return fv;
-	  }
-
-	private void addCoreFeatures(DependencyInstance instance, int small,
-			int large, boolean attR, HashMap<String, Float> featMap) {
-		
-		String[] forms = instance.forms;
-	    String[] pos = instance.postags;
-	    String[] posA = instance.cpostags;
-
-	    String att = attR ? "RA" : "LA";
-
-	    int dist = Math.abs(large - small);
-	    String distBool = "0";
-	    if (dist > 10) {
-	      distBool = "10";
-	    } else if (dist > 5) {
-	      distBool = "5";
-	    } else {
-	      distBool = Integer.toString(dist - 1);
-	    }
-
-	    String attDist = "&" + att + "&" + distBool;		
-	}
-
 	public static void main(String[] args) throws IOException {
 		
 		SLModel model = new SLModel();
@@ -117,13 +74,13 @@ public abstract class DependencyReader {
 			problem.addExample(pair.getFirst(),pair.getSecond());
 			num1++;
 			instance = depReader.getNext();
-			System.out.println(num1);
+//			System.out.println(num1);
 		}
-		System.out.println(problem.size());
+//		System.out.println(problem.size());
 		
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
 		
-		// there shld be a better way
+		// there shld be a better way, feature extraction
 		for(Pair<IInstance, IStructure> p:problem)
 		{
 			model.featureGenerator.getFeatureVector(p.getFirst(), p.getSecond());
@@ -132,6 +89,7 @@ public abstract class DependencyReader {
 		model.lm.setAllowNewFeatures(false);
 		System.out.println(model.lm.getNumOfFeature());
 		model.infSolver = new ChuLiuEdmondsDecoder(model.lm, model.featureGenerator);
+		
 	}
 	
 	public static void getParseTree(DependencyInstance instance){
