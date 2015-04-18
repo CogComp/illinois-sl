@@ -34,7 +34,7 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 		DepInst sent = (DepInst) ins;
 		DepStruct gold = goldStructure != null ? (DepStruct) goldStructure
 				: null;
-		// TODO edge matrix size?
+		// TODO edge matrix dims?
 		float[][] edgeScore = new float[sent.size()][sent.size()];
 		for (int i = 1; i <= sent.size(); i++) {
 			for (int j = 0; j <= sent.size(); j++) {

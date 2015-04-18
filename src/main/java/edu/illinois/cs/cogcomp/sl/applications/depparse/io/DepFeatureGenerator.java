@@ -13,8 +13,14 @@ import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
+/**
+ * generates features based on edges in the dep. graph
+ * @author Shyam
+ *
+ */
 public class DepFeatureGenerator extends AbstractFeatureGenerator {
 
+	
 	private Lexiconer lm;
 
 	public DepFeatureGenerator(Lexiconer lm) {

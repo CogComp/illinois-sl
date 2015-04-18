@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
 import edu.illinois.cs.cogcomp.sl.applications.tutorial.ViterbiInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -68,9 +70,9 @@ public abstract class DependencyReader {
 
 	}
 
-	static SLProblem getStructuredData() throws IOException {
+	static SLProblem getStructuredData(String filepath) throws IOException {
 		CONLLReader depReader = new CONLLReader();
-		depReader.startReading("data/depparse/english_train.conll");
+		depReader.startReading(filepath);
 		SLProblem problem = new SLProblem();
 		DependencyInstance instance = depReader.getNext();
 		while (instance != null) {
@@ -86,7 +88,7 @@ public abstract class DependencyReader {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
-		SLProblem problem = getStructuredData();
+		SLProblem problem = getStructuredData("data/depparse/english_train.conll");
 		pre_extract(model, problem);
 		// extraction done
 		model.lm.setAllowNewFeatures(false);
@@ -95,11 +97,43 @@ public abstract class DependencyReader {
 				model.featureGenerator);
 		SLParameters para = new SLParameters();
 		para.loadConfigFile(configFilePath);
-		para.TOTAL_NUMBER_FEATURE=model.lm.getNumOfFeature();
-		Learner learner = LearnerFactory.getLearner(model.infSolver, model.featureGenerator,
-				para);
+		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
+		Learner learner = LearnerFactory.getLearner(model.infSolver,
+				model.featureGenerator, para);
 		model.wv = learner.train(problem);
 		model.saveModel("trained.model");
+	}
+
+	public void test(String modelPath, String testDataPath) throws Exception{
+		SLModel model = SLModel.loadModel(modelPath);
+		SLProblem sp = getStructuredData(testDataPath);
+		double acc = 0.0;
+		double total = 0.0;
+
+		for (int i = 0; i < sp.instanceList.size(); i++) {
+			DepInst sent =(DepInst) sp.instanceList.get(i);
+			DepStruct gold = (DepStruct) sp.goldStructureList.get(i);
+			DepStruct prediction = (DepStruct) model.infSolver.getBestStructure(model.wv, sent);
+			IntPair tmp = evaluate(sent, gold, prediction);
+			acc+=tmp.getFirst();
+			total+=tmp.getSecond();
+		}
+		System.out.println("Done with testing!");
+	}
+	IntPair evaluate(DepInst sent, DepStruct gold, DepStruct pred) {
+		int instanceLength = sent.size() + 1;
+		int[] predHeads = pred.heads;
+		int[] goldHeads = gold.heads;
+		int corr = 0; // we only count attachment score, not edge label
+		int total = 0;
+
+		for (int i = 1; i < instanceLength; i++) {
+			if (predHeads[i] == goldHeads[i]) {
+				corr++;
+			}
+			total++;
+		}
+		return new IntPair(corr, total);
 	}
 
 	private static void pre_extract(SLModel model, SLProblem problem) {
