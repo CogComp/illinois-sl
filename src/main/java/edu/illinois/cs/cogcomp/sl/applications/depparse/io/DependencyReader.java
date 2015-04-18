@@ -24,9 +24,13 @@ import edu.illinois.cs.cogcomp.sl.applications.tutorial.ViterbiInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
+import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+import edu.illinois.cs.cogcomp.sl.learner.Learner;
+import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
+import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 public abstract class DependencyReader {
 
@@ -57,58 +61,73 @@ public abstract class DependencyReader {
 
 		return s;
 	}
-	
-	public static void main(String[] args) throws IOException {
-		
-		SLModel model = new SLModel();
-		model.lm = new Lexiconer();
 
+	public static void main(String[] args) throws IOException {
+
+		// System.out.println(problem.size());
+
+	}
+
+	static SLProblem getStructuredData() throws IOException {
 		CONLLReader depReader = new CONLLReader();
 		depReader.startReading("data/depparse/english_train.conll");
 		SLProblem problem = new SLProblem();
 		DependencyInstance instance = depReader.getNext();
-		int num1 = 0;
 		while (instance != null) {
 			Pair<IInstance, IStructure> pair = getSLPair(instance);
 			getParseTree(instance);
-			problem.addExample(pair.getFirst(),pair.getSecond());
-			num1++;
+			problem.addExample(pair.getFirst(), pair.getSecond());
 			instance = depReader.getNext();
-//			System.out.println(num1);
 		}
-//		System.out.println(problem.size());
-		
+		return problem;
+	}
+
+	public static void train(String configFilePath) throws Exception {
+		SLModel model = new SLModel();
+		model.lm = new Lexiconer();
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
-		
-		// there shld be a better way, feature extraction
-		for(Pair<IInstance, IStructure> p:problem)
-		{
-			model.featureGenerator.getFeatureVector(p.getFirst(), p.getSecond());
-		}
-		
+		SLProblem problem = getStructuredData();
+		pre_extract(model, problem);
+		// extraction done
 		model.lm.setAllowNewFeatures(false);
 		System.out.println(model.lm.getNumOfFeature());
-		model.infSolver = new ChuLiuEdmondsDecoder(model.lm, model.featureGenerator);
-		
+		model.infSolver = new ChuLiuEdmondsDecoder(model.lm,
+				model.featureGenerator);
+		SLParameters para = new SLParameters();
+		para.loadConfigFile(configFilePath);
+		para.TOTAL_NUMBER_FEATURE=model.lm.getNumOfFeature();
+		Learner learner = LearnerFactory.getLearner(model.infSolver, model.featureGenerator,
+				para);
+		model.wv = learner.train(problem);
+		model.saveModel("trained.model");
 	}
-	
-	public static void getParseTree(DependencyInstance instance){
+
+	private static void pre_extract(SLModel model, SLProblem problem) {
+		// there shld be a better way, feature extraction
+		for (Pair<IInstance, IStructure> p : problem) {
+			model.featureGenerator
+					.getFeatureVector(p.getFirst(), p.getSecond());
+		}
+	}
+
+	public static void getParseTree(DependencyInstance instance) {
 		String[] labs = instance.deprels;
 		int[] heads = instance.heads;
 
 		StringBuffer spans = new StringBuffer(heads.length * 5);
 		for (int i = 1; i < heads.length; i++) {
-			 spans.append(heads[i]).append("|").append(i).append(":")
-			 .append(labs[i]).append(" ");
+			spans.append(heads[i]).append("|").append(i).append(":")
+					.append(labs[i]).append(" ");
 		}
 		instance.actParseTree = spans.substring(0, spans.length() - 1);
 		System.out.println(instance.actParseTree);
 	}
 
-	private static Pair<IInstance,IStructure> getSLPair(DependencyInstance instance) {
+	private static Pair<IInstance, IStructure> getSLPair(
+			DependencyInstance instance) {
 		DepStruct d = new DepStruct(instance);
 		DepInst ins = new DepInst(instance);
-		return new Pair<IInstance,IStructure> (ins,d);
+		return new Pair<IInstance, IStructure>(ins, d);
 	}
-	
+
 }

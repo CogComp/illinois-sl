@@ -9,15 +9,16 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7033487235520156024L;
 	private DepFeatureGenerator feat;
 
-	public ChuLiuEdmondsDecoder(Lexiconer lm, AbstractFeatureGenerator featureGenerator) {
-		feat=(DepFeatureGenerator) featureGenerator;
+	public ChuLiuEdmondsDecoder(Lexiconer lm,
+			AbstractFeatureGenerator featureGenerator) {
+		feat = (DepFeatureGenerator) featureGenerator;
 	}
 
 	@Override
@@ -29,24 +30,25 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	@Override
 	public IStructure getLossAugmentedBestStructure(WeightVector weight,
 			IInstance ins, IStructure goldStructure) throws Exception {
-		float score=0.0f;
+		float score = 0.0f;
 		DepInst sent = (DepInst) ins;
+		DepStruct gold = goldStructure != null ? (DepStruct) goldStructure
+				: null;
 		// TODO edge matrix size?
-		float[][]edgeScore=new float[sent.size()][sent.size()];
-		for(int i=1;i<=sent.size();i++)
-		{
-			for(int j=0;j<=sent.size();j++)
-			{
-			IFeatureVector fv = feat.getEdgeFeatures(i,j,sent);
-			edgeScore[i][j]=weight.dotProduct(fv);
+		float[][] edgeScore = new float[sent.size()][sent.size()];
+		for (int i = 1; i <= sent.size(); i++) {
+			for (int j = 0; j <= sent.size(); j++) {
+				IFeatureVector fv = feat.getEdgeFeatures(i, j, sent);
+				edgeScore[i][j] = weight.dotProduct(fv);
+				if (gold != null) {
+					if (gold.heads[i] != j)
+						edgeScore[i][j] += 1.0f;
+				}
+
 			}
 		}
-		DepStruct pred=ChuLiuEdmonds(edgeScore);
-		if(goldStructure!=null)
-		{
-			score+=getLoss(ins,goldStructure,pred);
-		}
-		return null;
+		DepStruct pred = ChuLiuEdmonds(edgeScore);
+		return pred;
 	}
 
 	private DepStruct ChuLiuEdmonds(float[][] edgeScore) {
@@ -56,15 +58,13 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 
 	@Override
 	public float getLoss(IInstance ins, IStructure gold, IStructure pred) {
-		
-		float loss=0.0f;
+
+		float loss = 0.0f;
 		DepStruct predDep = (DepStruct) pred;
 		DepStruct goldDep = (DepStruct) gold;
-		for(int i=1;i<predDep.heads.length;i++)
-		{
-			if(predDep.heads[i]!=goldDep.heads[i])
-			{
-				loss+=1.0f;
+		for (int i = 1; i < predDep.heads.length; i++) {
+			if (predDep.heads[i] != goldDep.heads[i]) {
+				loss += 1.0f;
 			}
 		}
 		return loss;
