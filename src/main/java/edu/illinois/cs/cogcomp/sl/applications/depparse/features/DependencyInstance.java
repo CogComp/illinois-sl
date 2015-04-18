@@ -10,7 +10,7 @@ import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
-public class DependencyInstance implements Serializable, IInstance {
+public class DependencyInstance implements Serializable{
 
 	/**
 	 * 

@@ -17,7 +17,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.core.IInstance;
+import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 
 /**
@@ -45,11 +48,11 @@ public abstract class DependencyReader {
 		if (format.equals("MST")) {
 			return new MSTReader();
 		} else if (format.equals("CONLL")) {
-			return new CONLLReader(discourseMode);
+			return new CONLLReader();
 		} else {
 			System.out.println("!!!!!!!  Not a supported format: " + format);
 			System.out.println("********* Assuming CONLL format. **********");
-			return new CONLLReader(discourseMode);
+			return new CONLLReader();
 		}
 	}
 
@@ -90,38 +93,42 @@ public abstract class DependencyReader {
 	}
 
 	public static void main(String[] args) throws IOException {
-		DependencyReader depReader = DependencyReader.createDependencyReader(
-				"CONLL", false);
+		CONLLReader depReader = new CONLLReader();
+		
 		depReader.startReading("data/depparse/english_train.conll");
+		
 		SLProblem problem = new SLProblem();
 		
 		DependencyInstance instance = depReader.getNext();
+		
 		int num1 = 0;
 
-		System.out.println("Creating Feature Vector Instances: ");
 		while (instance != null) {
-
-			System.out.print(num1 + " ");
-			System.out.println(instance.toString());
-			String[] labs = instance.deprels;
-			int[] heads = instance.heads;
-
-			StringBuffer spans = new StringBuffer(heads.length * 5);
-			for (int i = 1; i < heads.length; i++) {
-				 spans.append(heads[i]).append("|").append(i).append(":")
-				 .append(labs[i]).append(" ");
-			}
-			instance.actParseTree = spans.substring(0, spans.length() - 1);
-			goldParse
-//			System.out.println(instance.actParseTree);
-			// lengths.add(instance.length());
-			problem.addExample(instance, goldParse);
-			instance = null;
-
-			instance = depReader.getNext();
-
+			Pair<IInstance, IStructure> pair = getSLPair(instance);
+			problem.addExample(pair.getFirst(),pair.getSecond());
 			num1++;
+			instance = depReader.getNext();
+			System.out.println(num1);
 		}
-		
+		System.out.println(problem.size());
+	}
+	
+	public void getParseTree(DependencyInstance instance){
+		String[] labs = instance.deprels;
+		int[] heads = instance.heads;
+
+		StringBuffer spans = new StringBuffer(heads.length * 5);
+		for (int i = 1; i < heads.length; i++) {
+			 spans.append(heads[i]).append("|").append(i).append(":")
+			 .append(labs[i]).append(" ");
+		}
+		instance.actParseTree = spans.substring(0, spans.length() - 1);
+		System.out.println(instance.actParseTree);
+	}
+
+	private static Pair<IInstance,IStructure> getSLPair(DependencyInstance instance) {
+		DepStruct d = new DepStruct(instance);
+		DepInst ins = new DepInst(instance);
+		return new Pair<IInstance,IStructure> (ins,d);
 	}
 }
