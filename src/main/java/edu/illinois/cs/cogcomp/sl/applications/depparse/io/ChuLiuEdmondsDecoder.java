@@ -1,5 +1,11 @@
 package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
 
+import java.util.Map;
+
+import edu.cmu.cs.ark.cle.Arborescence;
+import edu.cmu.cs.ark.cle.ChuLiuEdmonds;
+import edu.cmu.cs.ark.cle.graph.DenseWeightedGraph;
+import edu.cmu.cs.ark.cle.util.Weighted;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
@@ -34,7 +40,7 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 		DepStruct gold = goldStructure != null ? (DepStruct) goldStructure
 				: null;
 		// TODO edge matrix dims?
-		float[][] edgeScore = new float[sent.size()][sent.size()];
+		double[][] edgeScore = new double[sent.size()][sent.size()];
 		for (int i = 0; i <= sent.size(); i++) {
 			for (int j = 1; j <= sent.size(); j++) {
 				IFeatureVector fv = feat.getEdgeFeatures(i, j, sent);
@@ -58,8 +64,18 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	 * @param edgeScore
 	 * @return
 	 */
-	private DepStruct ChuLiuEdmonds(float[][] edgeScore) {
-		return null;
+	private DepStruct ChuLiuEdmonds(double[][] edgeScore) {
+		DenseWeightedGraph<Integer> dg = DenseWeightedGraph.from(edgeScore);
+		Weighted<Arborescence<Integer>> weightedSpanningTree = ChuLiuEdmonds.getMaxArborescence(dg, 0);
+		Map<Integer, Integer> node2parent = weightedSpanningTree.val.parents;
+		
+		int[] head=new int[edgeScore.length];
+		String[] deprels=new String[edgeScore[0].length];
+		for(Integer node:node2parent.keySet())
+		{
+			head[node]=node2parent.get(node);
+		}
+		return new DepStruct(head,deprels);
 	}
 
 	@Override

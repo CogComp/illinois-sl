@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
-ME=`basename $0` # for usage message
-
-if [ "$#" -ne 0 ]; then 	# number of args
-    echo "USAGE: "
-    echo "$ME"
-    exit
-fi
-
-
 
 git clone git@github.com:sammthomson/ChuLiuEdmonds.git
 cd ChuLiuEdmonds
 mvn install
-
+cd ..
+rm -rf ChuLiuEdmonds
 
 
 

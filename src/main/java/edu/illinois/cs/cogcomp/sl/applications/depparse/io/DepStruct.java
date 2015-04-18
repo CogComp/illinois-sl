@@ -18,4 +18,8 @@ public class DepStruct implements IStructure{
 		heads[0]=-1;
 		deprels=new String[sent_size+1];
 	}
+	public DepStruct(int[] heads, String[] deprels){
+		this.heads=heads;
+		this.deprels=deprels;
+	}
 }
