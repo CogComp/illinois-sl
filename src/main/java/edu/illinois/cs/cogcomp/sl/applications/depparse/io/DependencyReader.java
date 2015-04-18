@@ -64,10 +64,10 @@ public abstract class DependencyReader {
 		return s;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 
 		// System.out.println(problem.size());
-
+		train("config/DCD.config");
 	}
 
 	static SLProblem getStructuredData(String filepath) throws IOException {
@@ -95,6 +95,7 @@ public abstract class DependencyReader {
 		System.out.println(model.lm.getNumOfFeature());
 		model.infSolver = new ChuLiuEdmondsDecoder(model.lm,
 				model.featureGenerator);
+		System.exit(-1);
 		SLParameters para = new SLParameters();
 		para.loadConfigFile(configFilePath);
 		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();

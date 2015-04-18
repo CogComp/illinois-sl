@@ -30,18 +30,18 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	@Override
 	public IStructure getLossAugmentedBestStructure(WeightVector weight,
 			IInstance ins, IStructure goldStructure) throws Exception {
-		float score = 0.0f;
 		DepInst sent = (DepInst) ins;
 		DepStruct gold = goldStructure != null ? (DepStruct) goldStructure
 				: null;
 		// TODO edge matrix dims?
 		float[][] edgeScore = new float[sent.size()][sent.size()];
-		for (int i = 1; i <= sent.size(); i++) {
-			for (int j = 0; j <= sent.size(); j++) {
+		for (int i = 0; i <= sent.size(); i++) {
+			for (int j = 1; j <= sent.size(); j++) {
 				IFeatureVector fv = feat.getEdgeFeatures(i, j, sent);
+				// edge from head i to modifier j
 				edgeScore[i][j] = weight.dotProduct(fv);
 				if (gold != null) {
-					if (gold.heads[i] != j)
+					if (gold.heads[j] != i)
 						edgeScore[i][j] += 1.0f;
 				}
 
@@ -51,8 +51,14 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 		return pred;
 	}
 
+	/**
+	 * takes matrix[i][j] with directed edge i-->j scores and find the maximum
+	 * aborescence using Chu-Liu-Edmonds algorithm
+	 * 
+	 * @param edgeScore
+	 * @return
+	 */
 	private DepStruct ChuLiuEdmonds(float[][] edgeScore) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
