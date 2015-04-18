@@ -102,6 +102,7 @@ public abstract class DependencyReader {
 	}
 
 	public static void main(String[] args) throws IOException {
+		
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
 
@@ -130,7 +131,7 @@ public abstract class DependencyReader {
 		
 		model.lm.setAllowNewFeatures(false);
 		System.out.println(model.lm.getNumOfFeature());
-		model.infSolver = new TreeDecoder(model.lm);
+		model.infSolver = new ChuLiuEdmondsDecoder(model.lm, model.featureGenerator);
 	}
 	
 	public static void getParseTree(DependencyInstance instance){

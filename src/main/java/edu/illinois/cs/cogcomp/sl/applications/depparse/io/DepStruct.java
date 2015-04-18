@@ -12,4 +12,10 @@ public class DepStruct implements IStructure{
 		heads = instance.heads;
 		deprels = instance.deprels;
 	}
+	public DepStruct(int sent_size)
+	{
+		heads=new int[sent_size+1];
+		heads[0]=-1;
+		deprels=new String[sent_size+1];
+	}
 }

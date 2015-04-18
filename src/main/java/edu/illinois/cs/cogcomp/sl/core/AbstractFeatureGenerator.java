@@ -25,4 +25,5 @@ public abstract class AbstractFeatureGenerator {
 	public float decisionValue(WeightVector wv, IInstance x, IStructure y) {
 		return wv.dotProduct(getFeatureVector(x, y));
 	}
+
 }
