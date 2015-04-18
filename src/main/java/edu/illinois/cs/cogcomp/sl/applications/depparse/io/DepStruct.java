@@ -5,8 +5,8 @@ import edu.illinois.cs.cogcomp.sl.core.IStructure;
 
 public class DepStruct implements IStructure{
 
-	private int[] heads;
-	private String[] deprels;
+	public int[] heads; // pos of heads of ith token is heads[i]
+	public String[] deprels;
 
 	public DepStruct(DependencyInstance instance) {
 		heads = instance.heads;

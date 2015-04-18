@@ -16,24 +16,18 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.tutorial.ViterbiInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
+import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
+import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
-/**
- * A class that defines common behavior and abstract methods for readers for
- * different formats.
- * 
- * <p>
- * Created: Sat Nov 10 15:25:10 2001
- * </p>
- * 
- * @author Jason Baldridge
- * @version $Id: DependencyReader.java 137 2013-09-10 09:33:47Z wyldfire $
- */
 public abstract class DependencyReader {
 
 	protected BufferedReader inputReader;
@@ -42,35 +36,7 @@ public abstract class DependencyReader {
 
 	protected boolean confScores = false;
 
-	public static DependencyReader createDependencyReader(String format,
-			boolean discourseMode) throws IOException {
-
-		if (format.equals("MST")) {
-			return new MSTReader();
-		} else if (format.equals("CONLL")) {
-			return new CONLLReader();
-		} else {
-			System.out.println("!!!!!!!  Not a supported format: " + format);
-			System.out.println("********* Assuming CONLL format. **********");
-			return new CONLLReader();
-		}
-	}
-
-	public static DependencyReader createDependencyReader(String format)
-			throws IOException {
-
-		return createDependencyReader(format, false);
-	}
-
-	public static DependencyReader createDependencyReaderWithConfidenceScores(
-			String format) throws IOException {
-		DependencyReader reader = createDependencyReader(format);
-		reader.confScores = true;
-		return reader;
-	}
-
 	public boolean startReading(String file) throws IOException {
-		labeled = fileContainsLabels(file);
 		inputReader = new BufferedReader(new InputStreamReader(
 				new FileInputStream(file), "UTF8"));
 		return labeled;
@@ -91,29 +57,83 @@ public abstract class DependencyReader {
 
 		return s;
 	}
+	
+	public SparseFeatureVector createFeatureVector(DependencyInstance instance) {
+
+	    final int instanceLength = instance.length();
+
+	    String[] labs = instance.deprels;
+	    int[] heads = instance.heads;
+
+	    SparseFeatureVector fv = null;
+	    HashMap<String, Float> featMap = new HashMap<String,Float>();
+	    for (int i = 0; i < instanceLength; i++) {
+	      if (heads[i] == -1) {
+	        continue;
+	      }
+	      int small = i < heads[i] ? i : heads[i];
+	      int large = i > heads[i] ? i : heads[i];
+	      boolean attR = i < heads[i] ? false : true;
+	      addCoreFeatures(instance, small, large, attR, featMap);
+	    }
+	    return fv;
+	  }
+
+	private void addCoreFeatures(DependencyInstance instance, int small,
+			int large, boolean attR, HashMap<String, Float> featMap) {
+		
+		String[] forms = instance.forms;
+	    String[] pos = instance.postags;
+	    String[] posA = instance.cpostags;
+
+	    String att = attR ? "RA" : "LA";
+
+	    int dist = Math.abs(large - small);
+	    String distBool = "0";
+	    if (dist > 10) {
+	      distBool = "10";
+	    } else if (dist > 5) {
+	      distBool = "5";
+	    } else {
+	      distBool = Integer.toString(dist - 1);
+	    }
+
+	    String attDist = "&" + att + "&" + distBool;		
+	}
 
 	public static void main(String[] args) throws IOException {
-		CONLLReader depReader = new CONLLReader();
-		
-		depReader.startReading("data/depparse/english_train.conll");
-		
-		SLProblem problem = new SLProblem();
-		
-		DependencyInstance instance = depReader.getNext();
-		
-		int num1 = 0;
+		SLModel model = new SLModel();
+		model.lm = new Lexiconer();
 
+		CONLLReader depReader = new CONLLReader();
+		depReader.startReading("data/depparse/english_train.conll");
+		SLProblem problem = new SLProblem();
+		DependencyInstance instance = depReader.getNext();
+		int num1 = 0;
 		while (instance != null) {
 			Pair<IInstance, IStructure> pair = getSLPair(instance);
+			getParseTree(instance);
 			problem.addExample(pair.getFirst(),pair.getSecond());
 			num1++;
 			instance = depReader.getNext();
 			System.out.println(num1);
 		}
 		System.out.println(problem.size());
+		
+		model.featureGenerator = new DepFeatureGenerator(model.lm);
+		
+		// there shld be a better way
+		for(Pair<IInstance, IStructure> p:problem)
+		{
+			model.featureGenerator.getFeatureVector(p.getFirst(), p.getSecond());
+		}
+		
+		model.lm.setAllowNewFeatures(false);
+		System.out.println(model.lm.getNumOfFeature());
+		model.infSolver = new TreeDecoder(model.lm);
 	}
 	
-	public void getParseTree(DependencyInstance instance){
+	public static void getParseTree(DependencyInstance instance){
 		String[] labs = instance.deprels;
 		int[] heads = instance.heads;
 
@@ -131,4 +151,5 @@ public abstract class DependencyReader {
 		DepInst ins = new DepInst(instance);
 		return new Pair<IInstance,IStructure> (ins,d);
 	}
+	
 }

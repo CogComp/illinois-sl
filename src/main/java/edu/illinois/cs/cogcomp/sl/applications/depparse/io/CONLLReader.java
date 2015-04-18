@@ -35,6 +35,7 @@ import edu.illinois.cs.cogcomp.sl.applications.depparse.features.RelationalFeatu
 public class CONLLReader extends DependencyReader {
 
   public CONLLReader() {
+	  
   }
 
   @Override
@@ -55,7 +56,7 @@ public class CONLLReader extends DependencyReader {
       return null;
     }
 
-    String[] forms = new String[length + 1];
+    String[] forms = new String[length + 1]; // +1 for the 0 root
     String[] lemmas = new String[length + 1];
     String[] cpos = new String[length + 1];
     String[] pos = new String[length + 1];
