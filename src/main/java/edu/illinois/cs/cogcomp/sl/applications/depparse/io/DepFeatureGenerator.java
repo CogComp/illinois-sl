@@ -35,7 +35,7 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements Ser
 	@Override
 	public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
 		DepInst sent = (DepInst) x;
-		System.out.println("sent size " + sent.size());
+//		System.out.println("sent size " + sent.size());
 		DepStruct tree = (DepStruct) y;
 		// for(int i=0;i<tree.heads.length;i++)
 		// {

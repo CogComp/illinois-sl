@@ -37,26 +37,36 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	public IStructure getLossAugmentedBestStructure(WeightVector weight,
 			IInstance ins, IStructure goldStructure) throws Exception {
 		DepInst sent = (DepInst) ins;
-		System.out.println(sent.size());
+//		System.out.println(sent.size());
 		DepStruct gold = goldStructure != null ? (DepStruct) goldStructure
 				: null;
 		// TODO edge matrix dims?
 		double[][] edgeScore = new double[sent.size()+1][sent.size()+1];
+		initEdgeScores(edgeScore);
 		for (int head = 0; head <= sent.size(); head++) {
 			for (int j = 1; j <= sent.size(); j++) {
-				System.out.println(head+" "+j);
+//				System.out.println(head+" "+j);
 				IFeatureVector fv = feat.getEdgeFeatures(head, j, sent);
 				// edge from head i to modifier j
 				edgeScore[head][j] = weight.dotProduct(fv);
 				if (gold != null) {
 					if (gold.heads[j] != head) // incur loss
-						edgeScore[head][j] -= 1.0f;
+						edgeScore[head][j] += 1.0f;
 				}
 
 			}
 		}
 		DepStruct pred = ChuLiuEdmonds(edgeScore);
 		return pred;
+	}
+
+	private void initEdgeScores(double[][] edgeScore) {
+		// TODO Auto-generated method stub
+		for(int i=0;i<edgeScore.length;i++)
+			for(int j=0;j<edgeScore[0].length;j++)
+			{
+				edgeScore[i][j]=Float.NEGATIVE_INFINITY;
+			}
 	}
 
 	/**
