@@ -40,16 +40,19 @@ public abstract class MainClass {
 	public static void main(String[] args) throws Exception {
 
 		// System.out.println(problem.size());
-		if (args.length != 1) {
-			System.out.println("usage: <config file>");
+		if (args.length != 4) {
+			System.out.println("usage: <config-file> <train-file> <test-file> <model-name>");
 			System.exit(-1);
 		}
-		SLModel model = train(args[0]);
-		model.saveModel("trained.model");
-		System.out.println("Testing on Training Data");
-		test("trained.model", "data/depparse/english_train.conll");
+		String trainFile = args[1];
+		String testFile = args[2];
+		String modelFile = args[3];
+		SLModel model = train(trainFile,args[0]);
+		model.saveModel(modelFile);
+//		System.out.println("Testing on Training Data");
+//		test(modelFile, trainFile);
 		System.out.println("Testing on Test Data");
-		test("trained.model", "data/depparse/english_test.conll");
+		test(modelFile, testFile);
 	}
 
 	static SLProblem getStructuredData(String filepath) throws IOException {
@@ -66,13 +69,13 @@ public abstract class MainClass {
 		return problem;
 	}
 
-	public static SLModel train(String configFilePath) throws Exception {
+	public static SLModel train(String trainFile, String configFilePath) throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
 		if (model.lm.isAllowNewFeatures())
 			model.lm.addFeature("W:unknownword");
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
-		SLProblem problem = getStructuredData("data/depparse/english_train.conll");
+		SLProblem problem = getStructuredData(trainFile);
 		pre_extract(model, problem);
 		// extraction done
 		System.out.println(model.lm.getNumOfFeature());
