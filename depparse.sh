@@ -6,6 +6,6 @@ CP="./config/:./target/classes/:./target/dependency/*"
 OPTIONS="-Xss40m -ea -cp $CP"
 PACKAGE_PREFIX="edu.illinois.cs.cogcomp"
 
-MAIN="$PACKAGE_PREFIX.sl.applications.depparse.io.DependencyReader"
+MAIN="$PACKAGE_PREFIX.sl.applications.depparse.io.MainClass"
 
 time nice java $OPTIONS $MAIN $CONFIG_STR $*
