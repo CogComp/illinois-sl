@@ -1,5 +1,15 @@
+#!/usr/bin/env bash
+
 #mvn -q dependency:copy-dependencies
 #mvn -q compile
+
+ME=`basename $0` # for usage message
+
+if [ "$#" -ne 1 ]; then 	# number of args
+    echo "USAGE: "
+    echo "$ME <config file>"
+    exit
+fi
 
 CP="./config/:./target/classes/:./target/dependency/*"
 
