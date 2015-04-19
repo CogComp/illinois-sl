@@ -113,10 +113,18 @@ public class DependencyInstance implements Serializable{
 		this.confidenceScores = confidenceScores;
 	}
 
-	public void setFeatureVector(SparseFeatureVector fv) {
-		this.fv = fv;
-	}
+	public void getParseTree() {
+		String[] labs = this.deprels;
+		int[] heads = this.heads;
 
+		StringBuffer spans = new StringBuffer(heads.length * 5);
+		for (int i = 1; i < heads.length; i++) {
+			spans.append(heads[i]).append("|").append(i).append(":")
+					.append(labs[i]).append(" ");
+		}
+		this.actParseTree = spans.substring(0, spans.length() - 1);
+//		System.out.println(this.actParseTree);
+	}
 	public int length() {
 		return forms.length;
 	}

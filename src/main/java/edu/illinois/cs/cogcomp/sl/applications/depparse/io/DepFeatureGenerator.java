@@ -16,12 +16,13 @@ import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
 /**
  * generates features based on edges in the dep. graph
+ * 
  * @author Shyam
  *
  */
-public class DepFeatureGenerator extends AbstractFeatureGenerator implements Serializable{
+public class DepFeatureGenerator extends AbstractFeatureGenerator implements
+		Serializable {
 
-	
 	/**
 	 * 
 	 */
@@ -35,7 +36,7 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements Ser
 	@Override
 	public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
 		DepInst sent = (DepInst) x;
-//		System.out.println("sent size " + sent.size());
+		// System.out.println("sent size " + sent.size());
 		DepStruct tree = (DepStruct) y;
 		// for(int i=0;i<tree.heads.length;i++)
 		// {
@@ -100,6 +101,16 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements Ser
 
 	}
 
+	private void addDirectionalFeats(int head, int i, DepInst sent,
+			List<String> featureMap) {
+		boolean attR = i < head ? false : true;
+		featureMap.add("headpos_" + sent.pos[head] + "_" + attR
+				+ "_modifierpos_" + sent.pos[i]);
+		featureMap.add("headword_" + sent.lemmas[head] + "_" + attR
+				+ "_modifierword_" + sent.lemmas[i]);
+
+	}
+
 	private void addUnigramFeats(int head, int i, DepInst sent,
 			List<String> featureMap) {
 		featureMap.add("head_" + sent.lemmas[head] + "_" + sent.pos[head]);
@@ -111,9 +122,8 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements Ser
 	}
 
 	/**
-	 * returns f(i,j)
-	 * head idx from 0..n
-	 * i idx from 1..n
+	 * returns f(i,j) head idx from 0..n i idx from 1..n
+	 * 
 	 * @param head
 	 * @param i
 	 * @param sent
@@ -121,18 +131,22 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements Ser
 	 */
 	public IFeatureVector getEdgeFeatures(int head, int i, DepInst sent) {
 		List<String> featureMap = new ArrayList<>();
+
 		addUnigramFeats(head, i, sent, featureMap);
 		addBigramFeats(head, i, sent, featureMap);
 		addSurroundingPOS(head, i, sent, featureMap);
+		addDirectionalFeats(head, i, sent, featureMap);
+
 		FeatureVectorBuffer fv = new FeatureVectorBuffer();
 		for (String f : featureMap) {
 			if (lm.isAllowNewFeatures())
 				lm.addFeature(f);
-			if(lm.containFeature(f))
+			if (lm.containFeature(f))
 				fv.addFeature(lm.getFeatureId(f), 1.0f);
 			else
-				fv.addFeature(lm.getFeatureId("W:unknownword"),1.0f);
+				fv.addFeature(lm.getFeatureId("W:unknownword"), 1.0f);
 		}
 		return fv.toFeatureVector();
 	}
+
 }

@@ -131,18 +131,7 @@ public abstract class MainClass {
 		}
 	}
 
-	public static void getParseTree(DependencyInstance instance) {
-		String[] labs = instance.deprels;
-		int[] heads = instance.heads;
-
-		StringBuffer spans = new StringBuffer(heads.length * 5);
-		for (int i = 1; i < heads.length; i++) {
-			spans.append(heads[i]).append("|").append(i).append(":")
-					.append(labs[i]).append(" ");
-		}
-		instance.actParseTree = spans.substring(0, spans.length() - 1);
-		System.out.println(instance.actParseTree);
-	}
+	
 
 	private static Pair<IInstance, IStructure> getSLPair(
 			DependencyInstance instance) {
