@@ -1,15 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2007 University of Texas at Austin and (C) 2005
-// University of Pennsylvania and Copyright (C) 2002, 2003 University
-// of Massachusetts Amherst, Department of Computer Science.
-//
-// This software is licensed under the terms of the Common Public
-// License, Version 1.0 or (at your option) any subsequent version.
-//
-// The license is approved by the Open Source Initiative, and is
-// available from their website at http://www.opensource.org.
-///////////////////////////////////////////////////////////////////////////////
-
 package edu.illinois.cs.cogcomp.sl.applications.depparse;
 
 import java.io.BufferedReader;
@@ -20,6 +8,9 @@ import java.util.HashMap;
 
 import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
+import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
+import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
+import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.base.DependencyInstance;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.io.CONLLReader;
 import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
@@ -35,24 +26,18 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
-public abstract class MainClass {
+public class MainClass {
 
-	public static void main(String[] args) throws Exception {
+	@CommandIgnore
+	public static void main(String args[]) throws Exception {
 
-		// System.out.println(problem.size());
-		if (args.length != 4) {
-			System.out.println("usage: <config-file> <train-file> <test-file> <model-name>");
-			System.exit(-1);
+		InteractiveShell<MainClass> tester = new InteractiveShell<MainClass>(
+				MainClass.class);
+		if (args.length == 0)
+			tester.showDocumentation();
+		else {
+			tester.runCommand(args);
 		}
-		String trainFile = args[1];
-		String testFile = args[2];
-		String modelFile = args[3];
-		SLModel model = train(trainFile,args[0]);
-		model.saveModel(modelFile);
-//		System.out.println("Testing on Training Data");
-//		test(modelFile, trainFile);
-		System.out.println("Testing on Test Data");
-		test(modelFile, testFile);
 	}
 
 	static SLProblem getStructuredData(String filepath) throws IOException {
@@ -68,8 +53,9 @@ public abstract class MainClass {
 		}
 		return problem;
 	}
-
-	public static SLModel train(String trainFile, String configFilePath) throws Exception {
+	@CommandDescription(description="String trainFile, String configFilePath,	String modelFile")
+	public static SLModel train(String trainFile, String configFilePath,
+			String modelFile) throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
 		if (model.lm.isAllowNewFeatures())
@@ -87,9 +73,10 @@ public abstract class MainClass {
 				model.featureGenerator, para);
 		model.wv = learner.train(problem);
 		model.lm.setAllowNewFeatures(false);
+		model.saveModel(modelFile);
 		return model;
 	}
-
+	@CommandDescription(description="String modelFile, String testFile")
 	public static void test(String modelPath, String testDataPath)
 			throws Exception {
 		SLModel model = SLModel.loadModel(modelPath);
@@ -134,8 +121,6 @@ public abstract class MainClass {
 					.getFeatureVector(p.getFirst(), p.getSecond());
 		}
 	}
-
-	
 
 	private static Pair<IInstance, IStructure> getSLPair(
 			DependencyInstance instance) {

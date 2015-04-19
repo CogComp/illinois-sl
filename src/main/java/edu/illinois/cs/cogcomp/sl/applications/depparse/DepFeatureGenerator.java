@@ -16,7 +16,7 @@ import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
 /**
  * generates features based on edges in the dep. graph
- * 
+ * features for a dep tree is sum of the features for all its edges
  * @author upadhya3
  *
  */
@@ -139,6 +139,7 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 	}
 
 	/**
+	 * the main feat extraction primitive
 	 * returns f(i,j) head idx from 0..n i idx from 1..n
 	 * 
 	 * @param head

@@ -12,7 +12,8 @@ import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
 /**
  * 
- * Borrowed from MST Parser http://www.seas.upenn.edu/~strctlrn/MSTParser/MSTParser.html
+ * Borrowed from McDonald's MST Parser at 
+ * http://www.seas.upenn.edu/~strctlrn/MSTParser/MSTParser.html
  *
  */
 public class DependencyInstance implements Serializable{

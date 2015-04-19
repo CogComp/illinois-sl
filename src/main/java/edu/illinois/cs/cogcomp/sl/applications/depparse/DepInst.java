@@ -4,8 +4,13 @@ import edu.illinois.cs.cogcomp.sl.applications.depparse.base.DependencyInstance;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
+/**
+ * represents a sentence which is to be parsed, with some additional features (pos,lemmas)
+ * @author Shyam
+ *
+ */
 public class DepInst implements IInstance {
-
+	// all these fields have length # of tokens +1
 	public String[] lemmas;
 	public String[] pos;
 	public String[] cpos;

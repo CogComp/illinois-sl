@@ -14,6 +14,11 @@ import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
+/**
+ * Finds the best dep tree using McDonald's directed MST appraoch
+ * @author upadhya3
+ *
+ */
 public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 
 	/**

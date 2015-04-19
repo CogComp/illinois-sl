@@ -3,14 +3,6 @@
 #mvn -q dependency:copy-dependencies
 #mvn -q compile
 
-ME=`basename $0` # for usage message
-
-if [ "$#" -ne 4 ]; then 	# number of args
-    echo "USAGE: "
-    echo "$ME <config-file> <train-file> <test-file> <model-name>"
-    exit
-fi
-
 CP="./config/:./target/classes/:./target/dependency/*"
 
 OPTIONS="-Xss40m -ea -cp $CP"
