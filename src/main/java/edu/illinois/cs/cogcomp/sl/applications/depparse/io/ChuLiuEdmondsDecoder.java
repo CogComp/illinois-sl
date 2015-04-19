@@ -53,7 +53,6 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 					if (gold.heads[j] != head) // incur loss
 						edgeScore[head][j] += 1.0f;
 				}
-
 			}
 		}
 		DepStruct pred = ChuLiuEdmonds(edgeScore);

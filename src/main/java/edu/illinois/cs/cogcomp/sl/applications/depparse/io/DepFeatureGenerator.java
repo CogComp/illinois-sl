@@ -128,7 +128,10 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements Ser
 		for (String f : featureMap) {
 			if (lm.isAllowNewFeatures())
 				lm.addFeature(f);
-			fv.addFeature(lm.getFeatureId(f), 1.0f);
+			if(lm.containFeature(f))
+				fv.addFeature(lm.getFeatureId(f), 1.0f);
+			else
+				fv.addFeature(lm.getFeatureId("W:unknownword"),1.0f);
 		}
 		return fv.toFeatureVector();
 	}

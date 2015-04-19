@@ -91,6 +91,8 @@ public abstract class DependencyReader {
 	public static SLModel train(String configFilePath) throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
+		if (model.lm.isAllowNewFeatures())
+			model.lm.addFeature("W:unknownword");
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
 		SLProblem problem = getStructuredData("data/depparse/english_train.conll");
 		pre_extract(model, problem);
