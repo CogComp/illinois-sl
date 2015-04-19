@@ -10,14 +10,17 @@ import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
+/**
+ * 
+ * Borrowed from MST Parser http://www.seas.upenn.edu/~strctlrn/MSTParser/MSTParser.html
+ *
+ */
 public class DependencyInstance implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1738430545985436659L;
-
-	public SparseFeatureVector fv;
 
 	public String actParseTree;
 
@@ -57,28 +60,6 @@ public class DependencyInstance implements Serializable{
 	public double[] confidenceScores;
 
 	public DependencyInstance() {
-	}
-
-	public DependencyInstance(DependencyInstance source) {
-		this.fv = source.fv;
-		this.actParseTree = source.actParseTree;
-	}
-
-	public DependencyInstance(String[] forms, SparseFeatureVector fv) {
-		this.forms = forms;
-		this.fv = fv;
-	}
-
-	public DependencyInstance(String[] forms, String[] postags,
-			SparseFeatureVector fv) {
-		this(forms, fv);
-		this.postags = postags;
-	}
-
-	public DependencyInstance(String[] forms, String[] postags, String[] labs,
-			SparseFeatureVector fv) {
-		this(forms, postags, fv);
-		this.deprels = labs;
 	}
 
 	public DependencyInstance(String[] forms, String[] postags, String[] labs,

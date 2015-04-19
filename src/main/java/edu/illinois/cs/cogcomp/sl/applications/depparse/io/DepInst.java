@@ -6,13 +6,11 @@ import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
 public class DepInst implements IInstance {
 
-	public SparseFeatureVector feat;
 	public String[] lemmas;
 	public String[] pos;
 	public String[] cpos;
 
 	public DepInst(DependencyInstance instance) {
-		feat = instance.fv;
 		lemmas = instance.lemmas;
 		pos = instance.postags;
 		cpos = instance.cpostags;

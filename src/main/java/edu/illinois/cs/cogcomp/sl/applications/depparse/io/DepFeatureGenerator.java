@@ -17,7 +17,7 @@ import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 /**
  * generates features based on edges in the dep. graph
  * 
- * @author Shyam
+ * @author upadhya3
  *
  */
 public class DepFeatureGenerator extends AbstractFeatureGenerator implements
@@ -65,83 +65,83 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 	}
 
 	private void addSurroundingPOS(int head, int i, DepInst sent,
-			List<String> flist) {
+			List<String> fList) {
 		String nextmod = (i + 1 < sent.pos.length) ? sent.pos[i + 1] : "NULL";
 		String nexthead = (head + 1 < sent.pos.length) ? sent.pos[head + 1]
 				: "NULL";
 		String prevmod = (i - 1 > 0) ? sent.pos[i - 1] : "NULL";
 		String prevhead = (head - 1 > 0) ? sent.pos[head - 1] : "NULL";
-		flist.add("headpos_" + sent.pos[head] + "_nexthead_" + nexthead
+		fList.add("headpos_" + sent.pos[head] + "_nexthead_" + nexthead
 				+ "_modpos_" + sent.pos[i] + "_nextmod_" + nextmod);
-		flist.add("headpos_" + sent.pos[head] + "_prevhead_" + prevhead
+		fList.add("headpos_" + sent.pos[head] + "_prevhead_" + prevhead
 				+ "_modpos_" + sent.pos[i] + "_nextmod_" + nextmod);
-		flist.add("headpos_" + sent.pos[head] + "_nexthead_" + nexthead
+		fList.add("headpos_" + sent.pos[head] + "_nexthead_" + nexthead
 				+ "_modpos_" + sent.pos[i] + "_prevmod_" + prevmod);
-		flist.add("headpos_" + sent.pos[head] + "_prevhead_" + prevhead
+		fList.add("headpos_" + sent.pos[head] + "_prevhead_" + prevhead
 				+ "_modpos_" + sent.pos[i] + "_prevmod_" + prevmod);
 
 	}
 
 	private void addBigramFeats(int head, int i, DepInst sent,
-			List<String> featureMap) {
-		featureMap.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
+			List<String> fList) {
+		fList.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
 				+ "_modifierboth_" + sent.lemmas[i] + "_" + sent.pos[i]);
-		featureMap.add("headpos_" + sent.pos[head] + "_modifierboth_"
+		fList.add("headpos_" + sent.pos[head] + "_modifierboth_"
 				+ sent.lemmas[i] + "_" + sent.pos[i]);
-		featureMap.add("headword_" + sent.lemmas[head] + "_modifierboth_"
+		fList.add("headword_" + sent.lemmas[head] + "_modifierboth_"
 				+ sent.lemmas[i] + "_" + sent.pos[i]);
-		featureMap.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
+		fList.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
 				+ "_modifierpos_" + sent.pos[i]);
-		featureMap.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
+		fList.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
 				+ "_modifierword_" + sent.lemmas[i]);
-		featureMap.add("headword_" + sent.lemmas[head] + "_modifierword_"
+		fList.add("headword_" + sent.lemmas[head] + "_modifierword_"
 				+ sent.lemmas[i]);
-		featureMap.add("headpos_" + sent.pos[head] + "_modifierpos_"
+		fList.add("headpos_" + sent.pos[head] + "_modifierpos_"
 				+ sent.pos[i]);
 
 	}
 
 	private void addInBetweenPOS(int head, int i, DepInst sent,
-			List<String> featureMap) {
+			List<String> fList) {
 		int low = head > i ? i : head;
 		int high = head < i ? i : head;
 		for (int k = low + 1; k < high; k++) {
-			featureMap.add("headpos_" + sent.pos[head] + "_bwpos_" + k + "_"
+			fList.add("headpos_" + sent.pos[head] + "_bwpos_" + k + "_"
 					+ sent.pos[k] + "_modifierpos_" + sent.pos[i]);
 		}
 	}
 
 	private void addDistanceFeats(int head, int i, DepInst sent,
-			List<String> featureMap) {
+			List<String> fList) {
 		int dist = Math.abs(head-i);
-		featureMap.add("headpos_" + sent.pos[head] + "_dist_" + dist
+		fList.add("headpos_" + sent.pos[head] + "_dist_" + dist
 				+ "_modifierpos_" + sent.pos[i]);
-		featureMap.add("headword_" + sent.lemmas[head] + "_dist_" + dist
+		fList.add("headword_" + sent.lemmas[head] + "_dist_" + dist
 				+ "_modifierword_" + sent.lemmas[i]);
 	}
 
 	private void addDirectionalFeats(int head, int i, DepInst sent,
-			List<String> featureMap) {
+			List<String> fList) {
 		boolean attR = i < head ? false : true;
-		featureMap.add("headpos_" + sent.pos[head] + "_" + attR
+		fList.add("headpos_" + sent.pos[head] + "_" + attR
 				+ "_modifierpos_" + sent.pos[i]);
-		featureMap.add("headword_" + sent.lemmas[head] + "_" + attR
+		fList.add("headword_" + sent.lemmas[head] + "_" + attR
 				+ "_modifierword_" + sent.lemmas[i]);
-		featureMap.add("headword_" + sent.lemmas[head] + "_" + attR
+		fList.add("headword_" + sent.lemmas[head] + "_" + attR
 				+ "_modifierpos_" + sent.pos[i]);
-		featureMap.add("headpos_" + sent.pos[head] + "_" + attR
+		fList.add("headpos_" + sent.pos[head] + "_" + attR
 				+ "_modifierword_" + sent.lemmas[i]);
 
 	}
 
 	private void addUnigramFeats(int head, int i, DepInst sent,
-			List<String> featureMap) {
-		featureMap.add("head_" + sent.lemmas[head] + "_" + sent.pos[head]);
-		featureMap.add("head_" + sent.lemmas[head]);
-		featureMap.add("head_" + sent.pos[head]);
-		featureMap.add("modifier_" + sent.lemmas[i] + "_" + sent.pos[i]);
-		featureMap.add("modifier_" + sent.lemmas[i]);
-		featureMap.add("modifier_" + sent.pos[i]);
+			List<String> fList) {
+		fList.add("head_" + sent.lemmas[head] + "_" + sent.pos[head]);
+		fList.add("head_" + sent.lemmas[head]);
+		fList.add("head_" + sent.pos[head]);
+		fList.add("modifier_" + sent.lemmas[i] + "_" + sent.pos[i]);
+		fList.add("modifier_" + sent.lemmas[i]);
+		fList.add("modifier_" + sent.pos[i]);
 	}
 
 	/**
@@ -153,17 +153,17 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 	 * @return
 	 */
 	public IFeatureVector getEdgeFeatures(int head, int i, DepInst sent) {
-		List<String> featureMap = new ArrayList<>();
+		List<String> fList = new ArrayList<>();
 
-		addUnigramFeats(head, i, sent, featureMap);
-		addBigramFeats(head, i, sent, featureMap);
-		addSurroundingPOS(head, i, sent, featureMap);
-		addDirectionalFeats(head, i, sent, featureMap);
-		addInBetweenPOS(head, i, sent, featureMap);
-		addDistanceFeats(head, i, sent, featureMap);
+		addUnigramFeats(head, i, sent, fList);
+		addBigramFeats(head, i, sent, fList);
+		addSurroundingPOS(head, i, sent, fList);
+		addDirectionalFeats(head, i, sent, fList);
+		addInBetweenPOS(head, i, sent, fList);
+		addDistanceFeats(head, i, sent, fList);
 		
 		FeatureVectorBuffer fv = new FeatureVectorBuffer();
-		for (String f : featureMap) {
+		for (String f : fList) {
 			if (lm.isAllowNewFeatures())
 				lm.addFeature(f);
 			if (lm.containFeature(f))
