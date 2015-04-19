@@ -33,4 +33,5 @@ public abstract class AbstractFeatureGenerator implements Serializable{
 	public float decisionValue(WeightVector wv, IInstance x, IStructure y) {
 		return wv.dotProduct(getFeatureVector(x, y));
 	}
+
 }
