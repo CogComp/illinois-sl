@@ -101,6 +101,16 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 
 	}
 
+	private void addInBetweenPOS(int head, int i, DepInst sent,
+			List<String> featureMap) {
+		int low = head > i ? i : head;
+		int high = head < i ? i : head;
+		for (int k = low + 1; k < high; k++) {
+			featureMap.add("headpos_" + sent.pos[head] + "_bwpos_" + k + "_"
+					+ sent.pos[k] + "_modifierpos_" + sent.pos[i]);
+		}
+	}
+
 	private void addDirectionalFeats(int head, int i, DepInst sent,
 			List<String> featureMap) {
 		boolean attR = i < head ? false : true;
@@ -140,7 +150,7 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 		addBigramFeats(head, i, sent, featureMap);
 		addSurroundingPOS(head, i, sent, featureMap);
 		addDirectionalFeats(head, i, sent, featureMap);
-
+		addInBetweenPOS(head, i, sent, featureMap);
 		FeatureVectorBuffer fv = new FeatureVectorBuffer();
 		for (String f : featureMap) {
 			if (lm.isAllowNewFeatures())
