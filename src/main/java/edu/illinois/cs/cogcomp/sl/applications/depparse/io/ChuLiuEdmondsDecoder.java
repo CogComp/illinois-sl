@@ -22,8 +22,7 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	private static final long serialVersionUID = -7033487235520156024L;
 	private DepFeatureGenerator feat;
 
-	public ChuLiuEdmondsDecoder(Lexiconer lm,
-			AbstractFeatureGenerator featureGenerator) {
+	public ChuLiuEdmondsDecoder(	AbstractFeatureGenerator featureGenerator) {
 		feat = (DepFeatureGenerator) featureGenerator;
 	}
 
@@ -102,5 +101,8 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 		}
 		return loss;
 	}
-
+	@Override
+	public Object clone() {
+		return new ChuLiuEdmondsDecoder(feat);
+	}
 }

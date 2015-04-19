@@ -39,17 +39,16 @@ public abstract class MainClass {
 	public static void main(String[] args) throws Exception {
 
 		// System.out.println(problem.size());
-		if(args.length!=1)
-		{
+		if (args.length != 1) {
 			System.out.println("usage: <config file>");
 			System.exit(-1);
 		}
 		SLModel model = train(args[0]);
 		model.saveModel("trained.model");
 		System.out.println("Testing on Training Data");
-		test("trained.model","data/depparse/english_train.conll");
+		test("trained.model", "data/depparse/english_train.conll");
 		System.out.println("Testing on Test Data");
-		test("trained.model","data/depparse/english_test.conll");
+		test("trained.model", "data/depparse/english_test.conll");
 	}
 
 	static SLProblem getStructuredData(String filepath) throws IOException {
@@ -59,7 +58,7 @@ public abstract class MainClass {
 		DependencyInstance instance = depReader.getNext();
 		while (instance != null) {
 			Pair<IInstance, IStructure> pair = getSLPair(instance);
-//			getParseTree(instance);
+			// getParseTree(instance);
 			problem.addExample(pair.getFirst(), pair.getSecond());
 			instance = depReader.getNext();
 		}
@@ -76,8 +75,7 @@ public abstract class MainClass {
 		pre_extract(model, problem);
 		// extraction done
 		System.out.println(model.lm.getNumOfFeature());
-		model.infSolver = new ChuLiuEdmondsDecoder(model.lm,
-				model.featureGenerator);
+		model.infSolver = new ChuLiuEdmondsDecoder(model.featureGenerator);
 		SLParameters para = new SLParameters();
 		para.loadConfigFile(configFilePath);
 		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
@@ -88,24 +86,27 @@ public abstract class MainClass {
 		return model;
 	}
 
-	public static void test(String modelPath, String testDataPath) throws Exception{
+	public static void test(String modelPath, String testDataPath)
+			throws Exception {
 		SLModel model = SLModel.loadModel(modelPath);
 		SLProblem sp = getStructuredData(testDataPath);
 		double acc = 0.0;
 		double total = 0.0;
 
 		for (int i = 0; i < sp.instanceList.size(); i++) {
-			DepInst sent =(DepInst) sp.instanceList.get(i);
+			DepInst sent = (DepInst) sp.instanceList.get(i);
 			DepStruct gold = (DepStruct) sp.goldStructureList.get(i);
-			DepStruct prediction = (DepStruct) model.infSolver.getBestStructure(model.wv, sent);
+			DepStruct prediction = (DepStruct) model.infSolver
+					.getBestStructure(model.wv, sent);
 			IntPair tmp = evaluate(sent, gold, prediction);
-			acc+=tmp.getFirst();
-			total+=tmp.getSecond();
+			acc += tmp.getFirst();
+			total += tmp.getSecond();
 		}
-		System.out.println("acc "+acc);
-		System.out.println("total "+total);
+		System.out.println("acc " + acc);
+		System.out.println("total " + total);
 		System.out.println("Done with testing!");
 	}
+
 	static IntPair evaluate(DepInst sent, DepStruct gold, DepStruct pred) {
 		int instanceLength = sent.size();
 		int[] predHeads = pred.heads;
