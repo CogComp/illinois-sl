@@ -70,7 +70,9 @@ public abstract class DependencyReader {
 		// System.out.println(problem.size());
 		SLModel model = train("config/DCD.config");
 		model.saveModel("trained.model");
-//		test("trained.model","data/depparse/english_train.conll");
+		System.out.println("Testing on Training Data");
+		test("trained.model","data/depparse/english_train.conll");
+		System.out.println("Testing on Test Data");
 		test("trained.model","data/depparse/english_test.conll");
 	}
 
@@ -152,18 +154,18 @@ public abstract class DependencyReader {
 		}
 	}
 
-//	public static void getParseTree(DependencyInstance instance) {
-//		String[] labs = instance.deprels;
-//		int[] heads = instance.heads;
-//
-//		StringBuffer spans = new StringBuffer(heads.length * 5);
-//		for (int i = 1; i < heads.length; i++) {
-//			spans.append(heads[i]).append("|").append(i).append(":")
-//					.append(labs[i]).append(" ");
-//		}
-//		instance.actParseTree = spans.substring(0, spans.length() - 1);
-//		System.out.println(instance.actParseTree);
-//	}
+	public static void getParseTree(DependencyInstance instance) {
+		String[] labs = instance.deprels;
+		int[] heads = instance.heads;
+
+		StringBuffer spans = new StringBuffer(heads.length * 5);
+		for (int i = 1; i < heads.length; i++) {
+			spans.append(heads[i]).append("|").append(i).append(":")
+					.append(labs[i]).append(" ");
+		}
+		instance.actParseTree = spans.substring(0, spans.length() - 1);
+		System.out.println(instance.actParseTree);
+	}
 
 	private static Pair<IInstance, IStructure> getSLPair(
 			DependencyInstance instance) {
