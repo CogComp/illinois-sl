@@ -34,41 +34,16 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
-public abstract class DependencyReader {
-
-	protected BufferedReader inputReader;
-
-	protected boolean labeled = true;
-
-	protected boolean confScores = false;
-
-	public boolean startReading(String file) throws IOException {
-		inputReader = new BufferedReader(new InputStreamReader(
-				new FileInputStream(file), "UTF8"));
-		return labeled;
-	}
-
-	public boolean isLabeled() {
-		return labeled;
-	}
-
-	public abstract DependencyInstance getNext() throws IOException;
-
-	protected abstract boolean fileContainsLabels(String filename)
-			throws IOException;
-
-	
-	protected String normalize(String s) {
-		if (s.matches("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+"))
-			return "<num>";
-
-		return s;
-	}
+public abstract class MainClass {
 
 	public static void main(String[] args) throws Exception {
 
 		// System.out.println(problem.size());
-		SLModel model = train("config/DCD.config");
+		if(args.length!=1)
+		{
+			System.out.println("usage: <config file>");
+		}
+		SLModel model = train(args[0]);
 		model.saveModel("trained.model");
 		System.out.println("Testing on Training Data");
 		test("trained.model","data/depparse/english_train.conll");

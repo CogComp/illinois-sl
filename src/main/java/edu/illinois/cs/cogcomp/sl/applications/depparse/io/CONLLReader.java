@@ -13,13 +13,14 @@
 package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.features.RelationalFeature;
-
 
 /**
  * A reader for files in CoNLL format.
@@ -32,91 +33,104 @@ import edu.illinois.cs.cogcomp.sl.applications.depparse.features.RelationalFeatu
  * @version $Id: CONLLReader.java 137 2013-09-10 09:33:47Z wyldfire $
  * @see mstparser.io.DependencyReader
  */
-public class CONLLReader extends DependencyReader {
+public class CONLLReader {
 
-  public CONLLReader() {
-	  
-  }
+	public CONLLReader() {
 
-  @Override
-  public DependencyInstance getNext() throws IOException {
+	}
 
-    ArrayList<String[]> lineList = new ArrayList<String[]>();
+	protected BufferedReader inputReader;
+	protected boolean labeled = true;
 
-    String line = inputReader.readLine();
-    while (line != null && !line.equals("") && !line.startsWith("*")) {
-      lineList.add(line.split("\t"));
-      line = inputReader.readLine();
-    }
+	protected boolean confScores = false;
 
-    int length = lineList.size();
+	public DependencyInstance getNext() throws IOException {
 
-    if (length == 0) {
-      inputReader.close();
-      return null;
-    }
+		ArrayList<String[]> lineList = new ArrayList<String[]>();
 
-    String[] forms = new String[length + 1]; // +1 for the 0 root
-    String[] lemmas = new String[length + 1];
-    String[] cpos = new String[length + 1];
-    String[] pos = new String[length + 1];
-    String[][] feats = new String[length + 1][];
-    String[] deprels = new String[length + 1];
-    int[] heads = new int[length + 1];
-    double[] confscores = confScores ? new double[length + 1] : null;
+		String line = inputReader.readLine();
+		while (line != null && !line.equals("") && !line.startsWith("*")) {
+			lineList.add(line.split("\t"));
+			line = inputReader.readLine();
+		}
 
-    forms[0] = "<root>";
-    lemmas[0] = "<root-LEMMA>";
-    cpos[0] = "<root-CPOS>";
-    pos[0] = "<root-POS>";
-    deprels[0] = "<no-type>";
-    heads[0] = -1; 
-    // head idx range from 1 to sent.size()
-    if (confScores)
-      confscores[0] = 1;
+		int length = lineList.size();
 
-    for (int i = 0; i < length; i++) {
-      String[] info = lineList.get(i);
-      forms[i + 1] = normalize(info[1]);
-      lemmas[i + 1] = normalize(info[2]);
-      cpos[i + 1] = info[3];
-      pos[i + 1] = info[4];
-      feats[i + 1] = info[5].split("\\|");
-      deprels[i + 1] = labeled ? info[7] : "<no-type>";
-      heads[i + 1] = Integer.parseInt(info[6]);
-      if (confScores)
-        confscores[i + 1] = Double.parseDouble(info[10]);
-    }
+		if (length == 0) {
+			inputReader.close();
+			return null;
+		}
 
-    feats[0] = new String[feats[1].length];
-    for (int i = 0; i < feats[1].length; i++)
-      feats[0][i] = "<root-feat>" + i;
+		String[] forms = new String[length + 1]; // +1 for the 0 root
+		String[] lemmas = new String[length + 1];
+		String[] cpos = new String[length + 1];
+		String[] pos = new String[length + 1];
+		String[][] feats = new String[length + 1][];
+		String[] deprels = new String[length + 1];
+		int[] heads = new int[length + 1];
+		double[] confscores = confScores ? new double[length + 1] : null;
 
-    ArrayList<RelationalFeature> rfeats = new ArrayList<RelationalFeature>();
+		forms[0] = "<root>";
+		lemmas[0] = "<root-LEMMA>";
+		cpos[0] = "<root-CPOS>";
+		pos[0] = "<root-POS>";
+		deprels[0] = "<no-type>";
+		heads[0] = -1;
+		// head idx range from 1 to sent.size()
+		if (confScores)
+			confscores[0] = 1;
 
-    while (line != null && !line.equals("")) {
-      rfeats.add(new RelationalFeature(length, line, inputReader));
-      line = inputReader.readLine();
-    }
+		for (int i = 0; i < length; i++) {
+			String[] info = lineList.get(i);
+			forms[i + 1] = normalize(info[1]);
+			lemmas[i + 1] = normalize(info[2]);
+			cpos[i + 1] = info[3];
+			pos[i + 1] = info[4];
+			feats[i + 1] = info[5].split("\\|");
+			deprels[i + 1] = labeled ? info[7] : "<no-type>";
+			heads[i + 1] = Integer.parseInt(info[6]);
+			if (confScores)
+				confscores[i + 1] = Double.parseDouble(info[10]);
+		}
 
-    RelationalFeature[] rfeatsList = new RelationalFeature[rfeats.size()];
-    rfeats.toArray(rfeatsList);
+		feats[0] = new String[feats[1].length];
+		for (int i = 0; i < feats[1].length; i++)
+			feats[0][i] = "<root-feat>" + i;
 
-    return new DependencyInstance(forms, lemmas, cpos, pos, feats, deprels, heads, rfeatsList,
-            confscores);
+		ArrayList<RelationalFeature> rfeats = new ArrayList<RelationalFeature>();
 
-  }
+		while (line != null && !line.equals("")) {
+			rfeats.add(new RelationalFeature(length, line, inputReader));
+			line = inputReader.readLine();
+		}
 
-  @Override
-  protected boolean fileContainsLabels(String file) throws IOException {
-    BufferedReader in = new BufferedReader(new FileReader(file));
-    String line = in.readLine();
-    in.close();
+		RelationalFeature[] rfeatsList = new RelationalFeature[rfeats.size()];
+		rfeats.toArray(rfeatsList);
 
-    if (line.trim().length() > 0)
-      return true;
-    else
-      return false;
-  }
+		return new DependencyInstance(forms, lemmas, cpos, pos, feats, deprels,
+				heads, rfeatsList, confscores);
 
+	}
+
+	protected boolean fileContainsLabels(String file) throws IOException {
+		BufferedReader in = new BufferedReader(new FileReader(file));
+		String line = in.readLine();
+		in.close();
+
+		if (line.trim().length() > 0)
+			return true;
+		else
+			return false;
+	}
+	protected String normalize(String s) {
+		if (s.matches("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+"))
+			return "<num>";
+
+		return s;
+	}
+	public boolean startReading(String file) throws IOException {
+		inputReader = new BufferedReader(new InputStreamReader(
+				new FileInputStream(file), "UTF8"));
+		return labeled;
+	}
 }
