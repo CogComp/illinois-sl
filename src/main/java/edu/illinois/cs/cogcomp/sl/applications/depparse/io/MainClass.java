@@ -42,6 +42,7 @@ public abstract class MainClass {
 		if(args.length!=1)
 		{
 			System.out.println("usage: <config file>");
+			System.exit(-1);
 		}
 		SLModel model = train(args[0]);
 		model.saveModel("trained.model");
