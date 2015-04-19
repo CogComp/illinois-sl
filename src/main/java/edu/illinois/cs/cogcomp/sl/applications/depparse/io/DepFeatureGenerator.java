@@ -36,12 +36,7 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 	@Override
 	public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
 		DepInst sent = (DepInst) x;
-		// System.out.println("sent size " + sent.size());
 		DepStruct tree = (DepStruct) y;
-		// for(int i=0;i<tree.heads.length;i++)
-		// {
-		// System.out.println(tree.heads[i]);
-		// }
 		return extractFeatures(sent, tree);
 	}
 
@@ -57,7 +52,6 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 		FeatureVectorBuffer fb = new FeatureVectorBuffer();
 		for (int i = 1; i <= sent.size(); i++) {
 			int head = tree.heads[i];
-			// System.out.println("handling "+head+" "+(i+1));
 			IFeatureVector fv = getEdgeFeatures(head, i, sent);
 			fb.addFeature(fv);
 		}

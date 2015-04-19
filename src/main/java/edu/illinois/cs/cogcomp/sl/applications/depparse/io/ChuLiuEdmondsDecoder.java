@@ -20,9 +20,10 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	 * 
 	 */
 	private static final long serialVersionUID = -7033487235520156024L;
-	private DepFeatureGenerator feat;
 
-	public ChuLiuEdmondsDecoder(	AbstractFeatureGenerator featureGenerator) {
+	private DepFeatureGenerator feat; // for getting edge features
+
+	public ChuLiuEdmondsDecoder(AbstractFeatureGenerator featureGenerator) {
 		feat = (DepFeatureGenerator) featureGenerator;
 	}
 
@@ -36,15 +37,15 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	public IStructure getLossAugmentedBestStructure(WeightVector weight,
 			IInstance ins, IStructure goldStructure) throws Exception {
 		DepInst sent = (DepInst) ins;
-//		System.out.println(sent.size());
 		DepStruct gold = goldStructure != null ? (DepStruct) goldStructure
 				: null;
-		// TODO edge matrix dims?
-		double[][] edgeScore = new double[sent.size()+1][sent.size()+1];
+		// edgeScore[i][j] score of edge from head i to modifier j
+		// i (head) varies from 0..n, while j (token idx) varies over 1..n
+		double[][] edgeScore = new double[sent.size() + 1][sent.size() + 1];
 		initEdgeScores(edgeScore);
+
 		for (int head = 0; head <= sent.size(); head++) {
 			for (int j = 1; j <= sent.size(); j++) {
-//				System.out.println(head+" "+j);
 				IFeatureVector fv = feat.getEdgeFeatures(head, j, sent);
 				// edge from head i to modifier j
 				edgeScore[head][j] = weight.dotProduct(fv);
@@ -59,33 +60,33 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 	}
 
 	private void initEdgeScores(double[][] edgeScore) {
-		// TODO Auto-generated method stub
-		for(int i=0;i<edgeScore.length;i++)
-			for(int j=0;j<edgeScore[0].length;j++)
-			{
-				edgeScore[i][j]=Float.NEGATIVE_INFINITY;
+		for (int i = 0; i < edgeScore.length; i++)
+			for (int j = 0; j < edgeScore[0].length; j++) {
+				edgeScore[i][j] = Float.NEGATIVE_INFINITY;
 			}
 	}
 
 	/**
 	 * takes matrix[i][j] with directed edge i-->j scores and find the maximum
-	 * aborescence using Chu-Liu-Edmonds algorithm
+	 * aborescence using Chu-Liu-Edmonds algorithm. Thanks to code from
+	 * https://github.com/sammthomson/ChuLiuEdmonds
 	 * 
 	 * @param edgeScore
 	 * @return
 	 */
 	private DepStruct ChuLiuEdmonds(double[][] edgeScore) {
 		DenseWeightedGraph<Integer> dg = DenseWeightedGraph.from(edgeScore);
-		Weighted<Arborescence<Integer>> weightedSpanningTree = ChuLiuEdmonds.getMaxArborescence(dg, 0);
-		Map<Integer, Integer> node2parent = weightedSpanningTree.val.parents;
+		Weighted<Arborescence<Integer>> weightedSpanningTree = ChuLiuEdmonds
+				.getMaxArborescence(dg, 0);
 		
-		int[] head=new int[edgeScore.length];
-		String[] deprels=new String[edgeScore[0].length];
-		for(Integer node:node2parent.keySet())
-		{
-			head[node]=node2parent.get(node);
+		Map<Integer, Integer> node2parent = weightedSpanningTree.val.parents;
+
+		int[] head = new int[edgeScore.length];
+		String[] deprels = new String[edgeScore[0].length];
+		for (Integer node : node2parent.keySet()) {
+			head[node] = node2parent.get(node);
 		}
-		return new DepStruct(head,deprels);
+		return new DepStruct(head, deprels);
 	}
 
 	@Override
@@ -101,6 +102,8 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 		}
 		return loss;
 	}
+
+	// For using DEMIDCD
 	@Override
 	public Object clone() {
 		return new ChuLiuEdmondsDecoder(feat);
