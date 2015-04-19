@@ -18,6 +18,10 @@ public class DepInst implements IInstance {
 		cpos = instance.cpostags;
 	}
 
+	/***
+	 * # of tokens in the sentence
+	 * @return
+	 */
 	public int size() {
 		return lemmas.length - 1; // this is the true size, after removing the 0
 									// root

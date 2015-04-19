@@ -1,5 +1,6 @@
 package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,9 +19,13 @@ import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
  * @author Shyam
  *
  */
-public class DepFeatureGenerator extends AbstractFeatureGenerator {
+public class DepFeatureGenerator extends AbstractFeatureGenerator implements Serializable{
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8246812640996043593L;
 	private Lexiconer lm;
 
 	public DepFeatureGenerator(Lexiconer lm) {
@@ -49,10 +54,10 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator {
 	 */
 	private IFeatureVector extractFeatures(DepInst sent, DepStruct tree) {
 		FeatureVectorBuffer fb = new FeatureVectorBuffer();
-		for (int i = 0; i < sent.size(); i++) {
-			int head = tree.heads[i + 1];
+		for (int i = 1; i <= sent.size(); i++) {
+			int head = tree.heads[i];
 			// System.out.println("handling "+head+" "+(i+1));
-			IFeatureVector fv = getEdgeFeatures(head, i + 1, sent);
+			IFeatureVector fv = getEdgeFeatures(head, i, sent);
 			fb.addFeature(fv);
 		}
 		return fb.toFeatureVector();
@@ -107,7 +112,8 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator {
 
 	/**
 	 * returns f(i,j)
-	 * 
+	 * head idx from 0..n
+	 * i idx from 1..n
 	 * @param head
 	 * @param i
 	 * @param sent

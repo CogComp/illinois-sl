@@ -70,7 +70,8 @@ public class CONLLReader extends DependencyReader {
     cpos[0] = "<root-CPOS>";
     pos[0] = "<root-POS>";
     deprels[0] = "<no-type>";
-    heads[0] = -1;
+    heads[0] = -1; 
+    // head idx range from 1 to sent.size()
     if (confScores)
       confscores[0] = 1;
 

@@ -57,6 +57,7 @@ public abstract class DependencyReader {
 	protected abstract boolean fileContainsLabels(String filename)
 			throws IOException;
 
+	
 	protected String normalize(String s) {
 		if (s.matches("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+"))
 			return "<num>";
@@ -67,7 +68,10 @@ public abstract class DependencyReader {
 	public static void main(String[] args) throws Exception {
 
 		// System.out.println(problem.size());
-		train("config/DCD.config");
+		SLModel model = train("config/DCD.config");
+		model.saveModel("trained.model");
+		test("trained.model","data/depparse/english_train.conll");
+//		test("trained.model","data/depparse/english_test.conll");
 	}
 
 	static SLProblem getStructuredData(String filepath) throws IOException {
@@ -84,28 +88,27 @@ public abstract class DependencyReader {
 		return problem;
 	}
 
-	public static void train(String configFilePath) throws Exception {
+	public static SLModel train(String configFilePath) throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
 		SLProblem problem = getStructuredData("data/depparse/english_train.conll");
 		pre_extract(model, problem);
 		// extraction done
-		model.lm.setAllowNewFeatures(false);
 		System.out.println(model.lm.getNumOfFeature());
 		model.infSolver = new ChuLiuEdmondsDecoder(model.lm,
 				model.featureGenerator);
-		System.exit(-1);
 		SLParameters para = new SLParameters();
 		para.loadConfigFile(configFilePath);
 		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
 		model.wv = learner.train(problem);
-		model.saveModel("trained.model");
+		model.lm.setAllowNewFeatures(false);
+		return model;
 	}
 
-	public void test(String modelPath, String testDataPath) throws Exception{
+	public static void test(String modelPath, String testDataPath) throws Exception{
 		SLModel model = SLModel.loadModel(modelPath);
 		SLProblem sp = getStructuredData(testDataPath);
 		double acc = 0.0;
@@ -119,16 +122,18 @@ public abstract class DependencyReader {
 			acc+=tmp.getFirst();
 			total+=tmp.getSecond();
 		}
+		System.out.println("acc "+acc);
+		System.out.println("total "+total);
 		System.out.println("Done with testing!");
 	}
-	IntPair evaluate(DepInst sent, DepStruct gold, DepStruct pred) {
-		int instanceLength = sent.size() + 1;
+	static IntPair evaluate(DepInst sent, DepStruct gold, DepStruct pred) {
+		int instanceLength = sent.size();
 		int[] predHeads = pred.heads;
 		int[] goldHeads = gold.heads;
 		int corr = 0; // we only count attachment score, not edge label
 		int total = 0;
 
-		for (int i = 1; i < instanceLength; i++) {
+		for (int i = 1; i <= instanceLength; i++) {
 			if (predHeads[i] == goldHeads[i]) {
 				corr++;
 			}
