@@ -108,6 +108,10 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 				+ "_modifierpos_" + sent.pos[i]);
 		featureMap.add("headword_" + sent.lemmas[head] + "_" + attR
 				+ "_modifierword_" + sent.lemmas[i]);
+		featureMap.add("headword_" + sent.lemmas[head] + "_" + attR
+				+ "_modifierpos_" + sent.pos[i]);
+		featureMap.add("headpos_" + sent.pos[head] + "_" + attR
+				+ "_modifierword_" + sent.lemmas[i]);
 
 	}
 
