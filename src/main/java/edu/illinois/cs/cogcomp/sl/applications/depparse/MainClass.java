@@ -10,7 +10,7 @@
 // available from their website at http://www.opensource.org.
 ///////////////////////////////////////////////////////////////////////////////
 
-package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
+package edu.illinois.cs.cogcomp.sl.applications.depparse;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -20,7 +20,8 @@ import java.util.HashMap;
 
 import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
-import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.base.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.io.CONLLReader;
 import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
 import edu.illinois.cs.cogcomp.sl.applications.tutorial.ViterbiInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;

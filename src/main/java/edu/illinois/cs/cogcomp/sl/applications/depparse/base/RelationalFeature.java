@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.applications.depparse.features;
+package edu.illinois.cs.cogcomp.sl.applications.depparse.base;
 
 import java.io.BufferedReader;
 import java.io.IOException;

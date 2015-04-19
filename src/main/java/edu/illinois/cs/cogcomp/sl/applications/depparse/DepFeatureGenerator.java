@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
+package edu.illinois.cs.cogcomp.sl.applications.depparse;
 
 import java.io.Serializable;
 import java.util.ArrayList;

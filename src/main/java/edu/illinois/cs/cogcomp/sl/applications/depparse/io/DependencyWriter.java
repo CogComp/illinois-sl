@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.base.DependencyInstance;
 
 
 /**

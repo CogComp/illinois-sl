@@ -1,6 +1,6 @@
-package edu.illinois.cs.cogcomp.sl.applications.depparse.io;
+package edu.illinois.cs.cogcomp.sl.applications.depparse;
 
-import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.base.DependencyInstance;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 
