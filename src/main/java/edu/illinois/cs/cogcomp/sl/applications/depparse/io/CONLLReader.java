@@ -50,7 +50,7 @@ public class CONLLReader {
 
 		String line = inputReader.readLine();
 		while (line != null && !line.equals("") && !line.startsWith("*")) {
-			lineList.add(line.split("\t"));
+			lineList.add(line.split("\\s+"));
 			line = inputReader.readLine();
 		}
 
