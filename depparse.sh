@@ -5,7 +5,9 @@
 
 CP="./config/:./target/classes/:./target/dependency/*"
 
-OPTIONS="-Xss40m -ea -cp $CP"
+MEMORY="-Xmx20g -XX:MaxPermSize=500m"
+
+OPTIONS="$MEMORY -Xss40m -ea -cp $CP"
 PACKAGE_PREFIX="edu.illinois.cs.cogcomp"
 
 MAIN="$PACKAGE_PREFIX.sl.applications.depparse.MainClass"
