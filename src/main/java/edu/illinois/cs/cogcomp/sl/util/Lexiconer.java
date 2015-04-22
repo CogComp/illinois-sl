@@ -1,5 +1,7 @@
 package edu.illinois.cs.cogcomp.sl.util;
 
+import gnu.trove.map.hash.TIntIntHashMap;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Lexiconer implements Serializable {
 
-	private static final long serialVersionUID = 1L;
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3976531365997767401L;
 	// be careful, start from zero
 	Map<String, Integer> feaStr2IdMap = null;
 	Map<Integer, String> feaId2StrMap = null;
@@ -22,6 +27,7 @@ public class Lexiconer implements Serializable {
 	Map<String, Integer> LabelStr2IdMap = null;
 	Map<Integer, String> Id2LabelStrMap = null;
 
+	TIntIntHashMap featureCounts = null;
 	// It is truly important to have this. look at the comment in the
 	// constructor
 	public static final String biasStr = "*-global-bias-*";
@@ -33,7 +39,7 @@ public class Lexiconer implements Serializable {
 	 * zero. We preview the 0 feature in the constructor to prevent the user
 	 * tries to use feature 0
 	 */
-	public Lexiconer() {
+	public Lexiconer(boolean maintain_count) {
 		feaStr2IdMap = new ConcurrentHashMap<String, Integer>();
 		feaId2StrMap = new ConcurrentHashMap<Integer, String>();
 		LabelStr2IdMap = new ConcurrentHashMap<String, Integer>();
@@ -55,9 +61,16 @@ public class Lexiconer implements Serializable {
 		// In JLIS-sequence, we use this Lexmanager inside the structural lex
 		// manger
 		// Therefore, the zero index will still be not used by regular features
-
+		if(maintain_count)
+		{
+			featureCounts = new TIntIntHashMap();
+		}
 	}
-
+	
+	public Lexiconer()
+	{
+		this(false);
+	}
 	/**
 	 * The function that views all of the label names. Should always call this
 	 * function before using {@link Lexiconer#hasLabel(String)},
@@ -223,5 +236,14 @@ public class Lexiconer implements Serializable {
 	 */
 	public boolean isAllowNewFeatures() {
 		return allowNewFeatures;
+	}
+	
+	public synchronized void countFeature(int featureId) {
+		synchronized (featureCounts) {
+			if (!featureCounts.containsKey(featureId))
+				featureCounts.put(featureId, 1);
+			else
+				featureCounts.put(featureId, featureCounts.get(featureId) + 1);
+		}
 	}
 }
