@@ -133,4 +133,8 @@ public class CONLLReader {
 				new FileInputStream(file), "UTF8"));
 		return labeled;
 	}
+	
+	public void close() throws IOException{
+		inputReader.close();
+	}
 }

@@ -54,6 +54,7 @@ public class MainClass {
 			problem.addExample(pair.getFirst(), pair.getSecond());
 			instance = depReader.getNext();
 		}
+		depReader.close();
 		return problem;
 	}
 
