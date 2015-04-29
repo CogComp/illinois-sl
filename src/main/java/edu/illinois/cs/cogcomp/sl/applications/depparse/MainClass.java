@@ -76,6 +76,7 @@ public class MainClass {
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
 		model.wv = learner.train(problem);
+		printMemoryUsage();
 		model.lm.setAllowNewFeatures(false);
 		model.saveModel(modelFile);
 		return model;
