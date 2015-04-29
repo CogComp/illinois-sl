@@ -88,6 +88,7 @@ public class MainClass {
 			}
 		});
 		model.wv = learner.train(problem);
+		printMemoryUsage();
 		model.lm.setAllowNewFeatures(false);
 		model.saveModel(modelFile);
 		return model;
