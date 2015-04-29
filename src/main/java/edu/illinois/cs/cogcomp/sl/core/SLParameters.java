@@ -148,7 +148,11 @@ public class SLParameters implements Serializable {
 
 	public boolean DECAY_LEARNING_RATE = false;
 
-	public static int HAHSING_MASK = 0xFFFFFFFF;
+	/*
+	 * 32 bit mask for doing feature hashing. Turn off bits to cause collisions in feature hashing.
+	 * By default all bits are on (no hashing).
+	 */
+	public static int HASHING_MASK = 0xFFFFFFFF;
 
 	// -----------------------------------------------------------------------------------
 	// Read Parameters from a config file
@@ -208,6 +212,6 @@ public class SLParameters implements Serializable {
 				"DECAY_LEARNING_RATE", "false"));
 		
 		int b = Integer.parseInt(props.getProperty("NUMBER_OF_FEATURE_BITS","30"));
-		HAHSING_MASK = (1<<b)-1;
+		HASHING_MASK = (1<<b)-1;
 	}
 }

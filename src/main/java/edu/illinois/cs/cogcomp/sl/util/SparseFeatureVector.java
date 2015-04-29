@@ -90,7 +90,7 @@ public class SparseFeatureVector implements IFeatureVector {
 			indices = new int[fIdxArray.length];
 			values = new float[fValArray.length];
 			for (int i = 0; i < fIdxArray.length; i++) {
-				indices[i] = fIdxArray[i] & SLParameters.HAHSING_MASK;
+				indices[i] = fIdxArray[i] & SLParameters.HASHING_MASK;
 				values[i] = (float) fValArray[i];
 			}
 			squareL2Norm = 0;
@@ -134,7 +134,7 @@ public class SparseFeatureVector implements IFeatureVector {
 		
 		indices = new int[fIdxArray.length];
 		for (int i = 0; i < fIdxArray.length; i++) {
-			indices[i] = fIdxArray[i] & SLParameters.HAHSING_MASK;
+			indices[i] = fIdxArray[i] & SLParameters.HASHING_MASK;
 		}
 		values = new float[fValueArray.length];
 		System.arraycopy(fValueArray, 0, values, 0, indices.length);

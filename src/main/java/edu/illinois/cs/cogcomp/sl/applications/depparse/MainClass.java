@@ -68,6 +68,7 @@ public class MainClass {
 		model.infSolver = new ChuLiuEdmondsDecoder(model.featureGenerator);
 		SLParameters para = new SLParameters();
 		para.loadConfigFile(configFilePath);
+		System.out.println(para.HASHING_MASK);
 		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
