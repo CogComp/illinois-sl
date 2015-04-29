@@ -150,7 +150,7 @@ public class SLParameters implements Serializable {
 
 	/*
 	 * 32 bit mask for doing feature hashing. Turn off bits to cause collisions in feature hashing.
-	 * By default all bits are on (no hashing).
+	 * When loading a config file, we use 30bits for feature hashing by default.
 	 */
 	public static int HASHING_MASK = 0xFFFFFFFF;
 

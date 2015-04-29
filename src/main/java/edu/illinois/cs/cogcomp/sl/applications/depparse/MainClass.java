@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.NumberFormat;
 import java.util.HashMap;
 
 import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
@@ -53,7 +54,8 @@ public class MainClass {
 		}
 		return problem;
 	}
-	@CommandDescription(description="String trainFile, String configFilePath,	String modelFile")
+
+	@CommandDescription(description = "String trainFile, String configFilePath,	String modelFile")
 	public static SLModel train(String trainFile, String configFilePath,
 			String modelFile) throws Exception {
 		SLModel model = new SLModel();
@@ -64,6 +66,7 @@ public class MainClass {
 		SLProblem problem = getStructuredData(trainFile);
 		pre_extract(model, problem);
 		// extraction done
+		printMemoryUsage();
 		System.out.println(model.lm.getNumOfFeature());
 		model.infSolver = new ChuLiuEdmondsDecoder(model.featureGenerator);
 		SLParameters para = new SLParameters();
@@ -77,7 +80,8 @@ public class MainClass {
 		model.saveModel(modelFile);
 		return model;
 	}
-	@CommandDescription(description="String modelFile, String testFile")
+
+	@CommandDescription(description = "String modelFile, String testFile")
 	public static void test(String modelPath, String testDataPath)
 			throws Exception {
 		SLModel model = SLModel.loadModel(modelPath);
@@ -116,6 +120,7 @@ public class MainClass {
 	}
 
 	private static void pre_extract(SLModel model, SLProblem problem) {
+		System.out.println("Pre-extracting features ...");
 		// there shld be a better way, feature extraction
 		for (Pair<IInstance, IStructure> p : problem) {
 			model.featureGenerator
@@ -130,4 +135,20 @@ public class MainClass {
 		return new Pair<IInstance, IStructure>(ins, d);
 	}
 
+	public static void printMemoryUsage() {
+		Runtime runtime = Runtime.getRuntime();
+		NumberFormat nformat = NumberFormat.getInstance();
+		StringBuilder sb = new StringBuilder();
+		long maxMemory = runtime.maxMemory() / (1024 * 1024);
+		long allocatedMemory = runtime.totalMemory() / (1024 * 1024);
+		long freeMemory = runtime.freeMemory() / (1024 * 1024);
+		long usedMemory = allocatedMemory - freeMemory;
+
+		System.out.println("max memory: " + nformat.format(maxMemory) + " MB");
+		System.out.println("used-up memory: " + nformat.format(usedMemory)
+				+ " MB");
+		System.out.println("total free memory: "
+				+ nformat.format(freeMemory + (maxMemory - allocatedMemory))
+				+ " MB");
+	}
 }
