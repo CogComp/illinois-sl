@@ -55,7 +55,7 @@ public class MainClass {
 			instance = depReader.getNext();
 		}
 		depReader.close();
-		System.out.println("# of dependency instances: "+problem.size());
+		System.out.println("# of dependency instances: " + problem.size());
 		return problem;
 	}
 
@@ -71,7 +71,7 @@ public class MainClass {
 		pre_extract(model, problem);
 		// extraction done
 		printMemoryUsage();
-		System.out.println("# of features: "+model.lm.getNumOfFeature());
+		System.out.println("# of features: " + model.lm.getNumOfFeature());
 		model.infSolver = new ChuLiuEdmondsDecoder(model.featureGenerator);
 		SLParameters para = new SLParameters();
 		para.loadConfigFile(configFilePath);
@@ -80,7 +80,7 @@ public class MainClass {
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
 		learner.runWhenReportingProgress(new ProgressReportFunction() {
-			
+
 			@Override
 			public void run(WeightVector w, AbstractInferenceSolver inference)
 					throws Exception {
@@ -113,7 +113,7 @@ public class MainClass {
 		}
 		System.out.println("acc " + acc);
 		System.out.println("total " + total);
-		System.out.println("%age correct "+(acc*1.0/total));
+		System.out.println("%age correct " + (acc * 1.0 / total));
 		System.out.println("Done with testing!");
 	}
 
