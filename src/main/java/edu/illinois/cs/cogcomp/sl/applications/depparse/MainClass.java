@@ -16,6 +16,7 @@ import edu.illinois.cs.cogcomp.sl.applications.depparse.base.DependencyInstance;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.io.CONLLReader;
 import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
 import edu.illinois.cs.cogcomp.sl.applications.tutorial.ViterbiInferenceSolver;
+import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
@@ -23,6 +24,7 @@ import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
+import edu.illinois.cs.cogcomp.sl.learner.Learner.ProgressReportFunction;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
@@ -75,8 +77,15 @@ public class MainClass {
 		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
+		learner.runWhenReportingProgress(new ProgressReportFunction() {
+			
+			@Override
+			public void run(WeightVector w, AbstractInferenceSolver inference)
+					throws Exception {
+				printMemoryUsage();
+			}
+		});
 		model.wv = learner.train(problem);
-		printMemoryUsage();
 		model.lm.setAllowNewFeatures(false);
 		model.saveModel(modelFile);
 		return model;
