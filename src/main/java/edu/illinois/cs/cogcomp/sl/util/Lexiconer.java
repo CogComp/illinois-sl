@@ -116,6 +116,16 @@ public class Lexiconer implements Serializable {
 		return LabelStr2IdMap.get(str);
 	}
 
+	
+	public int[] getLabelIds(String[] labels)
+	{
+		int[] ans=new int[labels.length];
+		for(int i=0;i<labels.length;i++)
+		{
+			ans[i]=getLabelId(labels[i]);
+		}
+		return ans;
+	}
 	/**
 	 * Get the name of the label
 	 * 
