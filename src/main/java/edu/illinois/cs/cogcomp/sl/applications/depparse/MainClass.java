@@ -63,6 +63,8 @@ public class MainClass {
 	public static SLModel train(String trainFile, String configFilePath,
 			String modelFile) throws Exception {
 		SLModel model = new SLModel();
+		SLParameters para = new SLParameters();
+		para.loadConfigFile(configFilePath);
 		model.lm = new Lexiconer();
 		if (model.lm.isAllowNewFeatures())
 			model.lm.addFeature("W:unknownword");
@@ -73,9 +75,6 @@ public class MainClass {
 		printMemoryUsage();
 		System.out.println("# of features: " + model.lm.getNumOfFeature());
 		model.infSolver = new ChuLiuEdmondsDecoder(model.featureGenerator);
-		SLParameters para = new SLParameters();
-		para.loadConfigFile(configFilePath);
-		System.out.println(para.HASHING_MASK);
 		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
@@ -152,7 +151,6 @@ public class MainClass {
 	public static void printMemoryUsage() {
 		Runtime runtime = Runtime.getRuntime();
 		NumberFormat nformat = NumberFormat.getInstance();
-		StringBuilder sb = new StringBuilder();
 		long maxMemory = runtime.maxMemory() / (1024 * 1024);
 		long allocatedMemory = runtime.totalMemory() / (1024 * 1024);
 		long freeMemory = runtime.freeMemory() / (1024 * 1024);
