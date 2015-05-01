@@ -43,16 +43,20 @@ public class MainClass {
 		}
 	}
 
-	static SLProblem getStructuredData(String filepath) throws IOException {
+	static SLProblem getStructuredData(String filepath, int sizeLimit) throws IOException {
 		CONLLReader depReader = new CONLLReader();
 		depReader.startReading(filepath);
 		SLProblem problem = new SLProblem();
 		DependencyInstance instance = depReader.getNext();
+		int size=0;
 		while (instance != null) {
 			Pair<IInstance, IStructure> pair = getSLPair(instance);
 			// getParseTree(instance);
 			problem.addExample(pair.getFirst(), pair.getSecond());
+			size++;
 			instance = depReader.getNext();
+			if(size==sizeLimit)
+				break;
 		}
 		depReader.close();
 		System.out.println("# of dependency instances: " + problem.size());
@@ -69,7 +73,7 @@ public class MainClass {
 		if (model.lm.isAllowNewFeatures())
 			model.lm.addFeature("W:unknownword");
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
-		SLProblem problem = getStructuredData(trainFile);
+		SLProblem problem = getStructuredData(trainFile,10000);
 		pre_extract(model, problem);
 		// extraction done
 		printMemoryUsage();
@@ -97,7 +101,7 @@ public class MainClass {
 	public static void test(String modelPath, String testDataPath)
 			throws Exception {
 		SLModel model = SLModel.loadModel(modelPath);
-		SLProblem sp = getStructuredData(testDataPath);
+		SLProblem sp = getStructuredData(testDataPath,-1);
 		double acc = 0.0;
 		double total = 0.0;
 
