@@ -5,7 +5,7 @@
 
 CP="./config/:./target/classes/:./target/dependency/*"
 
-MEMORY="-Xmx20g -XX:MaxPermSize=500m"
+MEMORY="-Xmx8g -XX:MaxPermSize=500m"
 
 OPTIONS="$MEMORY -Xss40m -ea -cp $CP"
 PACKAGE_PREFIX="edu.illinois.cs.cogcomp"
