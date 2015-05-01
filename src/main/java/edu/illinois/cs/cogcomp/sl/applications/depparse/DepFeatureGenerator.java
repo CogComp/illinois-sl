@@ -151,7 +151,7 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 		List<String> fList = new ArrayList<>();
 
 		addUnigramFeats(head, i, sent, fList);
-		addBigramFeats(head, i, sent, fList);
+//		addBigramFeats(head, i, sent, fList);
 		addSurroundingPOS(head, i, sent, fList);
 		addDirectionalFeats(head, i, sent, fList);
 		addInBetweenPOS(head, i, sent, fList);
