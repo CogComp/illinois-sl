@@ -92,7 +92,13 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 			int numUpdate = 0;
 			learningIter = 0;
 			stop = false;
-			for(; learningIter < parameters.MAX_NUM_ITER; learningIter++) {
+			while(true){
+				if(learningIter == parameters.MAX_NUM_ITER)
+					break;
+				if(numNewStructures() < Integer.MAX_VALUE){
+					learningIter++;
+				}
+		//	for(; learningIter < parameters.MAX_NUM_ITER; learningIter++) {
 				Collections.shuffle(examples);
 				StructuredInstanceWithAlphas.L2SolverInfo si = new StructuredInstanceWithAlphas.L2SolverInfo(); // Inner stopping condition.
 									
@@ -145,16 +151,17 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 			logger.info("Done: reach maximal number of iterations: "  + parameters.MAX_NUM_ITER);
 			logger.info("total number of iteration " + learningIter);
 			logger.info("negative dual obj = " + -getDualObjective(
-					examples.toArray(new StructuredInstanceWithAlphas[examples.size()]), wv));
-			
+					examples.toArray(new StructuredInstanceWithAlphas[examples.size()]), wv));	
 		}
+		
 
 		private int numNewStructures() {
 			int totalAddStruct = 0;
 			for(int i = 0; i < numInfThreads; i++){
-				if(numNewStructFromInfThread[i]==-1)
+				if(numNewStructFromInfThread[i]==-1 || totalAddStruct == Integer.MAX_VALUE)
 					totalAddStruct= Integer.MAX_VALUE;
-				totalAddStruct += numNewStructFromInfThread[i];
+				else
+					totalAddStruct += numNewStructFromInfThread[i];
 			}
 			return totalAddStruct;
 		}
