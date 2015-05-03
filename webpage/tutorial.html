@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Illinois-SL Tutorial</title>
-<!-- 2015-02-15 Sun 22:27 -->
+<!-- 2015-05-03 Sun 12:24 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Shyam Upadhyay" />
@@ -215,7 +215,7 @@ for the JavaScript code in this tag.
 \newcommand{\Forall}{\,\forall\,}
 \renewcommand{\Pr}{\mathbb{P}} 
 \renewcommand{\vec}[1]{\mathbf{#1}} 
-
+\renewcommand{\ceiling}[1]{\lceil {#1} \rceil}
 
 \DeclareMathOperator*{\argmin}{\mathbf{arg\,min}}
 \DeclareMathOperator*{\argmax}{\mathbf{arg\,max}}
@@ -588,17 +588,6 @@ for (int i = 0; i &lt; sp.instanceList.size(); i++) {
     }
 }
 </pre>
-<p>
-#* TODO Example 2 - Multiclass Classification
-#\begin{align*}
-#\w = \begin{bmatrix}
-#\w<sub>1</sub> &amp; \w<sub>2</sub> &amp; &ctdot; &amp; \w<sub>M</sub>
-#\end{bmatrix} <br  />
-#&Phi;(\x,i) = \begin{bmatrix}
-#\underbrace{0 \cdots 0}<sub>\text{block 1 to i-1}</sub> &amp; \underbrace{\Phi(\x)}<sub>\text{block i}</sub> &amp; \underbrace{0 \cdots 0}<sub>\text{block i+1 to M}</sub>
-#\end{bmatrix}
-#\end{align*}
-</p>
 </div>
 </div>
 </div>
@@ -608,32 +597,24 @@ for (int i = 0; i &lt; sp.instanceList.size(); i++) {
 <p>
 You can find the source code for the POS tagging example at 'src/main/java/edu/illinois/cs/cogcomp/sl/applications/tutorial'
 in the downloaded package.
-#You can download a small dataset for training the model at &lt;PUT LINK HERE&gt;.
 You can also find a simple script to run the POS tagging example at 'scripts/run<sub>tutorial</sub>.sh'.
-It will train your model, and test it on a test dataset.
+It will train your model, and test it on a toy dataset.
 </p>
 </div>
 </div>
-
 <div id="outline-container-sec-6" class="outline-2">
 <h2 id="sec-6">Contact</h2>
 <div class="outline-text-2" id="text-6">
 <p>
-You can contact the authors at <a href="mailto:illinois-ml-nlp-users@cs.uiuc.edu">illinois-ml-nlp-users@cs.uiuc.edu</a>
-#<a href="mailto:kchang10@illinois.edu][kchang10@illinois.edu">mailto:kchang10@illinois.edu][kchang10@illinois.edu</a>]] or <a href="mailto:upadhya3@illinois.edu">upadhya3@illinois.edu</a> 
-in case you have a bug to report or have any comments/feedback/questions. If you use this package we will be happy if you cite us,
-</p>
-
-<p>
-&lt;CITE LINK&gt;
+You can post your questions and comments at <a href="mailto:illinois-ml-nlp-users@cs.uiuc.edu">illinois-ml-nlp-users@cs.uiuc.edu</a>
 </p>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Shyam Upadhyay</p>
-<p class="date">Created: 2015-02-15 Sun 22:27</p>
-<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)</p>
+<p class="date">Created: 2015-05-03 Sun 12:24</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
