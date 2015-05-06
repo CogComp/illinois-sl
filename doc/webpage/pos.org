@@ -1,7 +1,7 @@
 #+TITLE: POS Tutorial
 #+STARTUP: customtime
 #+OPTIONS: num:nil
-#+INCLUDE: "~/Dropbox/Private/org/revision/my_latex_preamble.org"
+#+INCLUDE: "my_latex_preamble.org"
 
   We will start with a very simple example - part-of-speech tagging. 
 

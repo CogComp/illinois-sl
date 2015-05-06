@@ -1,7 +1,7 @@
 #+TITLE: Illinois-SL Tutorial
 #+STARTUP: customtime
 #+OPTIONS: num:nil
-#+INCLUDE: "~/Dropbox/Private/org/revision/my_latex_preamble.org"
+#+INCLUDE: "my_latex_preamble.org"
 
 * Getting Started
 Illinois-SL is a general purpose JAVA library for performing structured learning. 
@@ -11,10 +11,26 @@ Illinois-SL comes with an efficient implementation of DCD with support for multi
 
 In this tutorial, we will walk you through installation, some simple examples on how to use this package.
 * Download and Installation
-You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/page/software_view/illinois-sl][here]].
+You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/page/software_view/illinois-sl][here]]. You can run the package out of the box, there is no need to install other packages.
+If you want to use this with maven, the maven coordinates are,
+
+#+BEGIN_SRC
+  <repositories>
+    <repository>
+      <id>CogcompSoftware</id>
+      <name>CogcompSoftware</name>
+      <url>http://cogcomp.cs.illinois.edu/m2repo/</url>
+    </repository>
+  </repositories>
+ ...
+  <groupId>edu.illinois.cs.cogcomp</groupId>
+  <version>0.2.2</version>		
+  <artifactId>illinois-sl</artifactId>
+
+#+END_SRC
 
 * Basics
-We need to implement the following,
+For implementating any structured learning problem, we need to implement the following classes,
 
 1) The input structure, $\x$. This should implement the =IInstance= interface.
 2) The output structure, $\y$. This should implement the =IStructure= interface.

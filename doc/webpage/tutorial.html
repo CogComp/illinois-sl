@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Illinois-SL Tutorial</title>
-<!-- 2015-05-06 Wed 10:30 -->
+<!-- 2015-05-06 Wed 14:09 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Shyam Upadhyay" />
@@ -249,8 +249,23 @@ In this tutorial, we will walk you through installation, some simple examples on
 <h2 id="sec-2">Download and Installation</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-You can download the Illinois-SL package from <a href="http://cogcomp.cs.illinois.edu/page/software_view/illinois-sl">here</a>.
+You can download the Illinois-SL package from <a href="http://cogcomp.cs.illinois.edu/page/software_view/illinois-sl">here</a>. You can run the package out of the box, there is no need to install other packages.
+If you want to use this with maven, the maven coordinates are,
 </p>
+
+<pre class="example">
+ &lt;repositories&gt;
+   &lt;repository&gt;
+     &lt;id&gt;CogcompSoftware&lt;/id&gt;
+     &lt;name&gt;CogcompSoftware&lt;/name&gt;
+     &lt;url&gt;http://cogcomp.cs.illinois.edu/m2repo/&lt;/url&gt;
+   &lt;/repository&gt;
+ &lt;/repositories&gt;
+...
+ &lt;groupId&gt;edu.illinois.cs.cogcomp&lt;/groupId&gt;
+ &lt;version&gt;0.2.2&lt;/version&gt;		
+ &lt;artifactId&gt;illinois-sl&lt;/artifactId&gt;
+</pre>
 </div>
 </div>
 
@@ -258,7 +273,7 @@ You can download the Illinois-SL package from <a href="http://cogcomp.cs.illinoi
 <h2 id="sec-3">Basics</h2>
 <div class="outline-text-2" id="text-3">
 <p>
-We need to implement the following,
+For implementating any structured learning problem, we need to implement the following classes,
 </p>
 
 <ol class="org-ol">
@@ -311,7 +326,7 @@ You can post your questions and comments at <a href="mailto:illinois-ml-nlp-user
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Shyam Upadhyay</p>
-<p class="date">Created: 2015-05-06 Wed 10:30</p>
+<p class="date">Created: 2015-05-06 Wed 14:09</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>

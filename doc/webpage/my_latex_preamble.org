@@ -1,0 +1,103 @@
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{lmodern}
+#+LATEX_HEADER: \usepackage[english]{babel}
+#+LATEX_HEADER: \usepackage{amsfonts}
+#+LATEX_HEADER: \usepackage{mathrsfs}
+#+LATEX_HEADER: \usepackage{amsmath,mathtools}
+#+LATEX_HEADER: \usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
+#+LATEX_HEADER: \usepackage[makeroom]{cancel}
+#+LATEX_HEADER: \usepackage{algorithm}
+#+LATEX_HEADER: \usepackage{algpseudocode} % uses algorithmicx package automatically
+#+LATEX_HEADER: \usepackage{eqparbox}
+#+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \hypersetup{colorlinks=true,linkcolor=red,citecolor=green}
+
+
+#+LATEX_HEADER: \DeclareMathOperator*{\argmin}{\mathbf{arg\,min}}
+#+LATEX_HEADER: \DeclareMathOperator*{\argmax}{\mathbf{arg\,max}}
+#+LATEX_HEADER: \DeclareMathOperator*{\sup}{sup}
+#+LATEX_HEADER: \DeclareMathOperator{\F}{\mathscr{F}} % Function Classes
+#+LATEX_HEADER: \DeclareMathOperator{\H}{\mathscr{H}} % Hilbert Spaces
+#+LATEX_HEADER: \DeclareMathOperator{\R}{\mathbb{R}} % Reals
+#+LATEX_HEADER: \DeclareMathOperator{\E}{\mathbb{E}} % Expectation
+#+LATEX_HEADER: \DeclareMathOperator{\Or}{\mathcal{O}} % Order Notation
+#+LATEX_HEADER: \DeclareMathOperator{\Tr}{\textbf{Tr}} % Expectation
+#+LATEX_HEADER: \DeclareMathOperator{\grad}{\nabla} % Gradient
+#+LATEX_HEADER: \DeclareMathOperator{\LLH}{\mathcal{L}} % Log Likelihood etc.
+#+LATEX_HEADER: \DeclareMathOperator{\Lag}{\mathcal{L}} % Lagrangian etc.
+#+LATEX_HEADER: \DeclareMathOperator{\X}{\mathcal{X}} % input space X
+#+LATEX_HEADER: \DeclareMathOperator{\Y}{\mathcal{Y}} % output space Y
+#+LATEX_HEADER: \DeclareMathOperator{\bF}{\mathbf{F}} 
+#+LATEX_HEADER: \DeclareMathOperator{\w}{\mathbf{w}} % weight vector
+#+LATEX_HEADER: \DeclareMathOperator{\y}{\mathbf{y}} % output structure
+#+LATEX_HEADER: \DeclareMathOperator{\x}{\mathbf{x}} % input structure
+
+
+#+LATEX_HEADER: \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil} % ceiling, greatest integer
+#+LATEX_HEADER: \DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor} % floor, lowest integer
+
+#+LATEX_HEADER: \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+#+LATEX_HEADER: \newcommand{\opt}[1]{{#1}^{*}} % Optimal 
+#+LATEX_HEADER: \newcommand{\pred}[1]{\hat{#1}} % Prediction 
+#+LATEX_HEADER: \newcommand{\dnorm}[1]{{#1}^{*}} % Dual Norm
+#+LATEX_HEADER: \newcommand{\dotprod}[2]{ {#1}^T{#2}} % w^Tx style
+#+LATEX_HEADER: \newcommand{\dotproduct}[2]{ \langle {#1},{#2} \rangle } % <w,x> style
+#+LATEX_HEADER: \newcommand{\Forall}{\,\forall\,} % for all with spacing
+#+LATEX_HEADER: \newcommand*{\Let}[2]{\State {#1} $\gets$ {#2}}
+
+#+LATEX_HEADER: \renewcommand{\Pr}{\mathbb{P}} % Probability
+#+LATEX_HEADER: \renewcommand{\vec}[1]{\mathbf{#1}} % vectors
+#+LATEX_HEADER: \renewcommand{\algorithmicrequire}{\textbf{Input:}}
+#+LATEX_HEADER: \renewcommand{\algorithmicensure}{\textbf{Output:}}
+#+LATEX_HEADER: \renewcommand{\algorithmiccomment}[1]{\hfill$\triangleleft$\ \eqparbox{COMMENT}{#1}}
+
+#+LATEX_HEADER: \newtheorem{theorem}{Theorem}
+#+LATEX_HEADER: \newtheorem{lemma}[theorem]{Lemma}
+#+LATEX_HEADER: \newtheorem{proposition}[theorem]{Proposition}
+#+LATEX_HEADER: \newtheorem{corollary}[theorem]{Corollary}
+
+
+#+BEGIN_HTML
+{% raw %}
+
+\(
+
+\newcommand{\opt}[1]{{#1}^{*}} 
+\newcommand{\pred}[1]{\hat{#1}} 
+\newcommand{\dnorm}[1]{{#1}^{*}} 
+\newcommand{\dotprod}[2]{ {#1}^T{#2}}
+\newcommand{\dotproduct}[2]{ \langle {#1},{#2} \rangle }
+\newcommand{\Forall}{\,\forall\,}
+\renewcommand{\Pr}{\mathbb{P}} 
+\renewcommand{\vec}[1]{\mathbf{#1}} 
+\renewcommand{\ceiling}[1]{\lceil {#1} \rceil}
+
+\DeclareMathOperator*{\argmin}{\mathbf{arg\,min}}
+\DeclareMathOperator*{\argmax}{\mathbf{arg\,max}}
+\DeclareMathOperator*{\sup}{sup}
+\DeclareMathOperator{\F}{\mathscr{F}} 
+\DeclareMathOperator{\H}{\mathscr{H}} 
+\DeclareMathOperator{\R}{\mathbb{R}} 
+\DeclareMathOperator{\E}{\mathbb{E}} 
+\DeclareMathOperator{\Or}{\mathcal{O}}
+\DeclareMathOperator{\Tr}{\textbf{Tr}} 
+\DeclareMathOperator{\grad}{\nabla} 
+\DeclareMathOperator{\LLH}{\mathcal{L}} 
+\DeclareMathOperator{\Lag}{\mathcal{L}} 
+\DeclareMathOperator{\X}{\mathcal{X}} 
+\DeclareMathOperator{\Y}{\mathcal{Y}} 
+\DeclareMathOperator{\w}{\mathbf{w}} 
+\DeclareMathOperator{\bF}{\mathbf{F}} 
+\DeclareMathOperator{\y}{\mathbf{y}} 
+\DeclareMathOperator{\x}{\mathbf{x}} 
+
+
+\)
+
+{% endraw %}
+
+#+END_HTML
+#+HTML_MATHJAX: path:"http://cdn.mathjax.org/mathjax/latest/MathJax.js"
