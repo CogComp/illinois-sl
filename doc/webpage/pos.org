@@ -206,3 +206,8 @@ for (int i = 0; i < sp.instanceList.size(); i++) {
     }
 }
 #+END_SRC
+* Final Remarks
+You can find the source code for the POS tagging and other examples under =src/main/java/edu/illinois/cs/cogcomp/sl/applications/tutorial=
+in the downloaded package.
+You can also find a simple script to run the POS tagging example at =scripts/run_tutorial.sh=.
+It will train your model, and test it on a toy dataset.

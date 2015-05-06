@@ -43,10 +43,5 @@ For this we can just set $\Delta(\y,\y')$ to zero in the loss-augmented inferenc
 \underbrace{0 \cdots 0}_{\text{block 1 to i-1}} & \underbrace{\Phi(\x)}_{\text{block i}} & \underbrace{0 \cdots 0}_{\text{block i+1 to M}}
 \end{bmatrix}
 \end{align*}
-* Final Remarks
-You can find the source code for the POS tagging example at 'src/main/java/edu/illinois/cs/cogcomp/sl/applications/tutorial'
-in the downloaded package.
-You can also find a simple script to run the POS tagging example at 'scripts/run_tutorial.sh'.
-It will train your model, and test it on a toy dataset.
 * Contact
 You can post your questions and comments at [[mailto:illinois-ml-nlp-users@cs.uiuc.edu][illinois-ml-nlp-users@cs.uiuc.edu]]
