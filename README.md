@@ -18,7 +18,7 @@ Table of Contents
 
 
 Purpose
-________
+-------
 
 Illinois Structured Learning Package (Illinois-SL) is a general purpose JAVA 
 library for performing structured learning. It houses learning algorithms like
@@ -33,8 +33,7 @@ latent structured models or indirect supervision, please check JLIS at cogcomp
 website.
 
 License
-________
-
+--------
 The Illinois Structured Learning Package is available under a Research
 and Academic use license. For more details, visit the Curator website 
 and click the download link.
