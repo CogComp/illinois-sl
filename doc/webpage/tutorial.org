@@ -1,7 +1,8 @@
-#+TITLE: Illinois-SL Tutorial
+#+TITLE: Illinois-SL -- a Structured Learning Library in Java
 #+STARTUP: customtime
 #+OPTIONS: num:nil
 #+INCLUDE: "my_latex_preamble.org"
+
 
 * Getting Started
 Illinois-SL is a general purpose JAVA library for performing structured learning. 
@@ -59,5 +60,13 @@ For this we can just set $\Delta(\y,\y')$ to zero in the loss-augmented inferenc
 \underbrace{0 \cdots 0}_{\text{block 1 to i-1}} & \underbrace{\Phi(\x)}_{\text{block i}} & \underbrace{0 \cdots 0}_{\text{block i+1 to M}}
 \end{bmatrix}
 \end{align*}
+* References
+**  Please cite the following paper when using the package:
+- K. W. Chang, S. Upadhyay, M. Chang, V. Srikumar, D. Roth. IllinoisSL: A JAVA Library for Structured Prediction. In Arxiv, 2015 ([[illinoisSL.pdf][paper]]).
+** Other relevant papers:
+- K.-W. Chang, V. Srikumar, and D. Roth. Multi-core structural svm training. In ECML, 2013.
+- M. Chang and W.-t. Yih. Dual coordinate descent algorithms for efficient large margin structural learning. In TACL, 2013.
+- M. Chang, V. Srikumar, D. Goldwasser, and D. Roth. Structured output learning with indirect supervision. In ICML, 2010.
+
 * Contact
 You can post your questions and comments at [[mailto:illinois-ml-nlp-users@cs.uiuc.edu][illinois-ml-nlp-users@cs.uiuc.edu]]
