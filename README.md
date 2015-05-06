@@ -6,15 +6,15 @@ Cognitive Computation Group, University of Illinois at Urbana-Champaign.
 
 Table of Contents
 =================
-1 README  
-	1.1  Purpose 
-	1.2  License 
-2 System requirements 
-3 Download contents 
-4 Using the jar 
-5 Using the Source Files 
-6 Additional Documentation/ Citation 
-7 Contact Information 
+1. README  
+   - Purpose 
+   - License 
+2. System requirements 
+3. Download contents 
+4. Using the jar 
+5. Using the Source Files 
+6. Additional Documentation/ Citation 
+7. Contact Information 
 
 
 Purpose
@@ -209,6 +209,8 @@ Additional Documentation/Citation
 Additional documentation is available in the JavaDoc located in doc/index.html
 
 
+Citing
+------
 Please cite the following papers when using this library
 
 M.-W. Chang, V. Srikumar, D. Goldwasser and Dan Roth. 
@@ -220,7 +222,7 @@ Multi-core Structural SVM Training.
 ECML, 2013.
 
 Contact Information
- ------------
+------------
 
 Please send a message to illinois-ml-nlp-users@cs.uiuc.edu for any
 questions about installing or using the Curator.
