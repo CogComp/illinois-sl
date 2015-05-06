@@ -115,8 +115,9 @@ The following script evaluates the performance of 'posModel' on
 Use the following comment to train a sequential model 'seqModel' on 
 'data/tutorial/wsj.sub.train' with DEMIParallelDCD solver:
 
+```
 > ./scripts/run_sequence.sh trainSequenceModel data/sequence/wsj.sub.train config/DEMIParallelDCD.config seqModel
-
+```
 Again, one can use another structured learning approach to train the model 
 by specifying a different config file. Each line follows the following format 
 
@@ -126,8 +127,9 @@ by specifying a different config file. Each line follows the following format
 to the same structured example. 
 
 The following comment tests 'seqModel" on 'data/sequence/wsj.sub.test' data set.
+```
 > ./scripts/run_sequence.sh testSequenceModel seqModel data/sequence/wsj.sub.test
-
+```
 
 4.1.2 __ scripts/run_multiclass.sh __
 
@@ -135,8 +137,9 @@ Use the following comment to train a multiclass model 'multiModel' on
 'data/multiclass/heart_scale.train' data with a cost matrix specified in 
 'data/multiclass/heart_scale.cost' using DEMIParallelDCD solver:
 
+```
 > ./scripts/run_multiclass.sh trainMultiClassModel data/multiclass/heart_scale.train data/multiclass/heart_scale.cost config/DEMIParallelDCD.config multiModel
-
+```
 Each line of the input data represents one instance, and it follows the following format:
 
 [Tag] [feature1_index]:[feature1_value] [feature2_index]:[feature2_value] ...
@@ -152,26 +155,31 @@ The cost needs to be positive, and it is 0 when [gold_label]=[predicted_label].
 
 To test the performance of 'multiModel' on 'data/multiclass/heart_scale.test', use
 
+```
 > ./scripts/run_multiclass.sh testMultiClassModel multiModel data/multiclass/heart_scale.test
-
+```
 
 4.1.3 __scripts/run_reranking.sh__
 
 
 Use the following comment to train a re-ranker on 'data/reranking/rank.train' with  Strctured Perceptron
 
+```
 > ./scripts/run_reranking.sh trainRankingModel data/reranking/rerank.train config/StructuredPerceptron.config  rankModel
-
+```
 Use the following comment to test the re-ranker model on 'data/reranking/rerank.test'
+```
 > ./scripts/run_reranking.sh testRankingModel rankModel data/reranking/rerank.test
-
+```
 These scripts should be runnable on installation; However, it is possible, 
 depending on your system configuration, that you will first need to modify
 the permissions on the scripts to allow you to execute them:
 
+```
 > chmod 744 scripts/*sh
-
----------------------- 5 Using the Source Files -----------------------
+```
+Using the Source Files
+-----------------------
 
 COMMAND LINE USAGE
 The command lines given at the top of this README.
@@ -188,7 +196,7 @@ JVM command line parameters.
 
 
 Additional Documentation/Citation
- ---------------------
+---------------------
 
 Additional documentation is available in the JavaDoc located in doc/index.html
 
@@ -203,7 +211,8 @@ K.-W. Chang, V. Srikumar, D. Roth.
 Multi-core Structural SVM Training.
 ECML, 2013.
 
------------ 7 Contact Information ------------
+Contact Information
+ ------------
 
 Please send a message to illinois-ml-nlp-users@cs.uiuc.edu for any
 questions about installing or using the Curator.
