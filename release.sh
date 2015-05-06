@@ -9,4 +9,4 @@ cp target/*.jar dist
 yes| cp -rf target/site/apidocs doc
 mvn clean
 
-zip -r illinois-SL.$version.zip src target doc scripts/*.sh  data dist config test pom.xml README.standalone
+zip -r illinois-SL.$version.zip src target doc scripts/*.sh  data dist/*.jar config/*.config test pom.xml README.standalone

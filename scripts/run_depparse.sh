@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
-
-#mvn -q dependency:copy-dependencies
-#mvn -q compile
-
-CP="./config/:./target/classes/:./target/dependency/*"
-
+JAVA=java
+jarPath=dist/illinois-sl-0.2.2-jar-with-dependencies.jar
 MEMORY="-Xmx8g -XX:MaxPermSize=500m"
+OPTIONS="$MEMORY -Xss40m -ea "
 
-OPTIONS="$MEMORY -Xss40m -ea -cp $CP"
-PACKAGE_PREFIX="edu.illinois.cs.cogcomp"
-
-MAIN="$PACKAGE_PREFIX.sl.applications.depparse.MainClass"
-
-time nice java $OPTIONS $MAIN $CONFIG_STR $*
+nice $JAVA  -ea -Xmx4096M -cp $jarPath $OPTIONS edu.illinois.cs.cogcomp.sl.applications.depparse.MainClass  $*
