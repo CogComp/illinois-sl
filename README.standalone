@@ -59,8 +59,8 @@ The download contains the following files:
 - scripts/ : scripts for testing the package
 - data/ : sample data sets
 - pom.xml : Maven pom file
-- webpage/tutorial.html : a tutorial about how to use this package as a library
-- webpage/apidocs : java API
+- doc/webpage/tutorial.html : A offline copy of the webpage http://cogcomp.cs.illinois.edu/software/illinois-sl. 
+- doc/apidocs : java API
 
 The details are shown later.
 

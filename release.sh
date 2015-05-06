@@ -5,7 +5,7 @@ mvn package
 mvn source:jar
 mvn cite
 cp target/*.jar dist
-yes| cp -rf target/site/apidocs webpage
+yes| cp -rf target/site/apidocs doc
 mvn clean
 
 zip -r illinois-SL.$version.zip src target doc scripts/*.sh  data dist config test pom.xml README.standalone
