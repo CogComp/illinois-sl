@@ -152,6 +152,7 @@ public class MainClass {
 		return new Pair<IInstance, IStructure>(ins, d);
 	}
 
+	@CommandIgnore
 	public static void printMemoryUsage() {
 		Runtime runtime = Runtime.getRuntime();
 		NumberFormat nformat = NumberFormat.getInstance();

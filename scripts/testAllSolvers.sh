@@ -24,6 +24,11 @@ echo 'run raranking...' | tee -a scripts/$log
 bash scripts/run_reranking.sh  trainRankingModel data/reranking/rerank.train $x model | tee -a scripts/$log
 bash scripts/run_reranking.sh  testRankingModel model data/reranking/rerank.test | tee -a scripts/$log
 
+#depparse
+echo 'run depparse...' | tee -a scripts/$log
+bash scripts/run_depparse.sh train data/depparse/english_train.conll $x eng.model | tee -a scripts/$log
+bash scripts/run_depparse.sh test eng.model data/depparse/english_test.conll | tee -a scripts/$log
+
 echo '' | tee -a scripts/$log
 done
 
