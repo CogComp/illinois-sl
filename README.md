@@ -17,7 +17,8 @@ Table of Contents
 7 Contact Information 
 
 
-1.1 ____ Purpose ____
+Purpose
+________
 
 Illinois Structured Learning Package (Illinois-SL) is a general purpose JAVA 
 library for performing structured learning. It houses learning algorithms like
@@ -31,7 +32,8 @@ structured prediction models. For advanced applications which makes use of
 latent structured models or indirect supervision, please check JLIS at cogcomp
 website.
 
-1.2 ____ License ____
+License
+________
 
 The Illinois Structured Learning Package is available under a Research
 and Academic use license. For more details, visit the Curator website 
@@ -85,7 +87,8 @@ scripts for these applications.
 The sample data sets can be found at 'data' directory. 
 We describe the usage of each script below. 
 
-4.1.1 __ scripts/run_tutorial.sh __
+scripts/run_tutorial.sh
+____
 
 Use the following comment to train a part of speech tagger model 'posModel' on 
 'data/tutorial/big.train' with DEMIParallelDCD solver:
@@ -109,7 +112,8 @@ The following script evaluates the performance of 'posModel' on
 >./scripts/run_tutorial.sh testPOSModel posModel data/tutorial/big.test
 ```
 
-4.1.2 __ scripts/run_sequence.sh __
+scripts/run_sequence.sh
+____
 
 
 Use the following comment to train a sequential model 'seqModel' on 
@@ -121,10 +125,11 @@ Use the following comment to train a sequential model 'seqModel' on
 Again, one can use another structured learning approach to train the model 
 by specifying a different config file. Each line follows the following format 
 
+```
 [Tag] qid:[example_id] [feature1_index]:[feature1_value] [feature2_index]:[feature2_value] ...
+```
 
-[Tag] is a positive integer representing the label. All lines with the same [example_id] belong
-to the same structured example. 
+`[Tag]` is a positive integer representing the label. All lines with the same `[example_id]` belong to the same structured example. 
 
 The following comment tests 'seqModel" on 'data/sequence/wsj.sub.test' data set.
 ```
@@ -142,16 +147,18 @@ Use the following comment to train a multiclass model 'multiModel' on
 ```
 Each line of the input data represents one instance, and it follows the following format:
 
+```
 [Tag] [feature1_index]:[feature1_value] [feature2_index]:[feature2_value] ...
-
-where [Tag] is an integer representing label.
+```
+where `[Tag]` is an integer representing label.
 
 The cost matrix file specifies the loss of  wrong predictions.
 Each line follows the following format:
 
+```
 [gold_label] [predicted_label] [cost]
-
-The cost needs to be positive, and it is 0 when [gold_label]=[predicted_label].
+```
+The cost needs to be positive, and it is 0 when `[gold_label]=[predicted_label]`.
 
 To test the performance of 'multiModel' on 'data/multiclass/heart_scale.test', use
 
@@ -159,7 +166,8 @@ To test the performance of 'multiModel' on 'data/multiclass/heart_scale.test', u
 > ./scripts/run_multiclass.sh testMultiClassModel multiModel data/multiclass/heart_scale.test
 ```
 
-4.1.3 __scripts/run_reranking.sh__
+scripts/run_reranking.sh
+____
 
 
 Use the following comment to train a re-ranker on 'data/reranking/rank.train' with  Strctured Perceptron
