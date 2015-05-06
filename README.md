@@ -1,4 +1,5 @@
 Illinois Structured Learning Package v0.2.2
+===========================================
 
 (C) 2015 Kai-Wei Chang, Upadhyay Shyam, Ming-Wei Chang, Vivek Srikumar and Dan Roth, 
 Cognitive Computation Group, University of Illinois at Urbana-Champaign.
@@ -15,8 +16,6 @@ Table of Contents
 6 Additional Documentation/ Citation 
 7 Contact Information 
 
-
--------------------------- 1 README  ----------------------------
 
 1.1 ____ Purpose ____
 
@@ -39,7 +38,8 @@ and Academic use license. For more details, visit the Curator website
 and click the download link.
 
 
--------------------------- 2 System requirements ----------------------------
+System requirements
+----------------------------
 
 The Illinois Structured Learning Package was developed on and for GNU/Linux,
 specifically CENTOS (2.6.18-238.12.1.el5) and Scientific Linux 
@@ -48,7 +48,8 @@ other operating system. The instructions below assume a Linux OS. We assume
 that the package is installed on a machine with sufficient memory. The actual
 requirement of the memory depends on the task. 
 
--------------------------- 3 Download contents ----------------------------
+Download contents
+----------------------------
 
 The download contains the following files:
 - dist/illinois-sl-0.2.2-jar-with-dependencies.jar :  the jar file with dependencies.
@@ -64,7 +65,8 @@ The download contains the following files:
 
 The details are shown later.
 
--------------------------- 4 Using the jar ----------------------------
+Using the jar
+----------------------------
 
 
 Illinois-SL supports three types of applications -- cost-sensitive multi-class
@@ -88,9 +90,12 @@ We describe the usage of each script below.
 Use the following comment to train a part of speech tagger model 'posModel' on 
 'data/tutorial/big.train' with DEMIParallelDCD solver:
 
+```
 > ./scripts/run_tutorial.sh trainPOSModel data/tutorial/big.train  config/DEMIParallelDCD.config posModel
+```
 
 One can use other structured learning solvers by simply specifying corresponding config file in 'config/'
+
 Currently, we provide the following options:
 - DCD.config : a dual coordinate descent approach (single thread) for Structured SVM.
 - DEMIParallelDCD.config: DEMIDCD for Structured SVM. (see the ECML paper below)
@@ -100,7 +105,9 @@ Currently, we provide the following options:
 The following script evaluates the performance of 'posModel' on 
 'data/tutorial/big.test':
 
+```
 >./scripts/run_tutorial.sh testPOSModel posModel data/tutorial/big.test
+```
 
 4.1.2 __ scripts/run_sequence.sh __
 
@@ -180,7 +187,8 @@ you may need to invoke your project using the -Xmx1G and -XX:MaxPermSize=1G
 JVM command line parameters. 
 
 
-------------- 6 Additional Documentation/ Citation ---------------------
+Additional Documentation/Citation
+ ---------------------
 
 Additional documentation is available in the JavaDoc located in doc/index.html
 
