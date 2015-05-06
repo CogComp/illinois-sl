@@ -1,4 +1,4 @@
-version=0.2
+version=0.2.2
 
 mvn compile assembly:single
 mvn package

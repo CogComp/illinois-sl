@@ -1,4 +1,4 @@
-Illinois Structured Learning Package v0.2
+Illinois Structured Learning Package v0.2.2
 
 (C) 2015 Kai-Wei Chang, Upadhyay Shyam, Ming-Wei Chang, Vivek Srikumar and Dan Roth, 
 Cognitive Computation Group, University of Illinois at Urbana-Champaign.
@@ -51,9 +51,9 @@ requirement of the memory depends on the task.
 -------------------------- 3 Download contents ----------------------------
 
 The download contains the following files:
-- dist/illinois-sl-0.2-jar-with-dependencies.jar :  the jar file with dependencies.
-- dist/illinois-sl-0.2-sources.jar : the jar file
-- dist/illinois-sl-0.2.jar : the archive of source files
+- dist/illinois-sl-0.2.2-jar-with-dependencies.jar :  the jar file with dependencies.
+- dist/illinois-sl-0.2.2-sources.jar : the jar file
+- dist/illinois-sl-0.2.2.jar : the archive of source files
 - README.standalone : this file
 - config/ : a set of sample configuration files
 - scripts/ : scripts for testing the package
