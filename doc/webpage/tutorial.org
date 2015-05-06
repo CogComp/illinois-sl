@@ -13,6 +13,14 @@ Illinois-SL comes with an efficient implementation of DCD with support for multi
 In this tutorial, we will walk you through installation, some simple examples on how to use this package.
 * Download and Installation
 You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/page/software_view/illinois-sl][here]]. You can run the package out of the box, there is no need to install other packages.
+
+#+BEGIN_SRC
+mkdir illinois-sl
+cd illinois-sl
+wget http://cogcomp.cs.illinois.edu/software/illinois-sl/illinois-SL.0.2.2.zip
+unzip illinois-SL.0.2.2.zip
+#+END_SRC
+
 If you want to use this with maven, the maven coordinates are,
 
 #+BEGIN_SRC
