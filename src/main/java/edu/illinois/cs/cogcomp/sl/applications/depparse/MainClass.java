@@ -105,6 +105,8 @@ public class MainClass {
 		double acc = 0.0;
 		double total = 0.0;
 
+		
+		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < sp.instanceList.size(); i++) {
 			DepInst sent = (DepInst) sp.instanceList.get(i);
 			DepStruct gold = (DepStruct) sp.goldStructureList.get(i);
@@ -114,6 +116,8 @@ public class MainClass {
 			acc += tmp.getFirst();
 			total += tmp.getSecond();
 		}
+		long estimatedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Time taken for "+sp.size()+" sentences: "+estimatedTime);
 		System.out.println("acc " + acc);
 		System.out.println("total " + total);
 		System.out.println("%age correct " + (acc * 1.0 / total));
