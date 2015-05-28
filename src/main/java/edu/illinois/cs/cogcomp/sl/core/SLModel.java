@@ -30,6 +30,7 @@ public class SLModel implements Serializable {
 
 	public WeightVector wv;
 	public SLParameters para;
+	public int numFeatuerBit;
 	public Lexiconer lm;
 	public AbstractInferenceSolver infSolver;
 	public AbstractFeatureGenerator featureGenerator;
@@ -47,6 +48,7 @@ public class SLModel implements Serializable {
 	 */
 	public void saveModel(String fileName) throws IOException {
 		logger.info("Save Model to " + fileName + ".....");
+		numFeatuerBit = SLParameters.HASHING_MASK;
 		ObjectOutputStream oos = new ObjectOutputStream(
 				new BufferedOutputStream(new FileOutputStream(fileName)));
 		oos.writeObject(this);
@@ -74,7 +76,7 @@ public class SLModel implements Serializable {
 
 		res = (SLModel) ios.readObject();
 		ios.close();
-
+		SLParameters.HASHING_MASK = res.numFeatuerBit;
 		logger.info("Load Model complete!");
 		return res;
 	}

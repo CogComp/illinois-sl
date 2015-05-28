@@ -9,11 +9,12 @@ import java.util.List;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
+import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
-
+import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 /**
  * generates features based on edges in the dep. graph
  * features for a dep tree is sum of the features for all its edges
@@ -28,6 +29,14 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 	 */
 	private static final long serialVersionUID = 8246812640996043593L;
 	private Lexiconer lm;
+	private static final int headCode = 103703;
+	private static final int iCode = 3163;
+	private static final int betweenCode = 479909;
+	private static final int templeteCode = 224737;
+	private static final int NULLCode = 746777;
+	private static final int nextCode = 414977; 
+	private static final int preCode = 2741;
+	
 
 	public DepFeatureGenerator(Lexiconer lm) {
 		this.lm = lm;
@@ -59,84 +68,90 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 	}
 
 	private void addSurroundingPOS(int head, int i, DepInst sent,
-			List<String> fList) {
-		String nextmod = (i + 1 < sent.pos.length) ? sent.pos[i + 1] : "NULL";
-		String nexthead = (head + 1 < sent.pos.length) ? sent.pos[head + 1]
-				: "NULL";
-		String prevmod = (i - 1 > 0) ? sent.pos[i - 1] : "NULL";
-		String prevhead = (head - 1 > 0) ? sent.pos[head - 1] : "NULL";
-		fList.add("headpos_" + sent.pos[head] + "_nexthead_" + nexthead
-				+ "_modpos_" + sent.pos[i] + "_nextmod_" + nextmod);
-		fList.add("headpos_" + sent.pos[head] + "_prevhead_" + prevhead
-				+ "_modpos_" + sent.pos[i] + "_nextmod_" + nextmod);
-		fList.add("headpos_" + sent.pos[head] + "_nexthead_" + nexthead
-				+ "_modpos_" + sent.pos[i] + "_prevmod_" + prevmod);
-		fList.add("headpos_" + sent.pos[head] + "_prevhead_" + prevhead
-				+ "_modpos_" + sent.pos[i] + "_prevmod_" + prevmod);
-
+			List<Integer> fList) {
+		int nextmod = nextCode*iCode*((i + 1 < sent.pos.length) ? sent.pos[i + 1] : NULLCode)& SLParameters.HASHING_MASK;
+		int nexthead = nextCode*headCode*((head + 1 < sent.pos.length) ? sent.pos[head + 1] : NULLCode)& SLParameters.HASHING_MASK;
+		int prevmod = preCode*iCode*((i - 1 > 0) ? sent.pos[i - 1] : NULLCode)& SLParameters.HASHING_MASK;
+		int prevhead = preCode*headCode*((head - 1 > 0) ? sent.pos[head - 1] : NULLCode)& SLParameters.HASHING_MASK;
+		addFeature(fList,  headCode* (sent.pos[head])+iCode* (sent.pos[i]) + nexthead + nextmod);
+		addFeature(fList,  headCode* (sent.pos[head])+iCode* (sent.pos[i]) + prevhead + nextmod);
+		addFeature(fList,  headCode* (sent.pos[head])+iCode* (sent.pos[i]) + nexthead + prevmod);
+		addFeature(fList,  headCode* (sent.pos[head])+iCode* (sent.pos[i]) + prevhead + prevmod);
 	}
 
-	private void addBigramFeats(int head, int i, DepInst sent,
-			List<String> fList) {
-		fList.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
-				+ "_modifierboth_" + sent.lemmas[i] + "_" + sent.pos[i]);
-		fList.add("headpos_" + sent.pos[head] + "_modifierboth_"
-				+ sent.lemmas[i] + "_" + sent.pos[i]);
-		fList.add("headword_" + sent.lemmas[head] + "_modifierboth_"
-				+ sent.lemmas[i] + "_" + sent.pos[i]);
-		fList.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
-				+ "_modifierpos_" + sent.pos[i]);
-		fList.add("headboth_" + sent.lemmas[head] + "_" + sent.pos[head]
-				+ "_modifierword_" + sent.lemmas[i]);
-		fList.add("headword_" + sent.lemmas[head] + "_modifierword_"
-				+ sent.lemmas[i]);
-		fList.add("headpos_" + sent.pos[head] + "_modifierpos_"
-				+ sent.pos[i]);
+	private void addBigramFeats(int head, int i, DepInst sent, List<Integer> fList) {
+		addFeature(fList,  headCode* (sent.pos[head]+ sent.lemmas[head]) + iCode*(sent.pos[i]+ sent.lemmas[i]));
+		addFeature(fList,  headCode* (sent.pos[head]) + iCode*(sent.pos[i]+ sent.lemmas[i]));
+		addFeature(fList,  headCode* (sent.lemmas[head]) + iCode*(sent.pos[i]+ sent.lemmas[i]));
+		addFeature(fList,  headCode* (sent.pos[head]+ sent.lemmas[head]) + iCode*(sent.pos[i]));
+		addFeature(fList,  headCode* (sent.pos[head]+ sent.lemmas[head]) + iCode*(sent.lemmas[i]));
+		addFeature(fList,  headCode* (sent.pos[head]) + iCode*(sent.pos[i]));
+		addFeature(fList,  headCode* (sent.lemmas[head]) + iCode*(sent.lemmas[i]));
 
 	}
 
 	private void addInBetweenPOS(int head, int i, DepInst sent,
-			List<String> fList) {
+			List<Integer> fList) {
+		int dist = Math.abs(head-i);
+		dist = (dist > 10)? 10 : (dist>5)? 5: dist;
+		dist *= (head > i)? templeteCode:-templeteCode;
 		int low = head > i ? i : head;
 		int high = head < i ? i : head;
 		for (int k = low + 1; k < high; k++) {
-			fList.add("headpos_" + sent.pos[head] + "_bwpos_" + k + "_"
-					+ sent.pos[k] + "_modifierpos_" + sent.pos[i]);
+			addFeature(fList,  headCode* sent.pos[head] + iCode*sent.pos[i] + betweenCode*sent.pos[k] + dist);
+			addFeature(fList,  headCode* sent.pos[head] + iCode*sent.pos[i] + betweenCode*sent.pos[k] );
+			addFeature(fList,  betweenCode*sent.pos[k] );
 		}
 	}
 
 	private void addDistanceFeats(int head, int i, DepInst sent,
-			List<String> fList) {
+			List<Integer> fList) {
 		int dist = Math.abs(head-i);
-		fList.add("headpos_" + sent.pos[head] + "_dist_" + dist
-				+ "_modifierpos_" + sent.pos[i]);
-		fList.add("headword_" + sent.lemmas[head] + "_dist_" + dist
-				+ "_modifierword_" + sent.lemmas[i]);
+		dist = (dist > 10)? 10 : (dist>5)? 5: dist;
+		dist *= (head > i)? templeteCode:-templeteCode;
+		int hw = headCode*sent.lemmas[head], hp = headCode*sent.pos[head], iw = iCode*sent.lemmas[i], ip = iCode*sent.pos[head];		
+		addFeature(fList, hw+dist);
+		addFeature(fList, hp+dist);
+		addFeature(fList, hw+hp+dist);
+		addFeature(fList, hw+hp+ip+dist);
+		addFeature(fList, hw+hp+iw+ip+dist);
+		addFeature(fList, hw+iw+dist);
+		addFeature(fList, hw+hp+dist);
+		addFeature(fList, hp+iw+dist);
+		addFeature(fList, hp+iw+ip+dist);
+		addFeature(fList, hp+ip+dist);
+		addFeature(fList, iw+ip+dist);
+		addFeature(fList, iw+dist);
+		addFeature(fList, ip+dist);
 	}
 
 	private void addDirectionalFeats(int head, int i, DepInst sent,
-			List<String> fList) {
-		boolean attR = i < head ? false : true;
-		fList.add("headpos_" + sent.pos[head] + "_" + attR
-				+ "_modifierpos_" + sent.pos[i]);
-		fList.add("headword_" + sent.lemmas[head] + "_" + attR
-				+ "_modifierword_" + sent.lemmas[i]);
-		fList.add("headword_" + sent.lemmas[head] + "_" + attR
-				+ "_modifierpos_" + sent.pos[i]);
-		fList.add("headpos_" + sent.pos[head] + "_" + attR
-				+ "_modifierword_" + sent.lemmas[i]);
-
+			List<Integer> fList) {
+		int attR = i < head ? 1299706 : 350377;
+		addFeature(fList, headCode* sent.pos[head] + attR + iCode*sent.pos[i]);
+		addFeature(fList, headCode* sent.lemmas[head] + attR + iCode*sent.lemmas[i]);
+		addFeature(fList, headCode* sent.pos[head] + attR + iCode*sent.lemmas[i]);
+		addFeature(fList, headCode* sent.lemmas[head] + attR + iCode*sent.pos[i]);
 	}
 
 	private void addUnigramFeats(int head, int i, DepInst sent,
-			List<String> fList) {
-		fList.add("head_" + sent.lemmas[head] + "_" + sent.pos[head]);
-		fList.add("head_" + sent.lemmas[head]);
-		fList.add("head_" + sent.pos[head]);
-		fList.add("modifier_" + sent.lemmas[i] + "_" + sent.pos[i]);
-		fList.add("modifier_" + sent.lemmas[i]);
-		fList.add("modifier_" + sent.pos[i]);
+			List<Integer> fList) {
+		int hw = headCode*sent.lemmas[head], hp = headCode*sent.pos[head], iw = iCode*sent.lemmas[i], ip = iCode*sent.pos[head];		
+		addFeature(fList, hw);
+		addFeature(fList, hp);
+		addFeature(fList, hw+hp);
+		addFeature(fList, hw+hp+ip);
+		addFeature(fList, hw+hp+iw+ip);
+		addFeature(fList, hw+iw);
+		addFeature(fList, hw+hp);
+		addFeature(fList, hp+iw);
+		addFeature(fList, hp+iw+ip);
+		addFeature(fList, hp+ip);
+		addFeature(fList, iw+ip);
+		addFeature(fList, iw);
+		addFeature(fList, ip);
 	}
+	
 
 	/**
 	 * the main feat extraction primitive
@@ -148,7 +163,8 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 	 * @return
 	 */
 	public IFeatureVector getEdgeFeatures(int head, int i, DepInst sent) {
-		List<String> fList = new ArrayList<>();
+		List<Integer> fList = new ArrayList<>();
+		List<Float> valList = new ArrayList<>();
 
 		addUnigramFeats(head, i, sent, fList);
 //		addBigramFeats(head, i, sent, fList);
@@ -157,16 +173,15 @@ public class DepFeatureGenerator extends AbstractFeatureGenerator implements
 		addInBetweenPOS(head, i, sent, fList);
 		addDistanceFeats(head, i, sent, fList);
 		
-		FeatureVectorBuffer fv = new FeatureVectorBuffer();
-		for (String f : fList) {
-			if (lm.isAllowNewFeatures())
-				lm.addFeature(f);
-			if (lm.containFeature(f))
-				fv.addFeature(lm.getFeatureId(f), 1.0f);
-			else
-				fv.addFeature(lm.getFeatureId("W:unknownword"), 1.0f);
-		}
+		for(int t=0; t< fList.size();t++)
+			valList.add(1.0f);
+		FeatureVectorBuffer fv = new FeatureVectorBuffer(fList, valList);
+
 		return fv.toFeatureVector();
+	}
+	private void addFeature(List<Integer> idxList, int feature ){
+		idxList.add(feature & SLParameters.HASHING_MASK);
+		
 	}
 
 }
