@@ -1,11 +1,7 @@
 package edu.illinois.cs.cogcomp.sl.applications.depparse;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.NumberFormat;
-import java.util.HashMap;
 
 import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
@@ -14,8 +10,6 @@ import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
 import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.base.DependencyInstance;
 import edu.illinois.cs.cogcomp.sl.applications.depparse.io.CONLLReader;
-import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
-import edu.illinois.cs.cogcomp.sl.applications.tutorial.ViterbiInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -23,10 +17,9 @@ import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
-import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
 import edu.illinois.cs.cogcomp.sl.learner.Learner.ProgressReportFunction;
+import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
-import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 public class MainClass {
@@ -66,6 +59,7 @@ public class MainClass {
 	@CommandDescription(description = "String trainFile, String configFilePath,	String modelFile")
 	public static SLModel train(String trainFile, String configFilePath,
 			String modelFile) throws Exception {
+	
 		SLModel model = new SLModel();
 		SLParameters para = new SLParameters();
 		para.loadConfigFile(configFilePath);
@@ -79,7 +73,7 @@ public class MainClass {
 		printMemoryUsage();
 		System.out.println("# of features: " + model.lm.getNumOfFeature());
 		model.infSolver = new ChuLiuEdmondsDecoder(model.featureGenerator);
-		para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
+		//para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
 		learner.runWhenReportingProgress(new ProgressReportFunction() {
