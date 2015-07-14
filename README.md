@@ -1,4 +1,4 @@
-Illinois Structured Learning Package v0.2.2
+Illinois Structured Learning Package v1.0.0
 ===========================================
 
 (C) 2015 Kai-Wei Chang, Upadhyay Shyam, Ming-Wei Chang, Vivek Srikumar and Dan Roth, 
@@ -53,9 +53,9 @@ Download contents
 ----------------------------
 
 The download contains the following files:
-- dist/illinois-sl-0.2.2-jar-with-dependencies.jar :  the jar file with dependencies.
-- dist/illinois-sl-0.2.2-sources.jar : the jar file
-- dist/illinois-sl-0.2.2.jar : the archive of source files
+- dist/illinois-sl-1.0.0-jar-with-dependencies.jar :  the jar file with dependencies.
+- dist/illinois-sl-1.0.0-sources.jar : the jar file
+- dist/illinois-sl-1.0.0.jar : the archive of source files
 - README.standalone : this file
 - config/ : a set of sample configuration files
 - scripts/ : scripts for testing the package
@@ -219,6 +219,7 @@ ICML, 2010.
 K.-W. Chang, V. Srikumar, D. Roth. 
 Multi-core Structural SVM Training.
 ECML, 2013.
+
 
 Contact Information
 ------------

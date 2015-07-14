@@ -82,15 +82,27 @@ public class CONLLReader {
 
 		for (int i = 0; i < length; i++) {
 			String[] info = lineList.get(i);
-			forms[i + 1] = normalize(info[1]);
-			lemmas[i + 1] = normalize(info[2]);
-			cpos[i + 1] = info[3];
-			pos[i + 1] = info[4];
-			feats[i + 1] = info[5].split("\\|");
-			deprels[i + 1] = labeled ? info[7] : "<no-type>";
-			heads[i + 1] = Integer.parseInt(info[6]);
+			if(info.length ==8){
+				forms[i + 1] = normalize(info[1]);
+				lemmas[i + 1] = normalize(info[2]);
+				cpos[i + 1] = info[3];
+				pos[i + 1] = info[4];
+				feats[i + 1] = info[5].split("\\|");
+				deprels[i + 1] = labeled ? info[7] : "<no-type>";
+				heads[i + 1] = Integer.parseInt(info[6]);
+			}
+			if(info.length ==9){
+				forms[i + 1] = normalize(info[1]);
+				lemmas[i + 1] = normalize(info[1]);
+				cpos[i + 1] = info[3];
+				pos[i + 1] = info[4];
+				feats[i + 1] = info[5].split("\\|");
+				deprels[i + 1] = labeled ? info[8] : "<no-type>";
+				heads[i + 1] = Integer.parseInt(info[7]);
+			}
 			if (confScores)
 				confscores[i + 1] = Double.parseDouble(info[10]);
+			
 		}
 
 		feats[0] = new String[feats[1].length];

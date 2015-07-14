@@ -2,7 +2,7 @@
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <groupId>edu.illinois.cs.cogcomp</groupId>
-  <version>0.2.2</version>		
+  <version>1.0</version>		
   <artifactId>illinois-sl</artifactId>
 
   <repositories>
@@ -110,18 +110,8 @@
       <artifactId>coreUtilities</artifactId>
       <version>0.2.7</version>
     </dependency>
-    <!-- <dependency> -->
-    <!--   <groupId>net.sf.trove4j</groupId> -->
-    <!--   <artifactId>trove4j</artifactId> -->
-    <!--   <version>3.0.1</version> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!--   <groupId>trove</groupId> -->
-    <!--   <artifactId>trove</artifactId> -->
-    <!--   <version>1.0.2</version> -->
-    <!-- </dependency> -->
 
-    <dependency>
+	<dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>1.6.1</version>
