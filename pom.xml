@@ -1,131 +1,120 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <groupId>edu.illinois.cs.cogcomp</groupId>
-  <version>0.2.2</version>		
-  <artifactId>illinois-sl</artifactId>
+    <groupId>edu.illinois.cs.cogcomp</groupId>
+    <version>0.2.3</version>
+    <artifactId>illinois-sl</artifactId>
 
-  <repositories>
-    <repository>
-      <id>CogcompSoftware</id>
-      <name>CogcompSoftware</name>
-      <url>http://cogcomp.cs.illinois.edu/m2repo/</url>
-    </repository>
-  </repositories>
-
-
-  <modelVersion>4.0.0</modelVersion>
-  <distributionManagement>
-    <repository>
-	<id>CogcompSoftware</id>
-	<name>CogcompSoftware</name>
-	<url>scp://bilbo.cs.illinois.edu:/mounts/bilbo/disks/0/www/cogcomp/html/m2repo</url>
-    </repository>
-  </distributionManagement>
+    <repositories>
+        <repository>
+            <id>CogcompSoftware</id>
+            <name>CogcompSoftware</name>
+            <url>http://cogcomp.cs.illinois.edu/m2repo/</url>
+        </repository>
+    </repositories>
 
 
-  <build>
-    <plugins>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>2.0.2</version>
-	<configuration>
-	  <source>1.7</source>
-	  <target>1.7</target>
-	</configuration>
-      </plugin>
+    <modelVersion>4.0.0</modelVersion>
+    <distributionManagement>
+        <repository>
+            <id>CogcompSoftware</id>
+            <name>CogcompSoftware</name>
+            <url>scp://bilbo.cs.illinois.edu:/mounts/bilbo/disks/0/www/cogcomp/html/m2repo</url>
+        </repository>
+    </distributionManagement>
 
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-source-plugin</artifactId>
-	<version>2.4</version>
-	<executions>
-	  <execution>
-	    <id>attach-sources</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-   </plugin>
-   <plugin>
-      <artifactId>maven-assembly-plugin</artifactId>
-      <configuration>
-        <archive>
-          <manifest>
-            <mainClass>fully.qualified.MainClass</mainClass>
-          </manifest>
-        </archive>
-        <descriptorRefs>
-          <descriptorRef>jar-with-dependencies</descriptorRef>
-        </descriptorRefs>
-      </configuration>
-    </plugin>
-  </plugins>
-  <extensions>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>fully.qualified.MainClass</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+        <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
                 <version>2.4</version>
             </extension>
         </extensions>
-  </build>
+    </build>
 
-  <reporting>
-    <plugins>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-javadoc-plugin</artifactId>
-	<version>2.7</version>
-	<configuration>
-	  <links>
-	    <link>http://download.oracle.com/javase/6/docs/api/</link>
-	    <link>http://cogcomp.cs.illinois.edu/software/coreUtilities/apidocs/</link>
-	  </links>
-	  <show>public</show>
-	</configuration>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <links>
+                        <link>http://download.oracle.com/javase/6/docs/api/</link>
+                        <link>http://cogcomp.cs.illinois.edu/software/coreUtilities/apidocs/</link>
+                    </links>
+                    <show>public</show>
+                </configuration>
+            </plugin>
 
-      </plugin>
-      <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>jxr-maven-plugin</artifactId>
-	<version>2.0-beta-1</version>
-      </plugin>
-    </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+        </plugins>
 
-  </reporting>
+    </reporting>
 
 
-  <dependencies>
-    
-    <dependency>
-    <groupId>edu.cmu.cs.ark</groupId>
-    <artifactId>ChuLiuEdmonds</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>edu.illinois.cs.cogcomp</groupId>
-      <artifactId>coreUtilities</artifactId>
-      <version>0.2.7</version>
-    </dependency>
-    <!-- <dependency> -->
-    <!--   <groupId>net.sf.trove4j</groupId> -->
-    <!--   <artifactId>trove4j</artifactId> -->
-    <!--   <version>3.0.1</version> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!--   <groupId>trove</groupId> -->
-    <!--   <artifactId>trove</artifactId> -->
-    <!--   <version>1.0.2</version> -->
-    <!-- </dependency> -->
+    <dependencies>
+        <dependency>
+            <groupId>edu.cmu.cs.ark</groupId>
+            <artifactId>ChuLiuEdmonds</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.6.1</version>
-      <optional>true</optional>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>edu.illinois.cs.cogcomp</groupId>
+            <artifactId>illinois-core-utilities</artifactId>
+            <version>1.2.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.6.1</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 </project>
