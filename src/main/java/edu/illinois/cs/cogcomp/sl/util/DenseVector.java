@@ -65,7 +65,7 @@ public class DenseVector implements Serializable, Cloneable{
 	 *            Sparse feature vector
 	 * @return
 	 */
-	public float dotProduct(IFeatureVector fv) {
+	public  synchronized float dotProduct(IFeatureVector fv) {
 		float res = 0.0f;
 		if(fv.getMaxIdx() >= size){
 			for(int i=0; i< fv.getNumActiveFeatures(); i++){
@@ -93,7 +93,7 @@ public class DenseVector implements Serializable, Cloneable{
 	 * @return
 	 */
 	
-	public float dotProduct(IFeatureVector fv, int offset){
+	public  synchronized float dotProduct(IFeatureVector fv, int offset){
 		float res = 0.0f;
 		if(fv.getMaxIdx() + offset >= size){
 			for(int i=0; i< fv.getNumActiveFeatures(); i++){
@@ -151,10 +151,8 @@ public class DenseVector implements Serializable, Cloneable{
 		System.arraycopy(u, 0, newU, 0, oldSize);
 		}
 		catch (Exception e){
+			System.err.println("Warning: Array Index out of bound (Ignore this warning in the early stage of DEMIDCD");
 			e.printStackTrace();
-			System.out.println(oldSize);
-			System.out.println(u.length);
-			System.out.println(newU.length);
 		}
 		u = newU;
 	}
@@ -265,6 +263,7 @@ public class DenseVector implements Serializable, Cloneable{
 			System.arraycopy(v.getInternalArray(), 0, u, 0, v.size);
 		} catch(Exception e) {
 			System.err.println("Warning: Array Index out of bound (Ignore this warning in the early stage of DEMIDCD");
+			e.printStackTrace();
 		}
 		size = v.size;
 	}
