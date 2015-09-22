@@ -17,8 +17,8 @@ You can download the Illinois-SL package from [[http://cogcomp.cs.illinois.edu/p
 #+BEGIN_SRC
 mkdir illinois-sl
 cd illinois-sl
-wget http://cogcomp.cs.illinois.edu/software/illinois-sl/illinois-SL.0.2.2.zip
-unzip illinois-SL.0.2.2.zip
+wget http://cogcomp.cs.illinois.edu/software/illinois-sl/illinois-SL.1.0.0.zip
+unzip illinois-SL.1.0.0.zip
 #+END_SRC
 
 If you want to use this with maven, the maven coordinates are,
@@ -33,7 +33,7 @@ If you want to use this with maven, the maven coordinates are,
   </repositories>
  ...
   <groupId>edu.illinois.cs.cogcomp</groupId>
-  <version>0.2.2</version>		
+  <version>1.0.0</version>		
   <artifactId>illinois-sl</artifactId>
 
 #+END_SRC

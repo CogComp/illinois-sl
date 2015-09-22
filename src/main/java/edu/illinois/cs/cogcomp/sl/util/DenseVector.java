@@ -264,7 +264,7 @@ public class DenseVector implements Serializable, Cloneable{
 				this.expandFor(v.getLength());
 			System.arraycopy(v.getInternalArray(), 0, u, 0, v.size);
 		} catch(Exception e) {
-			e.printStackTrace();
+			System.err.println("Warning: Array Index out of bound (Ignore this warning in the early stage of DEMIDCD");
 		}
 		size = v.size;
 	}

@@ -63,7 +63,7 @@ public class Evaluator  implements ProgressReportFunction{
 				}
 			}
 		}
-		if(outputFileName!=null){
+		if(writer!=null){
 			writer.close();
 		}
 		return acc/total;

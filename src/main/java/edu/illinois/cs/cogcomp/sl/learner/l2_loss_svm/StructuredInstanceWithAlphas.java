@@ -148,6 +148,10 @@ public class StructuredInstanceWithAlphas{
 
 		IStructure h = infSolver
 				.getLossAugmentedBestStructure(wv, ins, goldStructure);
+		// already in candidateSet
+		if(candidateSet.contains(h))
+			return 0;
+		
 		float loss = infSolver.getLoss(ins, goldStructure, h);
 
 
@@ -181,19 +185,15 @@ public class StructuredInstanceWithAlphas{
 
 		if (score < parameters.STOP_CONDITION) // not enough contribution
 			return 0;
-		if(!candidateSet.contains(h)){
-			AlphaStruct as = new AlphaStruct();
-			as.alpha = 0.0f;
-			as.loss = loss;
-			as.alphaFeactureVector = diff;
-			as.struct = h;
-			newCandidateAlphas.add(as);
-			candidateSet.add(h);
-			return 1;
-		}
-		return 0;
-
-
+		
+		AlphaStruct as = new AlphaStruct();
+		as.alpha = 0.0f;
+		as.loss = loss;
+		as.alphaFeactureVector = diff;
+		as.struct = h;
+		newCandidateAlphas.add(as);
+		candidateSet.add(h);
+		return 1;
 	}
 
 	private void printErrorLogForIncorrectInference(WeightVector wv, float loss, IStructure h,

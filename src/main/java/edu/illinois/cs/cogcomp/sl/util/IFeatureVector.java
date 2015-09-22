@@ -60,4 +60,17 @@ public interface IFeatureVector extends Serializable {
 	 */
 	public byte[] serialize() throws IOException;
 	
+	/*
+	 *  Return index array
+	 *  @return int[]
+	 */
+	public int[]  getIndices();
+	
+	/*
+	 *  Return value array
+	 *  @return float[]
+	 */
+	public float[]  getValues();
+	
+	
 }

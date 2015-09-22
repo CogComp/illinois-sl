@@ -161,8 +161,9 @@ public class SLParameters implements Serializable {
 	public void loadConfigFile(String fileName) throws FileNotFoundException,
 			IOException {
 		Properties props = new Properties();
-		props.load(new FileInputStream(fileName));
-
+		FileInputStream fileInputStream = new FileInputStream(fileName);
+		props.load(fileInputStream);
+		fileInputStream.close();
 		L2_LOSS_SSVM_SOLVER_TYPE = L2LossSSVMLearner.SolverType.valueOf(props
 				.getProperty("L2_LOSS_SSVM_SOLVER_TYPE",
 						L2LossSSVMLearner.SolverType.DEMIParallelDCDSolver
@@ -213,5 +214,6 @@ public class SLParameters implements Serializable {
 		
 		int b = Integer.parseInt(props.getProperty("NUMBER_OF_FEATURE_BITS","30"));
 		HASHING_MASK = (1<<b)-1;
+		fileInputStream.close();
 	}
 }

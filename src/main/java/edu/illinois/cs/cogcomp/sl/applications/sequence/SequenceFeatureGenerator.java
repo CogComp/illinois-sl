@@ -8,6 +8,11 @@ import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 
 public class SequenceFeatureGenerator extends AbstractFeatureGenerator {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * This function returns a feature vector \Phi(x,y) based on an instance-structure pair.
 	 * 
 	 * @return Feature Vector \Phi(x,y), where x is the input instance and y is the

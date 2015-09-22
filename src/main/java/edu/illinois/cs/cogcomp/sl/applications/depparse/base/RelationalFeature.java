@@ -8,7 +8,12 @@ import java.io.Serializable;
 
 public class RelationalFeature implements Serializable {
 
-  public String name;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public String name;
 
   public String[][] values;
 

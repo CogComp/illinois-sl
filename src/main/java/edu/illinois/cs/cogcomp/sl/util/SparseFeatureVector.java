@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -24,9 +25,9 @@ public class SparseFeatureVector implements IFeatureVector {
 	/**
 	 * 
 	 */
-	
+
 	public static Logger logger = LoggerFactory.getLogger(SparseFeatureVector.class);
-	
+
 	private static final long serialVersionUID = 1738932616256244560L;
 
 	/**
@@ -44,34 +45,51 @@ public class SparseFeatureVector implements IFeatureVector {
 	 */
 	protected float[] values;
 
-	
+
 	/*
 	 * Store the square l2-norm  of the feature vector;
 	 */
 	float squareL2Norm;
-	
+
+	/*
+	 * Store the max index;
+	 */
+	int maxIndex=-1;
+
+	int minIndex=Integer.MAX_VALUE;
+
+	boolean sorted = false;
+
 	/**
 	 * Constructor: construct a sparse feature vector by providing an array of indices and 
-	 * an array of feature values. Please note that the indices should be sorted.
+	 * an array of feature values. The third parameter specifies if the indices are sorted.
+	 * In general, using unsorted sparse vector takes less training time. However, some algorithms
+	 * converge only when using sorted sparse vector.
 	 * If your feature vector is not sorted, or the feature vector is constructed on the fly, 
-	 * please use FeatureVectorBuffer instead.
+	 * please use @FeatureVectorBuffer to construct @SparseFeatureVector. 
 	 * 
 	 * Please note that, we use float (single precision) to store feature values internally.
 	 * We allow using double array to construct the feature vector for users' convenience.   
 	 *  
 	 * @param fIdxArray
 	 * @param fValArray
+	 * @param sorted
 	 */
-	public SparseFeatureVector(int[] fIdxArray, double[] fValArray) {
-		
-		for(int i=1; i< fIdxArray.length; i++){
-			if(fIdxArray[i-1]>=fIdxArray[i]){
-				throw new IllegalArgumentException("Feature vector indices should be sorted. Please use FeatureVectorBuffer "
-						+ "to generate the feature vector. See readme for details");
+
+	public SparseFeatureVector(int[] fIdxArray, double[] fValArray){
+		this(fIdxArray, fValArray, true);
+	}
+
+	public SparseFeatureVector(int[] fIdxArray, double[] fValArray, boolean sorted) {
+		this.sorted = sorted;
+		if(sorted){
+			for(int i=1; i< fIdxArray.length; i++){
+				if(fIdxArray[i-1]>=fIdxArray[i]){
+					throw new IllegalArgumentException("Please use FeatureVectorBuffer to generate a sorted feature vector. See readme for details");
+				}			
 			}
-			
 		}
-		
+
 		if( fIdxArray.length != fValArray.length){		
 			throw new IllegalArgumentException("Length of index array is different from length of value array.");
 		}
@@ -81,72 +99,69 @@ public class SparseFeatureVector implements IFeatureVector {
 			squareL2Norm = 0;
 		}
 		else{
-
-			if(fIdxArray[0] < 0){
-				throw new IllegalArgumentException("Feature vector index should start at 1. Please use FeatureVectorBuffer"
-						+ "to shift your feature vector index by 1. See readme for details.");
-			}
-
 			indices = new int[fIdxArray.length];
 			values = new float[fValArray.length];
 			for (int i = 0; i < fIdxArray.length; i++) {
 				indices[i] = fIdxArray[i] & SLParameters.HASHING_MASK;
 				values[i] = (float) fValArray[i];
+				maxIndex = Math.max(maxIndex, indices[i]);
+				minIndex = Math.min(minIndex, indices[i]);
 			}
 			squareL2Norm = 0;
-			for (int i = 0; i < indices.length; i++) {
+
+			for (int i = 0; i < indices.length; i++)
 				squareL2Norm += values[i] * values[i];
+
+			if(minIndex < 0){
+				throw new IllegalArgumentException("Feature vector index should start at 1. Please use FeatureVectorBuffer"
+						+ "to shift your feature vector index by 1. See readme for details.");
 			}
 		}
 	}
-	
-	/**
-	 * Constructor: construct a sparse feature vector by providing an array of indices and 
-	 * an array of feature values. Please note that the indices should be sorted.
-	 * If your feature vector is not sorted, or the feature vector is constructed on the fly, 
-	 * please use FeatureVectorBuffer instead.
-	 * 
-	 * Please note that, we use float (single precision) to store feature values.  
-	 *  
-	 * @param fIdxArray
-	 * @param fValArray
-	 */
-	
-	public SparseFeatureVector(int[] fIdxArray, float[] fValueArray) {
 
-		//Check if featureVector is sorted
-		for(int i=1; i< fIdxArray.length; i++){
-			if(fIdxArray[i-1]>=fIdxArray[i]){
-				throw new IllegalArgumentException("Feature vector indices should be sorted. Please use FeatureVectorBuffer "
-						+ "to generate the feature vector. See readme for details");
+	public SparseFeatureVector(int[] fIdxArray, float[] fValArray){
+		this(fIdxArray, fValArray, true);
+	}
+	public SparseFeatureVector(int[] fIdxArray, float[] fValArray, boolean sorted) {
+		this.sorted = sorted;
+		if(sorted){
+			for(int i=1; i< fIdxArray.length; i++){
+				if(fIdxArray[i-1]>=fIdxArray[i]){
+					throw new IllegalArgumentException("Please use FeatureVectorBuffer to generate a sorted feature vector. See readme for details");
+				}			
 			}
-			
 		}
-		
-		if( fIdxArray.length != fValueArray.length){		
+
+		if( fIdxArray.length != fValArray.length){		
 			throw new IllegalArgumentException("Length of index array is different from length of value array.");
 		}
-		if(fIdxArray.length > 1 && fIdxArray[0] < 0){
-			throw new IllegalArgumentException("Feature vector index should start at 1. Please use FeatureVectorBuffer"
-					+ "to shift your feature vector index by 1. See readme for details.");
+		if(fIdxArray.length == 0){
+			indices = new int[0];
+			values = new float[0];
+			squareL2Norm = 0;
+		}
+		else{
+			indices = new int[fIdxArray.length];
+			values = new float[fValArray.length];
+			for (int i = 0; i < fIdxArray.length; i++) {
+				indices[i] = fIdxArray[i] & SLParameters.HASHING_MASK;
+				values[i] = fValArray[i];
+				maxIndex = Math.max(maxIndex, indices[i]);
+				minIndex = Math.min(minIndex, indices[i]);
+			}
+			squareL2Norm = 0;
 
-		}
-		
-		indices = new int[fIdxArray.length];
-		for (int i = 0; i < fIdxArray.length; i++) {
-			indices[i] = fIdxArray[i] & SLParameters.HASHING_MASK;
-		}
-		values = new float[fValueArray.length];
-		System.arraycopy(fValueArray, 0, values, 0, indices.length);
-		squareL2Norm = 0;
-		for (int i = 0; i < indices.length; i++) {
-			squareL2Norm += values[i] * values[i];
-		}
-		
-	}
+			for (int i = 0; i < indices.length; i++)
+				squareL2Norm += values[i] * values[i];
 
-	
-	
+			if(minIndex < 0){
+				throw new IllegalArgumentException("Feature vector index should start at 1. Please use FeatureVectorBuffer"
+						+ "to shift your feature vector index by 1. See readme for details.");
+			}
+		}	}
+
+
+
 	/**
 	 * Element-wise multiply the feature vector by c.
 	 * 
@@ -167,7 +182,7 @@ public class SparseFeatureVector implements IFeatureVector {
 	public float getSquareL2Norm() {
 		return squareL2Norm;
 	}
-	
+
 	/**
 	 * Get the largest feature index.
 	 * @return MaxIdx
@@ -175,7 +190,8 @@ public class SparseFeatureVector implements IFeatureVector {
 	public int getMaxIdx() {
 		if(indices.length < 1)
 			return 0;
-		return indices[indices.length-1];
+		return maxIndex; 
+		//indices[indices.length-1];
 	}
 
 	@Override
@@ -196,44 +212,61 @@ public class SparseFeatureVector implements IFeatureVector {
 	 */
 	@Override
 	public IFeatureVector difference(IFeatureVector fv2) {
-		int i1 = 0;
-		int i2 = 0;
+
+
+
+
 		List<Integer> rIdx = new ArrayList<Integer>();
 		List<Float> rVal= new ArrayList<Float>();
-		
-		while (i1 < this.indices.length && i2 < fv2.getNumActiveFeatures()) {
-			int idxFv1 = this.indices[i1];
-			int idxFv2 = fv2.getIdx(i2);
-			float valFv1 = this.values[i1];
-			float valFv2 = fv2.getValue(i2);
-			if (idxFv1 < idxFv2) {
-				rIdx.add(idxFv1);
-				rVal.add(valFv1);
+		int i1 = 0;
+		int i2 = 0;
+
+		if(!sorted){
+			for(i1=0;i1 < this.indices.length;i1++){
+				rIdx.add(this.indices[i1]);
+				rVal.add(this.values[i1]);
+			}
+			for(i1=0;i1 < fv2.getNumActiveFeatures();i1++){
+				rIdx.add(fv2.getIdx(i1));
+				rVal.add(-fv2.getValue(i1));
+			}
+		}
+		else{
+
+
+			while (i1 < this.indices.length && i2 < fv2.getNumActiveFeatures()) {
+				int idxFv1 = this.indices[i1];
+				int idxFv2 = fv2.getIdx(i2);
+				float valFv1 = this.values[i1];
+				float valFv2 = fv2.getValue(i2);
+				if (idxFv1 < idxFv2) {
+					rIdx.add(idxFv1);
+					rVal.add(valFv1);
+					i1++;
+				} else if (idxFv1 > idxFv2) {
+					rIdx.add(idxFv2);
+					rVal.add(-valFv2);
+					i2++;
+				} else {
+					rIdx.add(idxFv1);
+					rVal.add(valFv1-valFv2);
+					i1++;
+					i2++;
+				}
+			}
+
+			while (i1 < this.indices.length) {
+				rIdx.add(this.indices[i1]);
+				rVal.add(this.values[i1]);
 				i1++;
-			} else if (idxFv1 > idxFv2) {
-				rIdx.add(idxFv2);
-				rVal.add(-valFv2);
-				i2++;
-			} else {
-				rIdx.add(idxFv1);
-				rVal.add(valFv1-valFv2);
-				i1++;
+			}
+
+			while (i2 < fv2.getNumActiveFeatures()) {
+				rIdx.add(fv2.getIdx(i2));
+				rVal.add(-fv2.getValue(i2));
 				i2++;
 			}
 		}
-
-		while (i1 < this.indices.length) {
-			rIdx.add(this.indices[i1]);
-			rVal.add(this.values[i1]);
-			i1++;
-		}
-		
-		while (i2 < fv2.getNumActiveFeatures()) {
-			rIdx.add(fv2.getIdx(i2));
-			rVal.add(-fv2.getValue(i2));
-			i2++;
-		}
-
 		int[] resIdx = new int[rIdx.size()];
 		float[] resValue = new float[rVal.size()];
 
@@ -242,7 +275,7 @@ public class SparseFeatureVector implements IFeatureVector {
 			resValue[i] = rVal.get(i);
 		}
 
-		return new SparseFeatureVector(resIdx, resValue);
+		return new SparseFeatureVector(resIdx, resValue, sorted);
 	}
 
 	/**
@@ -255,7 +288,7 @@ public class SparseFeatureVector implements IFeatureVector {
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream oos = new DataOutputStream(baos);
-
+		oos.writeBoolean(sorted);
 		oos.writeInt(indices.length);
 
 		for (int i = 0; i < indices.length; i++) {
@@ -277,7 +310,7 @@ public class SparseFeatureVector implements IFeatureVector {
 
 		DataInputStream in = new DataInputStream(
 				new ByteArrayInputStream(array));
-
+		boolean sorted = in.readBoolean();
 		int numFeatures = in.readInt();
 
 		int[] featureIds = new int[numFeatures];
@@ -296,7 +329,7 @@ public class SparseFeatureVector implements IFeatureVector {
 			throw e;
 
 		}
-		return new SparseFeatureVector(featureIds, featureValues);
+		return new SparseFeatureVector(featureIds, featureValues, sorted);
 	}
 
 	@Override
@@ -314,5 +347,13 @@ public class SparseFeatureVector implements IFeatureVector {
 	public int getNumActiveFeatures() {
 		// TODO Auto-generated method stub
 		return indices.length;
+	}
+	
+	public float[]  getValues(){
+		return Arrays.copyOf(values, values.length);
+	}
+	
+	public int[] getIndices(){
+		return Arrays.copyOf(indices, indices.length);
 	}
 }

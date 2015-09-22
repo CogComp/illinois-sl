@@ -10,12 +10,11 @@ import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
-import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
+import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 /**
- * Finds the best dep tree using McDonald's directed MST appraoch
+ * Finds the best dep tree using McDonald's directed MST approach
  * @author upadhya3
  *
  */
@@ -51,9 +50,9 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 
 		for (int head = 0; head <= sent.size(); head++) {
 			for (int j = 1; j <= sent.size(); j++) {
-				IFeatureVector fv = feat.getEdgeFeatures(head, j, sent);
+				FeatureVectorBuffer edgefv = feat.getEdgeFeatures(head, j, sent);
 				// edge from head i to modifier j
-				edgeScore[head][j] = weight.dotProduct(fv);
+				edgeScore[head][j] = weight.dotProduct(edgefv.toFeatureVector(false));
 				if (gold != null) {
 					if (gold.heads[j] != head) // incur loss
 						edgeScore[head][j] += 1.0f;
@@ -87,11 +86,10 @@ public class ChuLiuEdmondsDecoder extends AbstractInferenceSolver {
 		Map<Integer, Integer> node2parent = weightedSpanningTree.val.parents;
 
 		int[] head = new int[edgeScore.length];
-		String[] deprels = new String[edgeScore[0].length];
 		for (Integer node : node2parent.keySet()) {
 			head[node] = node2parent.get(node);
 		}
-		return new DepStruct(head, deprels);
+		return new DepStruct(head);
 	}
 
 	@Override

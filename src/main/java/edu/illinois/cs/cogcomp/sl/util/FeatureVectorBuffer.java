@@ -1,12 +1,15 @@
 package edu.illinois.cs.cogcomp.sl.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.primitives.Floats;
+import com.google.common.primitives.Ints;
 
 /**
  * Generate a sparse feature vector.
@@ -31,20 +34,8 @@ import org.slf4j.LoggerFactory;
  */
 
 public class FeatureVectorBuffer {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1738932616256244560L;
-	
 	Logger logger = LoggerFactory.getLogger(FeatureVectorBuffer.class);
 
-	
-	/**
-	 *  storage of feature elements
-	 *  Note that we sum up the feature elements with the same index
-	 *  only when transfer it to FeatureVector.
-	 */
-	List<FeatureItem> featureItemList;
 	
 	/**
 	 * the indices of active features.
@@ -54,18 +45,20 @@ public class FeatureVectorBuffer {
 	 * and shift your feature vector.
 	 */
 
-	int[] indices;
+	List<Integer> idxList;
 
 	/**
 	 * The values of active features.
 	 */
-	float[] values;
+	List<Float> valList;
+	
 	
 	/**
 	 * Constructor
 	 */
 	public FeatureVectorBuffer(){
-		featureItemList = new ArrayList<FeatureVectorBuffer.FeatureItem>();
+		idxList = new ArrayList<Integer>();
+		valList = new ArrayList<Float>();
 	}
 	
 
@@ -77,8 +70,10 @@ public class FeatureVectorBuffer {
 	 */
 	public FeatureVectorBuffer(int[] fIdxArray, double[] fValueArray) {
 		assert fIdxArray.length == fValueArray.length;
-		featureItemList = new ArrayList<FeatureItem>();
-		addFeature(fIdxArray, fValueArray);
+		idxList = Ints.asList(fIdxArray);
+		valList = new ArrayList<Float>();
+		for (int i = 0; i < fIdxArray.length; i++) 
+			valList.add((float)fValueArray[i]);
 	}
 
 	/**
@@ -89,8 +84,8 @@ public class FeatureVectorBuffer {
 	 */
 	public FeatureVectorBuffer(int[] fIdxArray, float[] fValueArray) {
 		assert fIdxArray.length == fValueArray.length;
-		featureItemList = new ArrayList<FeatureItem>();
-		addFeature(fIdxArray, fValueArray);
+		idxList = Ints.asList(fIdxArray);
+		valList = Floats.asList(fValueArray);
 	}
 
 
@@ -101,8 +96,8 @@ public class FeatureVectorBuffer {
 	 * @param fValueArray
 	 */
 	public <T extends Number> FeatureVectorBuffer(List<Integer> fIdxList, List<T> fValueList) {
-		assert fIdxList.size() == fValueList.size();
-		featureItemList = new ArrayList<FeatureItem>();
+		idxList = new ArrayList<Integer>();
+		valList = new ArrayList<Float>();
 		addFeature(fIdxList, fValueList);
 	}
 	
@@ -112,10 +107,8 @@ public class FeatureVectorBuffer {
 	 * @param fv
 	 */
 	public FeatureVectorBuffer(IFeatureVector fv) {
-		featureItemList = new ArrayList<FeatureItem>();
-		for (int i = 0; i < fv.getNumActiveFeatures(); i++) {
-			featureItemList.add(new FeatureItem(fv.getIdx(i), fv.getValue(i)));
-		}
+		idxList= Ints.asList(fv.getIndices());
+		valList= Floats.asList(fv.getValues());
 	}
 
 	/**
@@ -123,9 +116,8 @@ public class FeatureVectorBuffer {
 	 * @param fv
 	 */
 	public void addFeature(IFeatureVector fv){
-		for (int i = 0; i < fv.getNumActiveFeatures(); i++) {
-			featureItemList.add(new FeatureItem(fv.getIdx(i), fv.getValue(i)));
-		}
+		idxList.addAll(Ints.asList(fv.getIndices()));
+		valList.addAll(Floats.asList(fv.getValues()));
 	}
 	
 	/**
@@ -133,10 +125,8 @@ public class FeatureVectorBuffer {
 	 * @param fvb
 	 */
 	public void addFeature(FeatureVectorBuffer fvb){
-		for (int i = 0; i < fvb.featureItemList.size(); i++) {
-			FeatureItem item = fvb.featureItemList.get(i);
-			featureItemList.add(new FeatureItem(item.index, item.value));
-		}
+		idxList.addAll(fvb.idxList);
+		valList.addAll(fvb.valList);
 	}
 
 
@@ -147,8 +137,9 @@ public class FeatureVectorBuffer {
 	 */	
 	public void addFeature(IFeatureVector fv, int offset){
 		for (int i = 0; i < fv.getNumActiveFeatures(); i++) {
-			featureItemList.add(new FeatureItem(fv.getIdx(i)+offset, fv.getValue(i)));
+			idxList.add(fv.getIdx(i)+offset);
 		}
+		valList.addAll(Floats.asList(fv.getValues()));
 	}
 	
 	/**
@@ -157,10 +148,10 @@ public class FeatureVectorBuffer {
 	 * @param fv
 	 */
 	public void addFeature(FeatureVectorBuffer fvb, int offset){
-		for (int i = 0; i < fvb.featureItemList.size(); i++) {
-			FeatureItem item = fvb.featureItemList.get(i);
-			featureItemList.add(new FeatureItem(item.index+offset, item.value));
+		for (int i = 0; i < fvb.idxList.size(); i++) {
+			idxList.add(fvb.idxList.get(i)+offset);
 		}
+		valList.addAll(fvb.valList);
 	}
 	
 	/**
@@ -169,7 +160,8 @@ public class FeatureVectorBuffer {
 	 * @param value
 	 */
 	public void addFeature(int idx, float value){
-		featureItemList.add(new FeatureItem(idx, value));
+		idxList.add(idx);
+		valList.add(value);
 	}
 	
 	/**
@@ -178,7 +170,8 @@ public class FeatureVectorBuffer {
 	 * @param value
 	 */
 	public void addFeature(int idx, double value){
-		featureItemList.add(new FeatureItem(idx, (float)value));
+		idxList.add(idx);
+		valList.add((float)value);
 	}
 	
 
@@ -188,9 +181,8 @@ public class FeatureVectorBuffer {
 	 * @param fValueArray
 	 */
 	public void addFeature(int[] fIdxArray, float[] fValueArray) {
-		for (int i = 0; i < fIdxArray.length; i++) {
-			featureItemList.add(new FeatureItem(fIdxArray[i], fValueArray[i]));
-		}
+		idxList.addAll(Ints.asList(fIdxArray));
+		valList.addAll(Floats.asList(fValueArray));
 	}
 
 	/**
@@ -199,8 +191,9 @@ public class FeatureVectorBuffer {
 	 * @param fValueArray
 	 */
 	public void addFeature(int[] fIdxArray, double[] fValueArray) {
+		idxList.addAll(Ints.asList(fIdxArray));
 		for (int i = 0; i < fIdxArray.length; i++) {
-			featureItemList.add(new FeatureItem(fIdxArray[i], (float)fValueArray[i]));
+			valList.add((float)fValueArray[i]);
 		}
 	}
 	
@@ -211,19 +204,19 @@ public class FeatureVectorBuffer {
 	 */
 	public <T extends Number> void addFeature(List<Integer> fIdxList,
 			List<T> fValueList) {
-		for (int i = 0; i < fIdxList.size(); i++) {
-			featureItemList.add(new FeatureItem(fIdxList.get(i), fValueList.get(i).floatValue()));
-		}
+		idxList.addAll(fIdxList);
+		for (int i = 0; i < fValueList.size(); i++) 
+			valList.add((float)fValueList.get(i).floatValue());
+		
 	}
 	
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 
-		for (int i = 0; i < featureItemList.size(); i++) {
-			int idx = featureItemList.get(i).index;
-			float val = featureItemList.get(i).value;
-			
+		for (int i = 0; i < idxList.size(); i++) {
+			int idx = idxList.get(i);
+			float val = valList.get(i);
 			sb.append(idx + ":" + val + " ");
 		}
 		return sb.toString();
@@ -236,8 +229,8 @@ public class FeatureVectorBuffer {
 	 * @return
 	 */
 	public void shift(int offset) {
-		for (int i = 0; i < featureItemList.size(); i++) {
-			featureItemList.get(i).index = featureItemList.get(i).index + offset; 
+		for (int i = 0; i < idxList.size(); i++) {
+			idxList.set(i, idxList.get(i)+offset);
 		}
 	}
 
@@ -247,53 +240,55 @@ public class FeatureVectorBuffer {
 	 * @return fv
 	 */
 	public  IFeatureVector toFeatureVector() {
-		Collections.sort(featureItemList, new Comparator<FeatureItem>() {
-			// @Override
-			@Override
-			public int compare(FeatureItem o1, FeatureItem o2) {
-				if (o1.index < o2.index)
-					return -1;
-				else if (o1.index > o2.index)
-					return 1;
-				else
-					return 0;
+		return toFeatureVector(true);
+	}
+	public  IFeatureVector toFeatureVector(boolean sorted) {
+		if(!sorted)
+			return new SparseFeatureVector(Ints.toArray(idxList), Floats.toArray(valList), false);
+		if(idxList.size() == 0)
+			return new SparseFeatureVector(new int[0], new float[0]);
+		// sort items
+		Integer[] idxs = new Integer[idxList.size()];
+		for(int i = 0; i < idxs.length; i++) idxs[i] = i;
+		Arrays.sort(idxs, new Comparator<Integer>(){
+			public int compare(Integer o1, Integer o2){
+				return Integer.compare(idxList.get(o1), idxList.get(o2));
 			}
 		});
-		
+				
 		int preIdx = -1;
-		if(featureItemList.size() ==0)
-			return new SparseFeatureVector(new int[0], new float[0]);
+			
 
-		if(featureItemList.get(0).index < 0) {
+		if(sorted && idxList.get(idxs[0])< 0) {
 			logger.error("Feature vector index should start at 1. Please shift your feature vector "
 					+ "index by 1 using shift(int offset) function . See readme for details.");
 			throw new IllegalArgumentException("index must be >= 1");
 		}
 		
 		int numNonZeroFeature = 0;
-		for(int i =0; i < featureItemList.size(); i ++){
-			if(preIdx == featureItemList.get(i).index){
+		for(int i =0; i < idxs.length; i ++){
+			if(preIdx == idxList.get(idxs[i])){
 				continue;
 			}
 			numNonZeroFeature++;
-			preIdx = featureItemList.get(i).index;
+			preIdx = idxList.get(idxs[i]);
 		}
 		int[] indices = new int[numNonZeroFeature];
 		float[] values = new float[numNonZeroFeature];
 		
 		numNonZeroFeature = 0;
 		preIdx = -1;
-		for(int i =0; i < featureItemList.size(); i ++){
-			if(preIdx == featureItemList.get(i).index){
-				values[numNonZeroFeature-1] += featureItemList.get(i).value;
+		for(int i =0; i < idxList.size(); i ++){
+			if(preIdx == idxList.get(idxs[i])){
+				values[numNonZeroFeature-1] += valList.get(idxs[i]);
 				continue;
 			}
-			indices[numNonZeroFeature] = featureItemList.get(i).index;
-			values[numNonZeroFeature] = featureItemList.get(i).value;
-			preIdx = featureItemList.get(i).index;
+			indices[numNonZeroFeature] = idxList.get(idxs[i]);
+			values[numNonZeroFeature] =  valList.get(idxs[i]);
+			preIdx = idxList.get(idxs[i]);
 			numNonZeroFeature++;
 		}
-		return new SparseFeatureVector(indices, values);
+		return new SparseFeatureVector(indices, values, sorted);
 	}
 	
 	public static class FeatureItem {

@@ -14,21 +14,42 @@ import edu.illinois.cs.cogcomp.sl.core.IStructure;
 public class DepStruct implements IStructure {
 
 	public int[] heads; // pos of heads of ith token is heads[i]
-	public String[] deprels;
 
 	public DepStruct(DependencyInstance instance) {
 		heads = instance.heads;
-		deprels = instance.deprels;
 	}
 
 	public DepStruct(int sent_size) {
 		heads = new int[sent_size + 1];
 		heads[0] = -1;
-		deprels = new String[sent_size + 1];
 	}
 
-	public DepStruct(int[] heads, String[] deprels) {
+	public DepStruct(int[] heads) {
 		this.heads = heads;
-		this.deprels = deprels;
 	}
+	
+	@Override
+	public boolean equals(Object aThat) {
+		// check for self-comparison
+		if (this == aThat)
+			return true;		
+		if(this.heads.length != ((DepStruct) aThat).heads.length)
+			return false;
+		if(this.hashCode() != ((DepStruct) aThat).hashCode())
+			return false;
+		//check if their tags are the same
+		for(int i=0; i < this.heads.length; i++)
+			if(heads[i]!=((DepStruct) aThat).heads[i])
+				return false;
+		return true;
+	}
+	
+	@Override
+	public int hashCode(){
+		int hashCode = 0;
+		for (int i = 0; i < heads.length; i++)
+			hashCode = hashCode*31 + heads[i];
+		return hashCode;
+	}
+
 }

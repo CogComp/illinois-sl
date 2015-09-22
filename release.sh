@@ -1,5 +1,6 @@
-version=0.2.2
+version=1.0.0
 
+bash scripts/getExternalDeps.sh
 mvn compile assembly:single
 mvn package
 mvn source:jar

@@ -36,8 +36,8 @@ public class MultiClassInferenceSolver extends AbstractInferenceSolver{
 		int bestOutput = -1;
 		float bestScore = Float.NEGATIVE_INFINITY;
 		
-		for(int i=0; i < mi.number_of_class ; i ++){
-			float score = weight.dotProduct(mi.base_fv,mi.base_n_fea*i);
+		for(int i=0; i < mi.numberOfClasses ; i ++){
+			float score = weight.dotProduct(mi.baseFv,mi.baseNfeature*i);
 			
 			if (lmi!=null && i != lmi.output){
 				if(lossMatrix == null)

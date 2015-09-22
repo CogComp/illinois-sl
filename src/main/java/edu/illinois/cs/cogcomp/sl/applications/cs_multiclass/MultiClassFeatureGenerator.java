@@ -8,6 +8,11 @@ import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 
 public class MultiClassFeatureGenerator extends AbstractFeatureGenerator {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * This function returns a feature vector \Phi(x,y) based on an instance-structure pair.
 	 * 
 	 * @return Feature Vector \Phi(x,y), where x is the input instance and y is the
@@ -18,8 +23,8 @@ public class MultiClassFeatureGenerator extends AbstractFeatureGenerator {
 	public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
 		MultiClassInstance mx = (MultiClassInstance) x;
 		MultiClassLabel my = (MultiClassLabel)y;
-		FeatureVectorBuffer fvb = new FeatureVectorBuffer(mx.base_fv);
-		fvb.shift(my.output * mx.base_n_fea);
+		FeatureVectorBuffer fvb = new FeatureVectorBuffer(mx.baseFv);
+		fvb.shift(my.output * mx.baseNfeature);
 		return fvb.toFeatureVector();
 	}
 }

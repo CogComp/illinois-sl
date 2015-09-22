@@ -67,13 +67,8 @@ public class MainClass {
 		if (model.lm.isAllowNewFeatures())
 			model.lm.addFeature("W:unknownword");
 		model.featureGenerator = new DepFeatureGenerator(model.lm);
-		SLProblem problem = getStructuredData(trainFile,10000);
-		pre_extract(model, problem);
-		// extraction done
-		printMemoryUsage();
-		System.out.println("# of features: " + model.lm.getNumOfFeature());
+		SLProblem problem = getStructuredData(trainFile, -1);
 		model.infSolver = new ChuLiuEdmondsDecoder(model.featureGenerator);
-		//para.TOTAL_NUMBER_FEATURE = model.lm.getNumOfFeature();
 		Learner learner = LearnerFactory.getLearner(model.infSolver,
 				model.featureGenerator, para);
 		learner.runWhenReportingProgress(new ProgressReportFunction() {
@@ -132,15 +127,6 @@ public class MainClass {
 			total++;
 		}
 		return new IntPair(corr, total);
-	}
-
-	private static void pre_extract(SLModel model, SLProblem problem) {
-		System.out.println("Pre-extracting features ...");
-		// there shld be a better way, feature extraction
-		for (Pair<IInstance, IStructure> p : problem) {
-			model.featureGenerator
-					.getFeatureVector(p.getFirst(), p.getSecond());
-		}
 	}
 
 	private static Pair<IInstance, IStructure> getSLPair(

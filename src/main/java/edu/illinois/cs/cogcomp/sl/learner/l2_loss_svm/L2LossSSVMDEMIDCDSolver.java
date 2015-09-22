@@ -131,18 +131,25 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 				}
 				
 				if((learningIter+1) % parameters.PROGRESS_REPORT_ITER == 0) {
-					logger.info("Iteration: " + learningIter
+					if(numNewStructures() < Integer.MAX_VALUE){
+						int candidateSetSize = 0;
+						for(StructuredInstanceWithAlphas ex : examples){
+							candidateSetSize += ex.candidateSet.size();
+						}
+						logger.info("Iteration: " + learningIter
 							+ ": Add " + numNewStructures()
 							+ " candidate structures into the working set.");
-					logger.info("negative dual obj = " + -getDualObjective(
+						logger.info("Total size of candidate set is " + candidateSetSize);
+						logger.info("negative dual obj = " + -getDualObjective(
 							examples.toArray(new StructuredInstanceWithAlphas[examples.size()]), wv));
-					if(f!=null)
+						if(f!=null)
 						try {
 							f.run(wv, (AbstractInferenceSolver)infSolvers[0].clone());
-						} catch (Exception e) {
+							} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+					}
 				}
 				
 			}
