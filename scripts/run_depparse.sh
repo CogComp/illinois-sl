@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 JAVA=java
-jarPath=dist/illinois-sl-1.0-jar-with-dependencies.jar
+jarPath=dist/illinois-sl-1.3-jar-with-dependencies.jar
 MEMORY="-Xmx8g -XX:MaxPermSize=500m"
 OPTIONS="$MEMORY -Xss40m -ea "
 

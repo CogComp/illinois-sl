@@ -1,4 +1,4 @@
-version=1.0
+version=1.3
 sed -i "s/jarPath=.*/jarPath=dist\/illinois-sl-$version-jar-with-dependencies.jar/g" scripts/run_depparse.sh;
 sed -i "s/jarPath=.*/jarPath=dist\/illinois-sl-$version-jar-with-dependencies.jar/g" scripts/run_multiclass.sh;
 sed -i "s/jarPath=.*/jarPath=dist\/illinois-sl-$version-jar-with-dependencies.jar/g" scripts/run_reranking.sh;
