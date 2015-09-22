@@ -1,5 +1,8 @@
 package edu.illinois.cs.cogcomp.sl.util;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 /**
  * The weight vector 
  * @author Ming-Wei Chang
@@ -90,5 +93,15 @@ public class WeightVector extends DenseVector {
 				nzeroes++;
 		}
 		System.out.println("NZ values: "+nzeroes);
+	}
+	
+	public void printToFile(Lexiconer lm, String filepath) throws FileNotFoundException {
+		float[] ff= this.getInternalArray();
+		PrintWriter w = new PrintWriter(filepath);
+		for(int i=0;i<ff.length;i++)
+		{
+			w.println(lm.getFeatureString(i)+" "+ff[i]);
+		}
+		w.close();
 	}
 }
