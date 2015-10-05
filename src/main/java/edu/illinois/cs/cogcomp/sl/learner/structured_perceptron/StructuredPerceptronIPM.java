@@ -20,11 +20,11 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
  * @author Vivek Srikumar
  * 
  */
-public class StructurePerceptronIPM extends Learner {
+public class StructuredPerceptronIPM extends Learner {
 
 	private int num_threads;
 
-	public StructurePerceptronIPM(AbstractInferenceSolver infSolver,
+	public StructuredPerceptronIPM(AbstractInferenceSolver infSolver,
 			AbstractFeatureGenerator fg, SLParameters params, int num_threads) {
 		super(infSolver, fg, params);
 		this.num_threads = num_threads;
@@ -32,7 +32,7 @@ public class StructurePerceptronIPM extends Learner {
 
 	public static int numUpdates = 0;
 	private static Logger log = LoggerFactory
-			.getLogger(StructurePerceptronIPM.class);
+			.getLogger(StructuredPerceptronIPM.class);
 
 	class StructPerceptronHandler extends Thread {
 		private StructuredPerceptron learner;
@@ -64,7 +64,7 @@ public class StructurePerceptronIPM extends Learner {
 			SLParameters para) throws Exception {
 		// initialize thread
 		int n_thread = struct_finder_list.length;
-
+		log.info("Using # of threads "+n_thread);
 		// Approach 1: preprocess and split instances evenly (if data is on the
 		// disk)
 		// Approach 2: use a queue to store the instances, every instances
@@ -79,6 +79,7 @@ public class StructurePerceptronIPM extends Learner {
 		long trainTime = 0;
 		float initLearningRate = para.LEARNING_RATE;
 		for (int iter = 0; iter < para.MAX_NUM_ITER; iter++) {
+			
 			for (int i = 0; i < n_thread; i++) {
 				StructuredPerceptron spLearner = new StructuredPerceptron(
 						struct_finder_list[i], featureGenerator, para);
@@ -107,8 +108,8 @@ public class StructurePerceptronIPM extends Learner {
 			if (iter % para.PROGRESS_REPORT_ITER == 0) {
 				para.LEARNING_RATE = initLearningRate / (float) (iter + 1);
 				log.info("Changing learning rate to " + para.LEARNING_RATE);
-
 			}
+			log.info("OUTER ITER #" + iter);
 
 			para.LEARNING_RATE = initLearningRate;
 		}
@@ -128,6 +129,7 @@ public class StructurePerceptronIPM extends Learner {
 		}
 		WeightVector w = trainParallelStructuredPerceptron(solvers, sp,
 				parameters);
+		log.info("Finished!");
 		return w;
 	}
 }

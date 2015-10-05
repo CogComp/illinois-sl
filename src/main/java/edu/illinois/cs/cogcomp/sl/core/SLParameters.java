@@ -41,7 +41,7 @@ public class SLParameters implements Serializable {
 	private static final long serialVersionUID = 3630883016928318230L;
 
 	public static enum LearningModelType {
-		L2LossSSVM, StructuredPerceptron
+		L2LossSSVM, StructuredPerceptron, StructuredPerceptronIPM
 	};
 
 	public LearningModelType LEARNING_MODEL = LearningModelType.L2LossSSVM;
