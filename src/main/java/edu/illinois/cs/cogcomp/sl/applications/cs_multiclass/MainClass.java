@@ -13,7 +13,7 @@
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimers in the documentation and/or other materials provided with the distribution.
  * Neither the names of the Cognitive Computations Group, nor the University of Illinois at Urbana-Champaign, nor the names of its contributors may be used to endorse or promote products derived from this Software without specific prior written permission.
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
- *     
+ *
  *******************************************************************************/
 package edu.illinois.cs.cogcomp.sl.applications.cs_multiclass;
 
@@ -36,11 +36,12 @@ public class MainClass {
 		public static void trainMultiClassModel(String trainingDataPath, String costMatrixPath, String configFilePath, String modelPath)
 				throws Exception {
 			MultiClassModel model = new MultiClassModel();
-			
+
 			LabeledMultiClassData sp = MultiClassIOManager.readTrainingData(trainingDataPath);
 			model.labelMapping = sp.labelMapping;
 			model.numFeatures = sp.numFeatures;
-			model.cost_matrix = MultiClassIOManager.getCostMatrix(sp.labelMapping,costMatrixPath);
+			if(!costMatrixPath.equals("null"))
+				model.cost_matrix = MultiClassIOManager.getCostMatrix(sp.labelMapping,costMatrixPath);
 
 			// initialize the inference solver
 			model.infSolver = new MultiClassInferenceSolver(model.cost_matrix);
@@ -52,7 +53,7 @@ public class MainClass {
 			Learner learner = LearnerFactory.getLearner(model.infSolver, model.featureGenerator, para);
 			model.wv = learner.train(sp);
 			model.config =  new HashMap<String, String>();
-			
+
 			// save the model
 			model.saveModel(modelPath);
 		}
@@ -66,7 +67,7 @@ public class MainClass {
 				throws Exception {
 			MultiClassModel model = (MultiClassModel)SLModel.loadModel(modelPath);
 			SLProblem sp = MultiClassIOManager.readTestingData(testDataPath, model.labelMapping, model.numFeatures);
-			
+
 			BufferedWriter writer = null;
 			if(predictionFileName!=null){
 				writer = new BufferedWriter(new FileWriter(predictionFileName));
@@ -76,12 +77,14 @@ public class MainClass {
 			for (int i = 0; i < sp.size(); i++) {
 				MultiClassInstance ri = (MultiClassInstance) sp.instanceList.get(i);
 				MultiClassLabel pred = (MultiClassLabel) model.infSolver.getBestStructure(model.wv, ri);
-				pred_loss += model.cost_matrix[((MultiClassLabel)sp.goldStructureList.get(i)).output][pred.output];
+				if(model.cost_matrix!=null)
+					pred_loss += model.cost_matrix[((MultiClassLabel)sp.goldStructureList.get(i)).output][pred.output];
+				else
+					pred_loss +=1.0;
 				if(writer!=null)
 					writer.write(pred.output+ "\n");
 			}
-			System.out.println("Loss = " + pred_loss/sp.size());
-
+			System.out.println("Loss = " + pred_loss/sp.size()+" "+pred_loss+"/"+sp.size());
 			if(writer!=null)
 				writer.close();
 			return;
