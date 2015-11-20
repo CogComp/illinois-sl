@@ -17,8 +17,11 @@
  *******************************************************************************/
 package edu.illinois.cs.cogcomp.sl.util;
 
+import edu.illinois.cs.cogcomp.core.io.LineIO;
+
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * The weight vector 
@@ -120,5 +123,19 @@ public class WeightVector extends DenseVector {
 			w.println(lm.getFeatureString(i)+" "+ff[i]);
 		}
 		w.close();
+	}
+	public static WeightVector readFromFile(Lexiconer lm, String filepath) throws FileNotFoundException {
+		List<String> lines = LineIO.read(filepath);
+		float[] input = new float[lines.size()];
+		for(String line:lines)
+		{
+			String[] parts = line.split("\\s+");
+			assert parts.length==2 : "weight file corrupted";
+			String fstr = parts[0];
+			float val = Float.parseFloat(parts[1]);
+			input[lm.getFeatureId(fstr)]=val;
+		}
+		WeightVector wv = new WeightVector(input);
+		return wv;
 	}
 }
