@@ -23,9 +23,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,10 +228,6 @@ public class SparseFeatureVector implements IFeatureVector {
 	 */
 	@Override
 	public IFeatureVector difference(IFeatureVector fv2) {
-
-
-
-
 		List<Integer> rIdx = new ArrayList<Integer>();
 		List<Float> rVal= new ArrayList<Float>();
 		int i1 = 0;
@@ -250,7 +244,6 @@ public class SparseFeatureVector implements IFeatureVector {
 			}
 		}
 		else{
-
 
 			while (i1 < this.indices.length && i2 < fv2.getNumActiveFeatures()) {
 				int idxFv1 = this.indices[i1];
