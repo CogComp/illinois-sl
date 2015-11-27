@@ -77,6 +77,12 @@ public class SparseFeatureVector implements IFeatureVector {
 
 	boolean sorted = false;
 
+
+	public SparseFeatureVector(int[] fIdxArray, double[] fValArray){
+		this(fIdxArray, fValArray, true);
+	}
+
+
 	/**
 	 * Constructor: construct a sparse feature vector by providing an array of indices and 
 	 * an array of feature values. The third parameter specifies if the indices are sorted.
@@ -93,17 +99,13 @@ public class SparseFeatureVector implements IFeatureVector {
 	 * @param sorted
 	 */
 
-	public SparseFeatureVector(int[] fIdxArray, double[] fValArray){
-		this(fIdxArray, fValArray, true);
-	}
-
 	public SparseFeatureVector(int[] fIdxArray, double[] fValArray, boolean sorted) {
 		this.sorted = sorted;
 		if(sorted){
 			for(int i=1; i< fIdxArray.length; i++){
 				if(fIdxArray[i-1]>=fIdxArray[i]){
-					throw new IllegalArgumentException("Please use FeatureVectorBuffer to generate a sorted feature vector. See readme for details");
-				}			
+					throw new IllegalArgumentException("Please use FeatureVectorBuffer to generate a sorted feature vector. See readme for details. Caused by fIdx:"+i);
+				}
 			}
 		}
 
@@ -221,10 +223,9 @@ public class SparseFeatureVector implements IFeatureVector {
 	}
 
 	/**
-	 * return a new vector of (a-b)
+	 * return a new vector of (fv1-fv2)
 	 * 
-	 * @param a
-	 * @param b
+	 * @param fv2
 	 * @return diff
 	 */
 	@Override
