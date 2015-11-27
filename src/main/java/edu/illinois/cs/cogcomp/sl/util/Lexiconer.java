@@ -169,7 +169,7 @@ public class Lexiconer implements Serializable {
 	}
 
 	public int getFeatureId(String s) {
-		assert feaStr2IdMap.containsKey(s);
+	    assert feaStr2IdMap.containsKey(s) : "could not find featStr "+ s;
 		return feaStr2IdMap.get(s);
 	}
 

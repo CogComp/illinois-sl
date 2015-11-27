@@ -132,6 +132,8 @@ public class WeightVector extends DenseVector {
 			String[] parts = line.split("\\s+");
 			assert parts.length==2 : "weight file corrupted";
 			String fstr = parts[0];
+			if(fstr.equals("null"))
+			    continue;
 			float val = Float.parseFloat(parts[1]);
 			input[lm.getFeatureId(fstr)]=val;
 		}
