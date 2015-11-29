@@ -77,10 +77,13 @@ public class MainClass {
 			for (int i = 0; i < sp.size(); i++) {
 				MultiClassInstance ri = (MultiClassInstance) sp.instanceList.get(i);
 				MultiClassLabel pred = (MultiClassLabel) model.infSolver.getBestStructure(model.wv, ri);
+				MultiClassLabel gold = ((MultiClassLabel)sp.goldStructureList.get(i));
 				if(model.cost_matrix!=null)
-					pred_loss += model.cost_matrix[((MultiClassLabel)sp.goldStructureList.get(i)).output][pred.output];
-				else
-					pred_loss +=1.0;
+					pred_loss += model.cost_matrix[gold.output][pred.output];
+				else {
+					if(pred.output!=gold.output)
+					pred_loss += 1.0;
+				}
 				if(writer!=null)
 					writer.write(pred.output+ "\n");
 			}
