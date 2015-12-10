@@ -18,7 +18,7 @@ public class LatentLearner {
 			SLProblem problem, AbstractLatentInferenceSolver inference)
 			throws Exception {
 
-		WeightVector w = new WeightVector(100);//baseLearner.train(problem); // init w
+		WeightVector w = new WeightVector(100000);//baseLearner.train(problem); // init w
 
 		for (int outerIter = 0; outerIter < numOuterIters; outerIter++) {
 
