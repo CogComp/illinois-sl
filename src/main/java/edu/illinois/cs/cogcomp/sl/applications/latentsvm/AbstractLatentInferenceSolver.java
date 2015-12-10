@@ -36,7 +36,7 @@ public abstract class AbstractLatentInferenceSolver extends AbstractInferenceSol
 	 * @return
 	 * @throws Exception
 	 */
-	public abstract Pair<IStructure,Double> getLossAugmentedBestLatentStructure(
+	public abstract IStructure getLossAugmentedBestStructure(
 			WeightVector weight, IInstance ins, IStructure goldStructure)
 			throws Exception;
 
