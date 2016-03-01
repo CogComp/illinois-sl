@@ -1,6 +1,5 @@
-package edu.illinois.cs.cogcomp.sl.applications.latentsvm;
+package edu.illinois.cs.cogcomp.sl.latentsvm;
 
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
