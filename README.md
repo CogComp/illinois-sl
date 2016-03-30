@@ -51,6 +51,8 @@ requirement of the memory depends on the task.
 
 Download contents
 ----------------------------
+We recommand to download the stable version at
+http://cogcomp.cs.illinois.edu/page/software_view/illinois-sl
 
 The download contains the following files:
 - dist/illinois-sl-1.0.0-jar-with-dependencies.jar :  the jar file with dependencies.
