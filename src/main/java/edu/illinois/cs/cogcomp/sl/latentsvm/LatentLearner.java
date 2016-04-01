@@ -1,36 +1,38 @@
 package edu.illinois.cs.cogcomp.sl.latentsvm;
 
-import edu.illinois.cs.cogcomp.sl.core.IInstance;
-import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+import edu.illinois.cs.cogcomp.sl.core.*;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
-public class LatentLearner {
+public class LatentLearner extends Learner{
 
+	private final AbstractLatentInferenceSolver solver;
+	private final SLParameters params;
 	private Learner baseLearner;
 
-	public LatentLearner(Learner baseLearner) {
+	public LatentLearner(Learner baseLearner, AbstractFeatureGenerator fg, SLParameters params, AbstractLatentInferenceSolver solver) {
+		super(solver,fg, params);
 		this.baseLearner = baseLearner;
+		this.solver=solver;
+		this.params=params;
 	}
 
-	public WeightVector train(int numInnerIters, int numOuterIters,
-							  SLProblem problem, AbstractLatentInferenceSolver inference) throws Exception {
-		return train(numInnerIters, numOuterIters,
-				problem, inference,new WeightVector(10000));
+	public WeightVector train(SLProblem problem) throws Exception {
+		return train(problem, new WeightVector(10000));
 	}
-	public WeightVector train(int numInnerIters, int numOuterIters,
-							  SLProblem problem, AbstractLatentInferenceSolver inference, WeightVector w_init)
+
+	public WeightVector train(SLProblem problem, WeightVector w_init)
 			throws Exception {
 
 		WeightVector w = w_init; // new WeightVector(100000);//baseLearner.train(problem); // init w
 
-		for (int outerIter = 0; outerIter < numOuterIters; outerIter++) {
+		for (int outerIter = 0; outerIter < params.MAX_NUM_ITER; outerIter++) {
 
-			SLProblem new_prob = runLatentStructureInference(problem, w,
-					inference); // returns structured problem with (x_i,h_i)
+			SLProblem new_prob = runLatentStructureInference(problem, w,solver); // returns structured problem with (x_i,h_i)
 			w = baseLearner.train(new_prob, w); // update weight vector
 
+			if (params.PROGRESS_REPORT_ITER > 0 && (outerIter+1) % params.PROGRESS_REPORT_ITER == 0 && this.f != null)
+				f.run(w, solver);
 		}
 
 		return w;
@@ -48,7 +50,6 @@ public class LatentLearner {
 			// explaining
 			// latent
 			// structure
-
 			p.instanceList.add(x);
 			p.goldStructureList.add(y);
 
@@ -56,4 +57,5 @@ public class LatentLearner {
 
 		return p;
 	}
+
 }
