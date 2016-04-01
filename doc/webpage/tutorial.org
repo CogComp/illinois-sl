@@ -59,15 +59,6 @@ For this we can just set $\Delta(\y,\y')$ to zero in the loss-augmented inferenc
 
 * Examples
   - [[./pos.html][POS Tagging]]
-* TODO Example - Multiclass Classification			   :noexport:
-\begin{align*}
-\w = \begin{bmatrix}
-\w_1 & \w_2 & \cdots & \w_M
-\end{bmatrix} \\
-\Phi(\x,i) = \begin{bmatrix}
-\underbrace{0 \cdots 0}_{\text{block 1 to i-1}} & \underbrace{\Phi(\x)}_{\text{block i}} & \underbrace{0 \cdots 0}_{\text{block i+1 to M}}
-\end{bmatrix}
-\end{align*}
 * References
 1. Please cite the following paper when using the package:
    - K.-W. Chang, S. Upadhyay, M. Chang, V. Srikumar, D. Roth. IllinoisSL: A JAVA Library for Structured Prediction. In Arxiv, 2015 ([[illinoisSL.pdf][paper]]).
