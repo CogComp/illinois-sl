@@ -1,8 +1,6 @@
 Illinois Structured Learning Package v1.0.0
 ===========================================
 
-Purpose
--------
 Illinois Structured Learning Package (Illinois-SL) is a general
 purpose JAVA library for performing structured learning. It houses
 learning algorithms like averaged Structured Perceptron and Structured
@@ -14,6 +12,32 @@ implementation of DCD with support for multi-threading. Illinois-SL
 provides a simple and neat framework for developing applications using
 structured prediction models.
 
+Maven Coordinates
+-----------------
+To use Illinois-SL in your project add the following to your pom,
+
+```
+  <dependencies>
+  ...  
+    <dependency>
+      <groupId>edu.illinois.cs.cogcomp</groupId>
+      <artifactId>illinois-sl-core</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+  ...
+  </dependencies>
+
+<repositories>
+  ...
+    <repository>
+      <id>CogcompSoftware</id>
+      <name>CogcompSoftware</name>
+      <url>http://cogcomp.cs.illinois.edu/m2repo/</url>
+    </repository>
+  ...  
+  </repositories>
+
+```
 Example Usage
 -------------
 We provide detailed examples in an accompanying package at [illinois-sl-examples](https://github.com/IllinoisCogComp/illinois-sl-examples).
