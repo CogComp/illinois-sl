@@ -37,7 +37,6 @@ Linux OS without any hiccups. We assume that the package is installed
 on a machine with sufficient memory. The actual requirement of the
 memory depends on the task.
 
-
 NOTE:
 When running your project, if working with a large dataset,
 you may need to invoke your project using the -Xmx1G and -XX:MaxPermSize=1G
