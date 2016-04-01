@@ -87,8 +87,9 @@ ECML, 2013.
 Contact Information
 ------------
 
-Please send a message to illinois-ml-nlp-users@cs.uiuc.edu for any
-questions.
+Please open a new issue with a minimal working example, in case you
+run into problems when using this package, and we will assist you. You
+can also email your questions to illinois-ml-nlp-users@cs.uiuc.edu.
 
 (C) 2015 Kai-Wei Chang, Shyam Upadhyay, Ming-Wei Chang, Vivek Srikumar and Dan Roth, 
 Cognitive Computation Group, University of Illinois at Urbana-Champaign.
