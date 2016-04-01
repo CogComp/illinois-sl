@@ -3,18 +3,16 @@ Illinois Structured Learning Package v1.0.0
 
 Purpose
 -------
-
-Illinois Structured Learning Package (Illinois-SL) is a general purpose JAVA 
-library for performing structured learning. It houses learning algorithms like
-averaged Structured Perceptron and Structured SVM with L2-Loss, and provides 
-a minimal interface for your structured learning needs. The training algorithm 
-employed for training SSVM is dual coordinate descent(DCD), which has been 
-proven to have very good convergence properties. Illinois-SL comes with an 
-efficient implementation of DCD with support for multi-threading. Illinois-SL
-provides a simple and neat framework for developing applications using 
-structured prediction models. For advanced applications which makes use of
-latent structured models or indirect supervision, please check JLIS at [cogcomp
-website](http://cogcomp.cs.illinois.edu/page/software_view/JLIS).
+Illinois Structured Learning Package (Illinois-SL) is a general
+purpose JAVA library for performing structured learning. It houses
+learning algorithms like averaged Structured Perceptron and Structured
+SVM with L2-Loss, and provides a minimal interface for your structured
+learning needs. The training algorithm employed for training SSVM is
+dual coordinate descent(DCD), which has been proven to have very good
+convergence properties. Illinois-SL comes with an efficient
+implementation of DCD with support for multi-threading. Illinois-SL
+provides a simple and neat framework for developing applications using
+structured prediction models.
 
 Example Usage
 -------------
@@ -33,14 +31,14 @@ The Illinois Structured Learning Package was developed on and for
 GNU/Linux, specifically CENTOS (2.6.18-238.12.1.el5) and Scientific
 Linux (2.6.32-279.5.2.el6.x86_64). There are no guarantees for running
 it under any other operating system, but we hope it should run on a
-Linux OS without any hiccups. We assume that the package is installed
-on a machine with sufficient memory. The actual requirement of the
-memory depends on the task.
+Linux OS without any issues.
 
-NOTE:
-When running your project, if working with a large dataset,
-you may need to invoke your project using the -Xmx1G and -XX:MaxPermSize=1G
-JVM command line parameters. 
+We assume that the package is installed on a machine with sufficient
+memory. The actual requirement of the memory depends on the task and size of the learning problem.
+
+NOTE: When running your project, if working with a large dataset, you
+may need to invoke your project using the -Xmx1G and
+-XX:MaxPermSize=1G JVM command line parameters.
 
 
 Additional Documentation/Citation
