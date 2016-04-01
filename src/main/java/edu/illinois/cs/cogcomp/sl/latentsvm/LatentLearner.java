@@ -14,11 +14,16 @@ public class LatentLearner {
 		this.baseLearner = baseLearner;
 	}
 
-	public WeightVector learn(int numInnerIters, int numOuterIters,
-			SLProblem problem, AbstractLatentInferenceSolver inference)
+	public WeightVector train(int numInnerIters, int numOuterIters,
+							  SLProblem problem, AbstractLatentInferenceSolver inference) throws Exception {
+		return train(numInnerIters, numOuterIters,
+				problem, inference,new WeightVector(10000));
+	}
+	public WeightVector train(int numInnerIters, int numOuterIters,
+							  SLProblem problem, AbstractLatentInferenceSolver inference, WeightVector w_init)
 			throws Exception {
 
-		WeightVector w = new WeightVector(100000);//baseLearner.train(problem); // init w
+		WeightVector w = w_init; // new WeightVector(100000);//baseLearner.train(problem); // init w
 
 		for (int outerIter = 0; outerIter < numOuterIters; outerIter++) {
 
@@ -32,7 +37,7 @@ public class LatentLearner {
 	}
 
 	private static SLProblem runLatentStructureInference(SLProblem problem,
-			WeightVector w, AbstractLatentInferenceSolver inference)
+														 WeightVector w, AbstractLatentInferenceSolver inference)
 			throws Exception {
 
 		SLProblem p = new SLProblem();
@@ -40,9 +45,9 @@ public class LatentLearner {
 			IInstance x = problem.instanceList.get(i);
 			IStructure gold = problem.goldStructureList.get(i);
 			IStructure y = inference.getBestLatentStructure(w, x, gold); // best
-																			// explaining
-																			// latent
-																			// structure
+			// explaining
+			// latent
+			// structure
 
 			p.instanceList.add(x);
 			p.goldStructureList.add(y);
