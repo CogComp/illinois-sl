@@ -16,6 +16,10 @@ structured prediction models. For advanced applications which makes use of
 latent structured models or indirect supervision, please check JLIS at [cogcomp
 website](http://cogcomp.cs.illinois.edu/page/software_view/JLIS).
 
+Example Usage
+-------------
+We provide detailed examples in an accompanying package at [illinois-sl-examples](https://github.com/IllinoisCogComp/illinois-sl-examples).
+
 License
 --------
 The Illinois Structured Learning Package is available under a Research
@@ -33,39 +37,6 @@ Linux OS without any hiccups. We assume that the package is installed
 on a machine with sufficient memory. The actual requirement of the
 memory depends on the task.
 
-Download contents
-----------------------------
-We recommend to download the stable version at
-http://cogcomp.cs.illinois.edu/page/software_view/illinois-sl
-
-The download contains the following files:
-- dist/illinois-sl-1.0.0-jar-with-dependencies.jar :  the jar file with dependencies.
-- dist/illinois-sl-1.0.0-sources.jar : the jar file
-- dist/illinois-sl-1.0.0.jar : the archive of source files
-- README.standalone : this file
-- config/ : a set of sample configuration files
-- scripts/ : scripts for testing the package
-- data/ : sample data sets
-- pom.xml : Maven pom file
-- doc/webpage/tutorial.html : A offline copy of the webpage http://cogcomp.cs.illinois.edu/software/illinois-sl. 
-- doc/apidocs : java API
-
-The details are shown later.
-
-Using the jar
-----------------------------
-
-
-Using the Source Files
------------------------
-
-COMMAND LINE USAGE
-The command lines given at the top of this README.
-
-
-IMPORTING IN YOUR PROJECT
-Please refer to 'webpage/tutorial.html' for detailed usage of Illinois-SL
-library. 
 
 NOTE:
 When running your project, if working with a large dataset,
