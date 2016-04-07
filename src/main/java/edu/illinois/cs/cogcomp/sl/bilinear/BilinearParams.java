@@ -4,10 +4,7 @@ import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.experiments.ClassificationTester;
 import edu.illinois.cs.cogcomp.core.stats.Counter;
 import edu.illinois.cs.cogcomp.core.utilities.Table;
-import edu.illinois.cs.cogcomp.sl.core.IInstance;
-import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.core.SLModel;
-import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+import edu.illinois.cs.cogcomp.sl.core.*;
 import edu.illinois.cs.cogcomp.sl.util.DenseVector;
 import edu.illinois.cs.cogcomp.sl.util.SparseFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
@@ -24,23 +21,23 @@ import java.util.Random;
 /**
  * Created by Shyam on 11/24/15.
  */
-public class BilinearParams extends SLModel {
-    private static final int MAXITERS = 50;
-    private static final int REPORT_ITERS = 10;
-    private DenseVector[] bestW;
-    private DenseVector[] bestU;
-    public DenseVector[] U, W;
-    public DenseVector[] totalU, totalW;
+public class BilinearParams extends SLParameters {
+    public int MAXITERS = 50;
+    public int REPORT_ITERS = 10;
+
     int rank=10;
     float C=0.1f;
     private Map<String,Integer> labelMap;
-    private DenseVector[] backupU;
-    private DenseVector[] backupW;
-    private float lambda1 = 0.1f;
-    private float lambda2 = 0.1f;
-    private float LR = 0.001f;
 
-    public static void main(String[] args) {
+    public float lambda1 = 0.1f;
+    public float lambda2 = 0.1f;
+    public float LR = 0.001f;
+    public boolean average = false;
+    public String Ufile;
+    public String Wfile;
+    public String modelPath;
+
+//    public static void main(String[] args) {
 //        DenseVector[] V=new DenseVector[40];
 //        load_matrix("V.40.matrix",V);
 //        System.out.println(V.length+" "+V[0].getLength());
@@ -50,7 +47,7 @@ public class BilinearParams extends SLModel {
 //            }
 //            System.out.println();
 //        }
-    }
+//    }
 
     public void randomlyInitUW(int N, int D)
     {
@@ -94,22 +91,7 @@ public class BilinearParams extends SLModel {
 
     }
 
-    private DenseVector[] copyMatrix(DenseVector[] matrix) {
-        DenseVector[] ans = new DenseVector[matrix.length];
-        for(int i=0;i<matrix.length;i++)
-        {
-            ans[i]=copy(matrix[i]);
-        }
-        return ans;
-    }
-    private DenseVector copy(DenseVector denseVector) {
-        DenseVector ans = new DenseVector();
-        for(int i=0;i<denseVector.getLength();i++)
-        {
-            ans.setElement(i,denseVector.get(i));
-        }
-        return ans;
-    }
+
 
     public BilinearParams(Map<String,Integer> labelMap, int rank, int N, int D){
         this.rank=rank;
@@ -174,152 +156,126 @@ public class BilinearParams extends SLModel {
         Utils.save_matrix(modelPath+"W."+"matrix",bestW);
     }
 
-    private void interpolateValidate(SLProblem sl, String type, SLModel sparseModel) {
-        ClassificationTester tester = new ClassificationTester();
-        float total_loss=0.0f;
-        for(int t=0;t<sl.size();t++) {
-            AlgebraInstance x = (AlgebraInstance) sl.instanceList.get(t);
-            TemplateLabel tgold = (TemplateLabel) sl.goldStructureList.get(t);
-            float bestScore=Float.NEGATIVE_INFINITY;
-            TemplateLabel best=null;
-            for (String sign : labelMap.keySet()) {
-                int i = labelMap.get(sign);
-                TemplateLabel candidate = new TemplateLabel(sign, i);
-                float score = lambda1 * getScore(x,candidate);
-                score+=(1-lambda1)*sparseModel.wv.dotProduct(sparseModel.featureGenerator.getFeatureVector(x,candidate));
-                if(score>bestScore)
-                {
-                    bestScore=score;
-                    best=candidate;
-                }
-            }
-            TemplateLabel tpred = best;
-            if(tpred.output!=tgold.output)
-            {
-                total_loss+=1.0f;
-            }
-            tester.record(tgold.template + "", tpred.template + "");
-        }
-        System.out.println(type + "-->total loss:" + total_loss + "/" + sl.size());
-        Table perfTable = tester.getPerformanceTable();
-        for(int jj=0;jj<perfTable.getColumnCount();jj++)
-            System.out.print(perfTable.getValueAt(perfTable.getRowCount() - 1, jj) + " ");
-        System.out.println();
-
-
-    }
-
-    private void unaverageParams() {
-        U=backupU;
-        W=backupW;
-    }
-
-    private void averageParams(int T) {
-        backupU=U;
-        DenseVector[] avgU = new DenseVector[rank];
-        for(int i=0;i<rank;i++)
-        {
-            avgU[i]=new DenseVector();
-            for(int z=0;z<U[i].getLength();z++) {
-                float val = (U[i].get(z) * (T + 1) - totalU[i].get(z)) / T;
-                avgU[i].setElement(z,val);
-            }
-        }
-        U=avgU;
-
-        ////
-        backupW=W;
-        DenseVector[] avgW = new DenseVector[rank];
-        for(int i=0;i<rank;i++)
-        {
-            avgW[i]=new DenseVector();
-            for(int z=0;z<W[i].getLength();z++) {
-                float val = (W[i].get(z) * (T + 1) - totalW[i].get(z)) / T;
-                avgW[i].setElement(z,val);
-            }
-        }
-        W=avgW;
-    }
+//    private void interpolateValidate(SLProblem sl, String type, SLModel sparseModel) {
+//        ClassificationTester tester = new ClassificationTester();
+//        float total_loss=0.0f;
+//        for(int t=0;t<sl.size();t++) {
+//            AlgebraInstance x = (AlgebraInstance) sl.instanceList.get(t);
+//            TemplateLabel tgold = (TemplateLabel) sl.goldStructureList.get(t);
+//            float bestScore=Float.NEGATIVE_INFINITY;
+//            TemplateLabel best=null;
+//            for (String sign : labelMap.keySet()) {
+//                int i = labelMap.get(sign);
+//                TemplateLabel candidate = new TemplateLabel(sign, i);
+//                float score = lambda1 * getScore(x,candidate);
+//                score+=(1-lambda1)*sparseModel.wv.dotProduct(sparseModel.featureGenerator.getFeatureVector(x,candidate));
+//                if(score>bestScore)
+//                {
+//                    bestScore=score;
+//                    best=candidate;
+//                }
+//            }
+//            TemplateLabel tpred = best;
+//            if(tpred.output!=tgold.output)
+//            {
+//                total_loss+=1.0f;
+//            }
+//            tester.record(tgold.template + "", tpred.template + "");
+//        }
+//        System.out.println(type + "-->total loss:" + total_loss + "/" + sl.size());
+//        Table perfTable = tester.getPerformanceTable();
+//        for(int jj=0;jj<perfTable.getColumnCount();jj++)
+//            System.out.print(perfTable.getValueAt(perfTable.getRowCount() - 1, jj) + " ");
+//        System.out.println();
+//
+//
+//    }
+//
+//    private void unaverageParams() {
+//        U=backupU;
+//        W=backupW;
+//    }
 
 
 
-    public float validate(SLProblem sl, String datatype) {
-        float total_loss=0f;
-        ClassificationTester tester = new ClassificationTester();
-        List<Integer> wrong_ids = new ArrayList<>();
-        for(int t=0;t<sl.size();t++) {
-            IInstance x = sl.instanceList.get(t);
-            AlgebraInstance prob = (AlgebraInstance) x;
-            IStructure gold = sl.goldStructureList.get(t);
-            IStructure pred = getBestStructure(x);
-            TemplateLabel tpred = (TemplateLabel) pred;
-            TemplateLabel tgold = (TemplateLabel) gold;
-            if(tpred.output!=tgold.output)
-            {
-                total_loss+=1.0f;
-                wrong_ids.add(prob.id);
-            }
-            tester.record(tgold.template+ "", tpred.template+ "");
-        }
-        System.out.println(datatype + "-->total loss:" + total_loss + "/" + sl.size());
-        Table perfTable = tester.getPerformanceTable();
-        for(int jj=0;jj<perfTable.getColumnCount();jj++)
-            System.out.print(perfTable.getValueAt(perfTable.getRowCount() - 1, jj) + " ");
-        System.out.println();
-        // prec@k
-        getPrecAtK(sl);
-        return total_loss;
-    }
 
-    private void getPrecAtK(SLProblem sl) {
-        ClassificationTester precAtK = new ClassificationTester();
-        int K=10;
+//    public float validate(SLProblem sl, String datatype) {
+//        float total_loss=0f;
+//        ClassificationTester tester = new ClassificationTester();
+//        List<Integer> wrong_ids = new ArrayList<>();
+//        for(int t=0;t<sl.size();t++) {
+//            IInstance x = sl.instanceList.get(t);
+//            AlgebraInstance prob = (AlgebraInstance) x;
+//            IStructure gold = sl.goldStructureList.get(t);
+//            IStructure pred = getBestStructure(x);
+//            TemplateLabel tpred = (TemplateLabel) pred;
+//            TemplateLabel tgold = (TemplateLabel) gold;
+//            if(tpred.output!=tgold.output)
+//            {
+//                total_loss+=1.0f;
+//                wrong_ids.add(prob.id);
+//            }
+//            tester.record(tgold.template+ "", tpred.template+ "");
+//        }
+//        System.out.println(datatype + "-->total loss:" + total_loss + "/" + sl.size());
+//        Table perfTable = tester.getPerformanceTable();
+//        for(int jj=0;jj<perfTable.getColumnCount();jj++)
+//            System.out.print(perfTable.getValueAt(perfTable.getRowCount() - 1, jj) + " ");
+//        System.out.println();
+//        // prec@k
+//        getPrecAtK(sl);
+//        return total_loss;
+//    }
 
-        for(int idx=0;idx<sl.size();idx++) {
-            AlgebraInstance mi = (AlgebraInstance) sl.instanceList.get(idx);
-            TemplateLabel lmi = (TemplateLabel) sl.goldStructureList.get(idx);
-            Counter<TemplateLabel> cnt = new Counter<>();
-
-            for (String sign : labelMap.keySet()) {
-                int i = labelMap.get(sign);
-                TemplateLabel candidate = new TemplateLabel(sign, i);
-                float score = getScore(mi,candidate);
-                cnt.incrementCount(candidate,score);
-            }
-
-            List<TemplateLabel> rank_list = cnt.getSortedItemsHighestFirst();
-            assert rank_list.size()==labelMap.size():"all candidates must be scored! "+rank_list.size()+" "+labelMap.size();
-
-            boolean found=false;
-            for(int t=0;t<rank_list.size();t++)
-            {
-                TemplateLabel label = rank_list.get(t);
-//                System.out.println(label+" gold:"+lmi);
-//                System.out.println(label.output+" "+lmi.output);
-                if(label.output==lmi.output)
-                {
-                    found=true;
-                }
-                if(t==K)
-                {
-                    break;
-                }
-            }
-            if(found)
-            {
-//                System.out.println("YAYY!");
-                precAtK.record(lmi.template+"",lmi.template+"");
-            }
-            else
-                precAtK.record(lmi.template+"",rank_list.get(0).template+"");
-        }
-        System.out.println("---------------");
-        Table p_at_k= precAtK.getPerformanceTable();
-        System.out.println("Perf at K="+K);
-        for(int jj=0;jj<p_at_k.getColumnCount();jj++)
-            System.out.print(p_at_k.getValueAt(p_at_k.getRowCount() - 1, jj) + " ");
-        System.out.println();
-    }
+//    private void getPrecAtK(SLProblem sl) {
+//        ClassificationTester precAtK = new ClassificationTester();
+//        int K=10;
+//
+//        for(int idx=0;idx<sl.size();idx++) {
+//            AlgebraInstance mi = (AlgebraInstance) sl.instanceList.get(idx);
+//            TemplateLabel lmi = (TemplateLabel) sl.goldStructureList.get(idx);
+//            Counter<TemplateLabel> cnt = new Counter<>();
+//
+//            for (String sign : labelMap.keySet()) {
+//                int i = labelMap.get(sign);
+//                TemplateLabel candidate = new TemplateLabel(sign, i);
+//                float score = getScore(mi,candidate);
+//                cnt.incrementCount(candidate,score);
+//            }
+//
+//            List<TemplateLabel> rank_list = cnt.getSortedItemsHighestFirst();
+//            assert rank_list.size()==labelMap.size():"all candidates must be scored! "+rank_list.size()+" "+labelMap.size();
+//
+//            boolean found=false;
+//            for(int t=0;t<rank_list.size();t++)
+//            {
+//                TemplateLabel label = rank_list.get(t);
+////                System.out.println(label+" gold:"+lmi);
+////                System.out.println(label.output+" "+lmi.output);
+//                if(label.output==lmi.output)
+//                {
+//                    found=true;
+//                }
+//                if(t==K)
+//                {
+//                    break;
+//                }
+//            }
+//            if(found)
+//            {
+////                System.out.println("YAYY!");
+//                precAtK.record(lmi.template+"",lmi.template+"");
+//            }
+//            else
+//                precAtK.record(lmi.template+"",rank_list.get(0).template+"");
+//        }
+//        System.out.println("---------------");
+//        Table p_at_k= precAtK.getPerformanceTable();
+//        System.out.println("Perf at K="+K);
+//        for(int jj=0;jj<p_at_k.getColumnCount();jj++)
+//            System.out.print(p_at_k.getValueAt(p_at_k.getRowCount() - 1, jj) + " ");
+//        System.out.println();
+//    }
 
     private float ComputeLoss(IInstance x, IStructure pred, IStructure gold) {
         float loss=0.0f;
@@ -341,53 +297,9 @@ public class BilinearParams extends SLModel {
         return loss;
     }
 
-    public void doOneIter(SLProblem train, int currIter){
-        float loss;
-        for(int t=0;t<train.size();t++)
-        {
-            IInstance x = train.instanceList.get(t);
-            IStructure gold = train.goldStructureList.get(t);
-            IStructure pred = getLossAugmentedBestStructure(x, gold);
-            loss=ComputeLoss(x,pred,gold);
-            if(loss!=0)
-            {
-                updateAlternate(x, gold, pred, loss, currIter*train.size()+t+1);
-                // updateJoint(x, gold, pred, loss);
-            }
 
-//            if(norm_after_every_update)
-//            {
-//                renormalize(U);
-//                renormalize(W);
-//            }
-        }
 
-    }
 
-    private IStructure getLossAugmentedBestStructure(IInstance ins, IStructure goldStructure) {
-        AlgebraInstance mi = (AlgebraInstance) ins;
-        TemplateLabel lmi = (TemplateLabel) goldStructure;
-
-        int bestOutput = -1;
-        String bestSign= "";
-        float bestScore = Float.NEGATIVE_INFINITY;
-        for(String sign:labelMap.keySet()){
-            int i=labelMap.get(sign);
-            TemplateLabel candidate = new TemplateLabel(sign, i);
-            float score = getScore(mi,candidate);
-//            System.out.println(score);
-            if (lmi!=null && i != lmi.output){
-                score += 1.0;
-            }
-            if (score > bestScore){
-                bestOutput = i;
-                bestScore = score;
-                bestSign=sign;
-            }
-        }
-        assert bestOutput >= 0 ;
-        return new TemplateLabel(bestSign,bestOutput);
-    }
 
     private float getScore(IInstance prob, IStructure temp) {
         AlgebraInstance x = (AlgebraInstance) prob;
@@ -463,170 +375,9 @@ public class BilinearParams extends SLModel {
 //    }
 
 
-    public void updateAlternate(IInstance x, IStructure gold, IStructure pred, Float loss, int updCnt){
 
-        AlgebraInstance mx = (AlgebraInstance) x;
-        TemplateLabel tpred = (TemplateLabel) pred;
-        TemplateLabel tgold = (TemplateLabel) gold;
-        SparseFeatureVector fx = mx.fx; // phi(x)
-        SparseFeatureVector t_hat = tpred.ft; // phi(t^)
-        SparseFeatureVector t= tgold.ft; // phi(t)
-        SparseFeatureVector dt_hat_t = (SparseFeatureVector) t_hat.difference(t);
 
-        assert dt_hat_t.getNumActiveFeatures()<=2 : "diff of one hot can have atmost 2 diff";
-        DenseVector Wt_hat_minus_Wt = projectW(dt_hat_t); // W phi(t^) - W phi(t)
 
-        // update U
-        updateU(fx,Wt_hat_minus_Wt,loss,updCnt);
 
-        // update W
-        updateW(fx,dt_hat_t,loss,updCnt);
 
-    }
-
-    private void updateU(SparseFeatureVector fx, DenseVector Wt_hat_minus_Wt, Float loss, int updCnt) {
-//        System.out.println("updating U");
-//        printMatrix(U);
-//        printUStats();
-        SparseFeatureVector dUk;
-        for (int k = 0; k < rank; k++) {
-            dUk = new SparseFeatureVector(fx.getIndices(),fx.getValues());
-            dUk.multiply(Wt_hat_minus_Wt.get(k));
-//            float norm = dUk.getSquareL2Norm();
-//            float alpha = Math.min(C,loss/norm);
-//            if(alpha>0) {
-////                System.out.println("alphaU=" + alpha + " normU="+norm+ " lossU="+loss);
-//                if (Float.isInfinite(alpha) || Float.isNaN(alpha)) {
-//                    System.out.println("infnite/nan step length " + loss + "/" + norm);
-//                    System.exit(-1);
-//                }
-//                U[k].addSparseFeatureVector(dUk, -1.0f * alpha);
-//                U[k].addDenseVector(U[k], -1.0f * alpha * lambda1);
-//                if(Params.average) {
-//                    totalU[k].addSparseFeatureVector(dUk, -1.0f * updCnt * alpha);
-//                    totalU[k].addDenseVector(U[k], -1.0f * updCnt * alpha);
-//                }
-//            }
-            U[k].addSparseFeatureVector(dUk, -1.0f * LR);
-//            U[k].addDenseVector(U[k], -1.0f * alpha * lambda1);
-            if(Params.average) {
-                totalU[k].addSparseFeatureVector(dUk, -1.0f * updCnt * LR);
-//                totalU[k].addDenseVector(U[k], -1.0f * updCnt * LR);
-            }
-        }
-//        printMatrix(U);
-//        printUStats();
-    }
-
-    private void updateW(SparseFeatureVector fx, SparseFeatureVector dt_hat_t, Float loss, int updCnt) {
-//        System.out.println("updating W");
-//        printMatrix(W);
-//        printWStats();
-        DenseVector Ux = projectU(fx);
-        SparseFeatureVector dWk;
-        for (int k = 0; k < rank; ++k) {
-            dWk= new SparseFeatureVector(dt_hat_t.getIndices(),dt_hat_t.getValues());
-            dWk.multiply(Ux.get(k));
-//            float norm =dWk.getSquareL2Norm();
-//            float alpha = Math.min(C,loss/norm);
-//            if(alpha>0) {
-//                System.out.println("alphaW=" + alpha + " normW="+norm+ " lossW="+loss);
-//                if (Float.isInfinite(alpha) || Float.isNaN(alpha)) {
-//                    System.out.println("infnite/nan step length " + loss + "/" + norm);
-//                    System.exit(-1);
-//                }
-//                W[k].addSparseFeatureVector(dWk, -1.0f * alpha);
-//                W[k].addDenseVector(W[k], -1.0f * alpha * lambda2);
-//                if(Params.average) {
-//                    totalW[k].addSparseFeatureVector(dWk, -1.0f * updCnt * alpha);
-//                    totalW[k].addDenseVector(W[k], -1.0f * updCnt * alpha);
-//                }
-//            }
-            W[k].addSparseFeatureVector(dWk, -1.0f * LR);
-            if(Params.average) {
-                totalW[k].addSparseFeatureVector(dWk, -1.0f * updCnt * LR);
-//                totalW[k].addDenseVector(W[k], -1.0f * updCnt * alpha);
-            }
-        }
-//        printMatrix(W);
-//        printWStats();
-    }
-
-    /**
-     * takes the feat vec of X and projects it to dense
-     * @param fv
-     */
-    public DenseVector projectU(SparseFeatureVector fv)
-    {
-        DenseVector result = new DenseVector();
-        for (int r = 0; r < rank; ++r)
-        {
-            // todo: make sure you do not need the other case handling
-            float res = 0.0f;
-            for(int i=0; i< fv.getNumActiveFeatures(); i++){
-                res += U[r].get(fv.getIdx(i)) * fv.getValue(i);
-            }
-            result.setElement(r,res);
-        }
-        return result;
-    }
-
-    /**
-     * * takes the feat vec of T and projects it to dense
-     * @param fv
-     */
-    public DenseVector projectW(SparseFeatureVector fv)
-    {
-        DenseVector result = new DenseVector();
-        for (int r = 0; r < rank; ++r)
-        {
-            // todo: make sure you do not need the other case handling
-            float res = 0.0f;
-            for(int i=0; i< fv.getNumActiveFeatures(); i++){
-                res += W[r].get(fv.getIdx(i)) * fv.getValue(i);
-            }
-            result.setElement(r,res);
-        }
-        return result;
-    }
-
-    void printWStats()
-    {
-        float norm=0.0f;
-        float max= Float.NEGATIVE_INFINITY;
-        float min = Float.POSITIVE_INFINITY;
-        for (int r = 0; r < rank; ++r)
-        {
-            norm+=W[r].getSquareL2Norm();
-            for(int i=0;i<W[r].getLength();i++)
-            {
-                float val = W[r].get(i);
-                if(min>val)
-                    min=val;
-                if(max<val)
-                    max=val;
-            }
-        }
-        System.out.println("norm W "+norm + " min "+min+" max "+max);
-    }
-
-    void printUStats()
-    {
-        float norm=0.0f;
-        float max= Float.NEGATIVE_INFINITY;
-        float min = Float.POSITIVE_INFINITY;
-        for (int r = 0; r < rank; ++r)
-        {
-            norm+=U[r].getSquareL2Norm();
-            for(int i=0;i<U[r].getLength();i++)
-            {
-                float val = U[r].get(i);
-                if(min>val)
-                    min=val;
-                if(max<val)
-                    max=val;
-            }
-        }
-        System.out.println("norm U "+norm + " min "+min+" max "+max);
-    }
 }

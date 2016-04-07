@@ -1,18 +1,8 @@
 package edu.illinois.cs.cogcomp.sl.bilinear;
 
-import algebra.Prob;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import edu.illinois.cs.cogcomp.core.io.LineIO;
-import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.util.DenseVector;
 
 import java.io.*;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Shyam on 12/2/15.
@@ -67,73 +57,128 @@ public class Utils {
     }
 
 
-
-
-    public static SLProblem readTrainingData(String allDataPath,String trainingDataPath,Map<Integer,String>denum, int limit) throws FileNotFoundException {
-        List<String> train = LineIO.read(trainingDataPath);
-
-        Gson g = new Gson();
-        String s = LineIO
-                .slurp(allDataPath);
-        Type listType = new TypeToken<ArrayList<Prob>>() {
-        }.getType();
-        List<Prob> coll2 = g.fromJson(s, listType);
-        SLProblem data = new SLProblem();
-        for(Prob coll:coll2)
+    public static DenseVector[] copyMatrix(DenseVector[] matrix) {
+        DenseVector[] ans = new DenseVector[matrix.length];
+        for(int i=0;i<matrix.length;i++)
         {
-            Collections.sort(coll.Template);
-            String sign =String.join("#", coll.Template);
-
-            if(train.contains(coll.iIndex+"")) {
-                String denumQ = denum.get(coll.iIndex);
-                AlgebraInstance iinst = new AlgebraInstance(coll.iIndex,coll.sQuestion,denumQ,sign);
-                int id = MainClass.getLabelId(sign);
-
-                if(id>=0)
-                {
-                    TemplateLabel istruct = new TemplateLabel(sign, id);
-                    data.addExample(iinst, istruct);
-                }
-            }
-            if(data.size()==limit)
-                break;
+            ans[i]=copy(matrix[i]);
         }
-        System.out.println("data size:"+data.size());
-        return data;
+        return ans;
+    }
+    public static DenseVector copy(DenseVector denseVector) {
+        DenseVector ans = new DenseVector();
+        for(int i=0;i<denseVector.getLength();i++)
+        {
+            ans.setElement(i,denseVector.get(i));
+        }
+        return ans;
     }
 
-
-    public static SLProblem readNoisyData(String noisyPath,Map<Integer,String>denum, int limit) throws FileNotFoundException {
-        Gson g = new Gson();
-        String s = LineIO
-                .slurp(noisyPath);
-        Type listType = new TypeToken<ArrayList<Prob>>() {
-        }.getType();
-        List<Prob> coll2 = g.fromJson(s, listType);
-        SLProblem data = new SLProblem();
-        for(Prob coll:coll2)
+    public static void printWStats(DenseVector[] W, BilinearParams params)
+    {
+        float norm=0.0f;
+        float max= Float.NEGATIVE_INFINITY;
+        float min = Float.POSITIVE_INFINITY;
+        for (int r = 0; r < params.rank; ++r)
         {
-            Collections.sort(coll.Template);
-            String sign =String.join("#", coll.Template);
-            String denumQ = denum.get(coll.iIndex);
-            AlgebraInstance iinst = new AlgebraInstance(coll.iIndex,coll.sQuestion,denumQ,sign);
-            int id = MainClass.getLabelId(sign);
-
-            if(id>=0)
+            norm+=W[r].getSquareL2Norm();
+            for(int i=0;i<W[r].getLength();i++)
             {
-                TemplateLabel istruct = new TemplateLabel(sign, id);
-                data.addExample(iinst, istruct);
+                float val = W[r].get(i);
+                if(min>val)
+                    min=val;
+                if(max<val)
+                    max=val;
             }
-            else
-            {
-                System.err.println("This cannot be "+sign);
-                System.exit(-1);
-            }
-            if(data.size()==limit)
-                break;
         }
-        System.out.println("noisy data size "+data.size());
-        return data;
+        System.out.println("norm W "+norm + " min "+min+" max "+max);
     }
+
+    public static void printUStats(DenseVector[] U, BilinearParams params)
+    {
+        float norm=0.0f;
+        float max= Float.NEGATIVE_INFINITY;
+        float min = Float.POSITIVE_INFINITY;
+        for (int r = 0; r < params.rank; ++r)
+        {
+            norm+=U[r].getSquareL2Norm();
+            for(int i=0;i<U[r].getLength();i++)
+            {
+                float val = U[r].get(i);
+                if(min>val)
+                    min=val;
+                if(max<val)
+                    max=val;
+            }
+        }
+        System.out.println("norm U "+norm + " min "+min+" max "+max);
+    }
+
+//    public static SLProblem readTrainingData(String allDataPath,String trainingDataPath,Map<Integer,String>denum, int limit) throws FileNotFoundException {
+//        List<String> train = LineIO.read(trainingDataPath);
+//
+//        Gson g = new Gson();
+//        String s = LineIO
+//                .slurp(allDataPath);
+//        Type listType = new TypeToken<ArrayList<Prob>>() {
+//        }.getType();
+//        List<Prob> coll2 = g.fromJson(s, listType);
+//        SLProblem data = new SLProblem();
+//        for(Prob coll:coll2)
+//        {
+//            Collections.sort(coll.Template);
+//            String sign =String.join("#", coll.Template);
+//
+//            if(train.contains(coll.iIndex+"")) {
+//                String denumQ = denum.get(coll.iIndex);
+//                AlgebraInstance iinst = new AlgebraInstance(coll.iIndex,coll.sQuestion,denumQ,sign);
+//                int id = MainClass.getLabelId(sign);
+//
+//                if(id>=0)
+//                {
+//                    TemplateLabel istruct = new TemplateLabel(sign, id);
+//                    data.addExample(iinst, istruct);
+//                }
+//            }
+//            if(data.size()==limit)
+//                break;
+//        }
+//        System.out.println("data size:"+data.size());
+//        return data;
+//    }
+//
+//
+//    public static SLProblem readNoisyData(String noisyPath,Map<Integer,String>denum, int limit) throws FileNotFoundException {
+//        Gson g = new Gson();
+//        String s = LineIO
+//                .slurp(noisyPath);
+//        Type listType = new TypeToken<ArrayList<Prob>>() {
+//        }.getType();
+//        List<Prob> coll2 = g.fromJson(s, listType);
+//        SLProblem data = new SLProblem();
+//        for(Prob coll:coll2)
+//        {
+//            Collections.sort(coll.Template);
+//            String sign =String.join("#", coll.Template);
+//            String denumQ = denum.get(coll.iIndex);
+//            AlgebraInstance iinst = new AlgebraInstance(coll.iIndex,coll.sQuestion,denumQ,sign);
+//            int id = MainClass.getLabelId(sign);
+//
+//            if(id>=0)
+//            {
+//                TemplateLabel istruct = new TemplateLabel(sign, id);
+//                data.addExample(iinst, istruct);
+//            }
+//            else
+//            {
+//                System.err.println("This cannot be "+sign);
+//                System.exit(-1);
+//            }
+//            if(data.size()==limit)
+//                break;
+//        }
+//        System.out.println("noisy data size "+data.size());
+//        return data;
+//    }
 
 }
