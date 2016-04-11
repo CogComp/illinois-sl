@@ -3,7 +3,7 @@
 
 
   <groupId>edu.illinois.cs.cogcomp</groupId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <artifactId>illinois-sl-core</artifactId>
 
   <repositories>
@@ -14,6 +14,9 @@
     </repository>
   </repositories>
 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <modelVersion>4.0.0</modelVersion>
   <distributionManagement>
@@ -101,12 +104,6 @@
   
   <dependencies>
     
-    <dependency>
-      <groupId>edu.illinois.cs.cogcomp</groupId>
-      <artifactId>illinois-core-utilities</artifactId>
-      <version>3.0.22</version>
-    </dependency>
-
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
