@@ -21,8 +21,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.zip.DataFormatException;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
@@ -76,10 +75,15 @@ public class SolverTest {
 
 	@Test
 	public void testSplit() throws Exception {
+		SLModel model = new SLModel();
+		SLParameters para = new SLParameters();
+		model.lm = new Lexiconer();
 		SLProblem sp = getStructuredData(model.lm);
 		sp.splitTrainTest(1);
 		sp = getStructuredData(model.lm);
-		sp.splitDataToNFolds(3);
+		sp.splitDataToNFolds(3,new Random());
+		para.loadConfigFile("config/StructuredPerceptron.config");
+        assertEquals( 10, para.MAX_NUM_ITER);
 	}
 	public void testModel(SLParameters para, float ref_acc, float ref_obj)	throws Exception {
 		SLModel model = new SLModel();
