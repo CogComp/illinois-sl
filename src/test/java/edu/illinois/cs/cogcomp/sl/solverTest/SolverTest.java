@@ -52,8 +52,10 @@ public class SolverTest {
 		testModel(para, 1.0f, 12.26f );
 
 		para.L2_LOSS_SSVM_SOLVER_TYPE = SolverType.DEMIParallelDCDSolver;
+		para.MAX_NUM_ITER = 10000;
 		para.DEMIDCD_NUMBER_OF_UPDATES_BEFORE_UPDATE_BUFFER = 1;
 		para.DEMIDCD_NUMBER_OF_INF_PARSE_BEFORE_UPDATE_WV = 1;
+		para.PROGRESS_REPORT_ITER = 500;
 		testModel(para, 1.0f, 12.26f );
 	}
 
