@@ -74,7 +74,13 @@ public class SolverTest {
 		testModel(para, 1.0f, 0.0f );
 	}
 
-
+	@Test
+	public void testSplit() throws Exception {
+		SLProblem sp = getStructuredData(model.lm);
+		sp.splitTrainTest(1);
+		sp = getStructuredData(model.lm);
+		sp.splitDataToNFolds(3);
+	}
 	public void testModel(SLParameters para, float ref_acc, float ref_obj)	throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
