@@ -42,6 +42,7 @@ public class SolverTest {
 		SLParameters para = new SLParameters();
 		para.LEARNING_MODEL = LearningModelType.L2LossSSVM;
 		para.L2_LOSS_SSVM_SOLVER_TYPE = SolverType.DCDSolver;
+		para.TRAINMINI = true;
 		para.MAX_NUM_ITER = 1000;
 		para.STOP_CONDITION = 0.01f;
 		para.C_FOR_STRUCTURE = 0.01f;

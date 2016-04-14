@@ -87,7 +87,7 @@ public class FeatureVectorBuffer {
 	 */
 	public FeatureVectorBuffer(int[] fIdxArray, double[] fValueArray) {
 		assert fIdxArray.length == fValueArray.length;
-		idxList = Ints.asList(fIdxArray);
+		idxList = new ArrayList<Integer>(Ints.asList(fIdxArray));
 		valList = new ArrayList<Float>();
 		for (int i = 0; i < fIdxArray.length; i++) 
 			valList.add((float)fValueArray[i]);
@@ -101,8 +101,8 @@ public class FeatureVectorBuffer {
 	 */
 	public FeatureVectorBuffer(int[] fIdxArray, float[] fValueArray) {
 		assert fIdxArray.length == fValueArray.length;
-		idxList = Ints.asList(fIdxArray);
-		valList = Floats.asList(fValueArray);
+		idxList = new ArrayList<Integer>(Ints.asList(fIdxArray));
+		valList = new ArrayList<Float>(Floats.asList(fValueArray));
 	}
 
 
@@ -124,8 +124,8 @@ public class FeatureVectorBuffer {
 	 * @param fv
 	 */
 	public FeatureVectorBuffer(IFeatureVector fv) {
-		idxList= Ints.asList(fv.getIndices());
-		valList= Floats.asList(fv.getValues());
+		idxList= new ArrayList<Integer>(Ints.asList(fv.getIndices()));
+		valList= new ArrayList<Float>(Floats.asList(fv.getValues()));
 	}
 
 	/**
@@ -306,35 +306,5 @@ public class FeatureVectorBuffer {
 			numNonZeroFeature++;
 		}
 		return new SparseFeatureVector(indices, values, sorted);
-	}
-	
-	public static class FeatureItem {
-	    public int    index;
-	    public final float value;
-
-	    public FeatureItem( final int index, final float value ) {
-	        this.index = index;
-	        this.value = value;
-	    }
-	    
-		@Override 	
-		public boolean equals( Object aThat ) {
-			
-		    //check for self-comparison
-		    if ( this == aThat ) return true;
-
-		    if ( !(aThat instanceof FeatureItem) ) return false;
-	
-		    //cast to native object is now safe
-		    FeatureItem that = (FeatureItem)aThat;
-
-		    //now a proper field-by-field evaluation can be made
-		    return this.index == that.index && (Math.abs(this.value -that.value) < 1e-30); 	        
-		  }	
-
-		 @Override 
-		 public int hashCode() {
-		    return (17*37 + index) + (23*37 + Float.floatToIntBits(value));
-		 }	
-	}
+	}	
 }
