@@ -15,6 +15,8 @@ import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  * @author Vivek Srikumar
@@ -23,6 +25,7 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 public class StructuredPerceptronIPM extends Learner {
 
 	private int num_threads;
+	static CyclicBarrier barrier; 
 
 	public StructuredPerceptronIPM(AbstractInferenceSolver infSolver,
 			AbstractFeatureGenerator fg, SLParameters params, int num_threads) {
@@ -38,7 +41,8 @@ public class StructuredPerceptronIPM extends Learner {
 		private StructuredPerceptron learner;
 		private WeightVector wv;
 		private SLProblem sp;
-		private SLParameters para;
+		private SLParameters para;		
+		public boolean stop = false;
 
 		public StructPerceptronHandler(StructuredPerceptron learner,
 				SLProblem sp, WeightVector wv, SLParameters para) {
@@ -51,68 +55,76 @@ public class StructuredPerceptronIPM extends Learner {
 		@Override
 		public void run() {
 			try {
-				wv = learner.train(sp, wv);
+				for(int iter =0; iter < para.MAX_NUM_ITER; iter++){
+					wv = learner.train(sp, wv);					
+					barrier.await();					
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		public void setWv(WeightVector wv){
+			this.wv.setDenseVector(wv);
+		}
 	}
+	
 
 	private WeightVector trainParallelStructuredPerceptron(
 			AbstractInferenceSolver[] struct_finder_list, SLProblem sp,
 			SLParameters para) throws Exception {
 		// initialize thread
-		int n_thread = struct_finder_list.length;
+		final int n_thread = Math.min(struct_finder_list.length,sp.size());						
 		log.info("Using # of threads "+n_thread);
-		// Approach 1: preprocess and split instances evenly (if data is on the
-		// disk)
-		// Approach 2: use a queue to store the instances, every instances
-		// access data from the queue
 
 		sp.shuffle(new Random(0));
 		List<SLProblem> subProbs = sp.splitData(n_thread);
-		StructPerceptronHandler[] inf_runner_list = new StructPerceptronHandler[n_thread];
+		final StructPerceptronHandler[] inf_runner_list = new StructPerceptronHandler[n_thread];
 
-		WeightVector wv = new WeightVector(10000);
+
 		long startTime = System.currentTimeMillis();
 		long trainTime = 0;
 		float initLearningRate = para.LEARNING_RATE;
-		for (int iter = 0; iter < para.MAX_NUM_ITER; iter++) {
+		for (int i = 0; i < n_thread; i++) {
+			StructuredPerceptron spLearner = new StructuredPerceptron(
+					struct_finder_list[i], featureGenerator, para);
+			inf_runner_list[i] = new StructPerceptronHandler(spLearner,
+					subProbs.get(i), new WeightVector(10000), para);
+		}		
+
+		final WeightVector wv = new WeightVector(10000);				
+		barrier = new CyclicBarrier(n_thread, new Runnable(){
+			public void run(){
+				// collect results
+				wv.empty();
+
+				for (int i = 0; i < n_thread; i++) {
+					wv.addDenseVector(inf_runner_list[i].wv);
+				}
+				wv.scale(1.0 / (double) n_thread);
+				for (int i = 0; i < n_thread; i++) {
+					inf_runner_list[i].setWv(wv);
+				}
+			}
+		});
 			
-			for (int i = 0; i < n_thread; i++) {
-				StructuredPerceptron spLearner = new StructuredPerceptron(
-						struct_finder_list[i], featureGenerator, para);
-				inf_runner_list[i] = new StructPerceptronHandler(spLearner,
-						subProbs.get(i), new WeightVector(wv, 0), para);
-			}
-			// run the threads
-			for (int i = 0; i < n_thread; i++) {
-				inf_runner_list[i].start();
-			}
-			// wait until all of them are finished
-			for (int i = 0; i < n_thread; i++) {
-				inf_runner_list[i].join();
-			}
 
-			// collect results
-			wv = new WeightVector(10000);
-			for (int i = 0; i < n_thread; i++) {
-				wv.addDenseVector(inf_runner_list[i].wv);
-			}
-			wv.scale(1.0 / (double) n_thread);
-			trainTime = System.currentTimeMillis() - startTime;
-
-			log.info("Training time was " + trainTime);
-
-			if (iter % para.PROGRESS_REPORT_ITER == 0) {
-				para.LEARNING_RATE = initLearningRate / (float) (iter + 1);
-				log.info("Changing learning rate to " + para.LEARNING_RATE);
-			}
-			log.info("OUTER ITER #" + iter);
-
-			para.LEARNING_RATE = initLearningRate;
+		for (int i = 0; i < n_thread; i++) {
+			inf_runner_list[i].start();
 		}
+
+
+		for (int i = 0; i < n_thread; i++) {
+			inf_runner_list[i].join();
+		}
+
+		wv.empty();		
+		for (int i = 0; i < n_thread; i++) {
+			wv.addDenseVector(inf_runner_list[i].wv);
+		}
+		wv.scale(1.0 / (double) n_thread);
+
+
 		return wv;
 	}
 
@@ -128,8 +140,7 @@ public class StructuredPerceptronIPM extends Learner {
 			solvers[i] = (AbstractInferenceSolver) infSolver.clone();
 		}
 		WeightVector w = trainParallelStructuredPerceptron(solvers, sp,
-				parameters);
-		log.info("Finished!");
+				parameters);		
 		return w;
 	}
 }

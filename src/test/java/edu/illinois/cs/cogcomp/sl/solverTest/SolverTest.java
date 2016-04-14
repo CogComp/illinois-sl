@@ -66,6 +66,10 @@ public class SolverTest {
 		para.MAX_NUM_ITER = 100;
 		para.C_FOR_STRUCTURE = 0.01f;
 		testModel(para, 1.0f, 0.0f );
+
+		para.MAX_NUM_ITER = 10;
+		para.LEARNING_MODEL = LearningModelType.StructuredPerceptronIPM;
+		testModel(para, 1.0f, 0.0f );
 	}
 
 
@@ -117,6 +121,7 @@ public class SolverTest {
 			}
 		}
 		acc /= total;
+		System.out.println("Acc: " + acc);
         assertEquals(acc, ref_acc, 0.01f);
 	}
 

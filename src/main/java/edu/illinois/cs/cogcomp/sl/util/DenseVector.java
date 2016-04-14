@@ -345,4 +345,8 @@ public class DenseVector implements Serializable, Cloneable{
 		else
 			return u[i];
 	}
+
+	public void empty(){
+		size = 0;
+	}
 }
