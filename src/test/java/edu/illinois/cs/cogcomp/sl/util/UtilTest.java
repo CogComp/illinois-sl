@@ -112,20 +112,22 @@ public class UtilTest {
 	@Test
 	public void featureBufferDouble() throws IOException{
 
-		SparseFeatureVector fv1 = new SparseFeatureVector(new int[]{1,2,3}, new double[]{1,2,3});
 		SparseFeatureVector fv2 = new SparseFeatureVector(new int[]{4,5,6}, new double[]{4,5,6});
-		SparseFeatureVector fv3 = new SparseFeatureVector(new int[]{7,8,9}, new double[]{7,8,9});
- 		FeatureVectorBuffer fvb = new FeatureVectorBuffer(fv1);
 
-		assertEquals("1:1.0 2:2.0 3:3.0 ", SparseFeatureVector.deserialize(fv1.serialize()).toString());
+ 		FeatureVectorBuffer fvb = new FeatureVectorBuffer(new int[]{1,2,3}, new double[]{1,2,3});
+
+		assertEquals("4:4.0 5:5.0 6:6.0 ", SparseFeatureVector.deserialize(fv2.serialize()).toString());
 		fvb.addFeature(fv2, 3); // shift fv2 by 3 and add to fvb;
-		fvb.addFeature(fv3); // add fv3 to fvb
+		fvb.addFeature(new int[]{7,8,9}, new double[]{7,8,9});		
 		IFeatureVector fRes = fvb.toFeatureVector();
 		assertEquals("1:1.0 2:2.0 3:3.0 7:11.0 8:13.0 9:15.0 ",fRes.toString());
 
  		FeatureVectorBuffer fvb2 = new FeatureVectorBuffer(new int[]{1}, new double[]{2});
 		fvb2.shift(1);
 		fvb2.addFeature(new int[]{3}, new double[]{3});
-		assertEquals("2:2.0 3:3.0 ",fvb2.toFeatureVector().toString());
+		fvb2.addFeature(fvb2);
+		assertEquals("2:4.0 3:6.0 ",fvb2.toFeatureVector().toString());
+		fvb2.addFeature(fvb2, 2);
+		assertEquals("2:4.0 3:6.0 4:4.0 5:6.0 ",fvb2.toFeatureVector().toString());
 	}
 }

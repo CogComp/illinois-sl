@@ -165,7 +165,8 @@ public class FeatureVectorBuffer {
 	 * @param fv
 	 */
 	public void addFeature(FeatureVectorBuffer fvb, int offset){
-		for (int i = 0; i < fvb.idxList.size(); i++) {
+		int size = fvb.idxList.size();
+		for (int i = 0; i < size; i++) {
 			idxList.add(fvb.idxList.get(i)+offset);
 		}
 		valList.addAll(fvb.valList);
