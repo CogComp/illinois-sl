@@ -88,8 +88,8 @@ public class UtilTest {
 		IFeatureVector myVector2 = myVector1.difference(myVector1);
         assertEquals(myVector2.getSquareL2Norm(), 0.0f, 1e-8f);
 	}
+
 	@Test
-	
 	public void featureBufferFloat() throws IOException{
 
 		SparseFeatureVector fv1 = new SparseFeatureVector(new int[]{1,2,3}, new float[]{1,2,3});
@@ -108,6 +108,8 @@ public class UtilTest {
 		fvb2.addFeature(new int[]{3}, new float[]{3});
 		assertEquals("2:2.0 3:3.0 ",fvb2.toFeatureVector().toString());
 	}
+
+	@Test
 	public void featureBufferDouble() throws IOException{
 
 		SparseFeatureVector fv1 = new SparseFeatureVector(new int[]{1,2,3}, new double[]{1,2,3});
