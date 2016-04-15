@@ -21,8 +21,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.zip.DataFormatException;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
@@ -42,6 +41,8 @@ public class SolverTest {
 		SLParameters para = new SLParameters();
 		para.LEARNING_MODEL = LearningModelType.L2LossSSVM;
 		para.L2_LOSS_SSVM_SOLVER_TYPE = SolverType.DCDSolver;
+		para.TRAINMINI = true;
+		para.TRAINMINI_SIZE = 1;
 		para.MAX_NUM_ITER = 1000;
 		para.STOP_CONDITION = 0.01f;
 		para.C_FOR_STRUCTURE = 0.01f;
@@ -53,7 +54,7 @@ public class SolverTest {
 
 		para.L2_LOSS_SSVM_SOLVER_TYPE = SolverType.DEMIParallelDCDSolver;
 		para.MAX_NUM_ITER = 10000;
-		para.STOP_CONDITION = 0.001f;
+		para.STOP_CONDITION = 0.01f;
 		para.DEMIDCD_NUMBER_OF_UPDATES_BEFORE_UPDATE_BUFFER = 1;
 		para.DEMIDCD_NUMBER_OF_INF_PARSE_BEFORE_UPDATE_WV = 1;
 		para.PROGRESS_REPORT_ITER = 500;
@@ -73,7 +74,18 @@ public class SolverTest {
 		testModel(para, 1.0f, 0.0f );
 	}
 
-
+	@Test
+	public void testSplit() throws Exception {
+		SLModel model = new SLModel();
+		SLParameters para = new SLParameters();
+		model.lm = new Lexiconer();
+		SLProblem sp = getStructuredData(model.lm);
+		sp.splitTrainTest(1);
+		sp = getStructuredData(model.lm);
+		sp.splitDataToNFolds(3,new Random());
+		para.loadConfigFile("config/StructuredPerceptron.config");
+        assertEquals( 10, para.MAX_NUM_ITER);
+	}
 	public void testModel(SLParameters para, float ref_acc, float ref_obj)	throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();

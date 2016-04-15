@@ -127,7 +127,7 @@ public class L2LossSSVMDEMIDCDSolver extends L2LossSSVMDCDSolver {
 					numUpdate++;
 				}
 				if (si.PGMaxNew - si.PGMinNew <= parameters.STOP_CONDITION) {
-					if(numNewStructures() ==0){
+					if(numNewStructures() ==0 && learningIter > 10){
 						stop = true;
 						logger.info("Done: Stopping condition: " + parameters.STOP_CONDITION + " projected gradient range: " + (si.PGMaxNew - si.PGMinNew));
 						logger.info("total number of iteration " + learningIter);
