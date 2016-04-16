@@ -3,7 +3,7 @@
 
 
 	<groupId>edu.illinois.cs.cogcomp</groupId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<artifactId>illinois-sl-core</artifactId>
 
 	<repositories>
@@ -123,10 +123,16 @@
 
   <dependencies>
 
+	  <!--<dependency>-->
+		  <!--<groupId>edu.illinois.cs.cogcomp</groupId>-->
+		  <!--<artifactId>illinois-core-utilities</artifactId>-->
+		  <!--<version>3.0.22</version>-->
+	  <!--</dependency>-->
+
 	  <dependency>
-		  <groupId>edu.illinois.cs.cogcomp</groupId>
-		  <artifactId>illinois-core-utilities</artifactId>
-		  <version>3.0.22</version>
+		  <groupId>net.sf.trove4j</groupId>
+		  <artifactId>trove4j</artifactId>
+		  <version>3.0.3</version>
 	  </dependency>
 
 

@@ -17,13 +17,11 @@
  *******************************************************************************/
 package edu.illinois.cs.cogcomp.sl.core;
 
-import java.io.Serializable;
-
+import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
-import edu.illinois.cs.cogcomp.sl.util.WeightVector;
+import java.io.Serializable;
 
 /**
  * The inference procedure that is used for finding the best structure. This is
@@ -80,11 +78,9 @@ public abstract class AbstractInferenceSolver implements Cloneable, Serializable
 	 *            The input example
 	 * @param goldStructure
 	 *            The gold structure for this example
-	 * @return A {@link Pair} of {@link IStructure} and {@link Double}: The
+	 * @return A {@link IStructure}: The
 	 *         {@link IStructure} contains the structure that violates the
-	 *         constraints the most. The {@link Double} represents the distance
-	 *         (delta) between the returning structure (y) and the gold
-	 *         structure (y*) for this example.
+	 *         constraints the most.
 	 * @throws Exception
 	 */
 	public abstract IStructure getLossAugmentedBestStructure(
