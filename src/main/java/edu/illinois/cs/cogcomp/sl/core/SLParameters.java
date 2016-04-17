@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
+import edu.illinois.cs.cogcomp.sl.learner.l1_loss_svm.L1LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.util.DenseVector;
 
 /**
@@ -41,12 +42,14 @@ public class SLParameters implements Serializable {
 	private static final long serialVersionUID = 3630883016928318230L;
 
 	public static enum LearningModelType {
-		L2LossSSVM, StructuredPerceptron, StructuredPerceptronIPM
+		L1LossSSVM, L2LossSSVM, StructuredPerceptron, StructuredPerceptronIPM
 	};
 
 	public LearningModelType LEARNING_MODEL = LearningModelType.L2LossSSVM;
 
 	public L2LossSSVMLearner.SolverType L2_LOSS_SSVM_SOLVER_TYPE = L2LossSSVMLearner.SolverType.DEMIParallelDCDSolver;
+
+	public L1LossSSVMLearner.SolverType L1_LOSS_SSVM_SOLVER_TYPE = L1LossSSVMLearner.SolverType.SGDSolver;
 
 	/**
 	 * Number of threads use to train the model. This parameter is useful only
@@ -185,6 +188,11 @@ public class SLParameters implements Serializable {
 				.getProperty("L2_LOSS_SSVM_SOLVER_TYPE",
 						L2LossSSVMLearner.SolverType.DEMIParallelDCDSolver
 								.name()));
+		L1_LOSS_SSVM_SOLVER_TYPE = L1LossSSVMLearner.SolverType.valueOf(props
+				.getProperty("L1_LOSS_SSVM_SOLVER_TYPE",
+						L1LossSSVMLearner.SolverType.SGDSolver
+								.name()));
+
 		LEARNING_MODEL = LearningModelType.valueOf(props.getProperty(
 				"LEARNING_MODEL", LearningModelType.L2LossSSVM.name()));
 		NUMBER_OF_THREADS = Integer.parseInt(props.getProperty(
