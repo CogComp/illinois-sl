@@ -3,7 +3,7 @@
 
 
 	<groupId>edu.illinois.cs.cogcomp</groupId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<artifactId>illinois-sl-core</artifactId>
 
 	<repositories>

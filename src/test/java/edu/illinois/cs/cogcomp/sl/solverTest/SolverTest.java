@@ -67,6 +67,17 @@ public class SolverTest {
 	}
 
 	@Test
+	public void testL1LossModel() throws Exception {
+		SLParameters para = new SLParameters();
+		para.MAX_NUM_ITER = 10000;
+		para.PROGRESS_REPORT_ITER = 500;
+		para.C_FOR_STRUCTURE = 0.01f;
+		para.LEARNING_MODEL = LearningModelType.L1LossSSVM;
+		para.LEARNING_RATE = 0.001f;
+		testModel(para, 1.0f, 0.0f );
+	}
+
+	@Test
 	public void testSPModel() throws Exception {
 		SLParameters para = new SLParameters();
 		para.LEARNING_MODEL = LearningModelType.StructuredPerceptron;
