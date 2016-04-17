@@ -44,7 +44,7 @@ public class L2LossSSVMLearner extends Learner {
 		public void runWhenReportingProgress(ProgressReportFunction f);
 	}
 	
-	public static enum SolverType {DCDSolver, ParallelDCDSolver, DEMIParallelDCDSolver};
+	public static enum SolverType {DCDSolver, ParallelDCDSolver, DEMIParallelDCDSolver, SGDSolver};
 	SolverType solverType = null;
 	IL2LossSSVMSolver solver = null;
 	
@@ -69,6 +69,9 @@ public class L2LossSSVMLearner extends Learner {
 			case DEMIParallelDCDSolver:
 				solver = new L2LossSSVMDEMIDCDSolver(infSolver, fg, parameters.NUMBER_OF_THREADS);
 				break;
+			case SGDSolver:
+				solver = new L2LossSSVMSGDSolver(infSolver,fg);
+				break;
 		}
 	}
 	
@@ -85,6 +88,9 @@ public class L2LossSSVMLearner extends Learner {
 			case DEMIParallelDCDSolver:
 				solver = new L2LossSSVMDEMIDCDSolver(infSolvers, fg, parameters.NUMBER_OF_THREADS);
 				break;
+			case SGDSolver:
+				solver = new L2LossSSVMSGDSolver(infSolver,fg);
+				break;	
 		}
 	}
 	
