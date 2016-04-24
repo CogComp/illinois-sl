@@ -74,6 +74,10 @@ Citing
 ------
 Please cite the following papers when using this library
 
+K.-W. Chang, S. Upadhyay, M.-W. Chang, V. Srikumar, D. Roth.
+IllinoisSL: A JAVA Library for Structured Prediction.
+Arxiv, 2015.
+
 M.-W. Chang, V. Srikumar, D. Goldwasser and Dan Roth. 
 Structured output learning with indirect supervision. 
 ICML, 2010.
