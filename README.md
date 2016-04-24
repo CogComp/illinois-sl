@@ -70,7 +70,6 @@ Additional Documentation/Citation
 
 Additional documentation is available in the JavaDoc located in doc/index.html
 
-
 Citing
 ------
 Please cite the following papers when using this library
@@ -82,6 +81,16 @@ ICML, 2010.
 K.-W. Chang, V. Srikumar, D. Roth. 
 Multi-core Structural SVM Training.
 ECML, 2013.
+
+Contribute to the package
+-------------------------
+
+If you encounter any issue when using the package, please file a bug report as a [GitHub issue](https://github.com/IllinoisCogComp/illinois-sl/issues) and provide information about how to reproduce the error. 
+
+You are also welcomed to contribute to the package. To do so, please fork git repo https://github.com/IllinoisCogComp/illinois-sl/ and submit a pull request.
+
+Please find the detailed instructions about how to contribute to a GitHub project at https://guides.github.com/activities/contributing-to-open-source/
+
 
 
 Contact Information
