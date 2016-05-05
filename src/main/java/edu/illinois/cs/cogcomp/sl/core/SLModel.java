@@ -64,7 +64,7 @@ public class SLModel implements Serializable {
 	 * @throws IOException
 	 */
 	public void saveModel(String fileName) throws IOException {
-		logger.info("Save Model to " + fileName + ".....");
+		logger.info("Save Model to {} .....",fileName);
 		numFeatuerBit = SLParameters.HASHING_MASK;
 		ObjectOutputStream oos = new ObjectOutputStream(
 				new BufferedOutputStream(new FileOutputStream(fileName)));
@@ -85,7 +85,7 @@ public class SLModel implements Serializable {
 	 */
 	public static SLModel loadModel(String fileName) throws IOException,
 			ClassNotFoundException {
-		logger.info("Load trained Models.....");
+		logger.info("Load trained Models from {} .....", fileName);
 
 		SLModel res = null;
 		ObjectInputStream ios = new ObjectInputStream(new BufferedInputStream(
