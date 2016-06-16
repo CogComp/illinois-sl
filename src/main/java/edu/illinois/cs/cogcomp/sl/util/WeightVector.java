@@ -17,10 +17,12 @@
  *******************************************************************************/
 package edu.illinois.cs.cogcomp.sl.util;
 
-import edu.illinois.cs.cogcomp.core.io.LineIO;
-
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -55,7 +57,7 @@ public class WeightVector extends DenseVector {
 	
 	/**
 	 * Duplicate a weight vector
-	 * @param in
+	 * @param wv
 	 */
 	public WeightVector(WeightVector wv) {
 		float in[] = wv.getInternalArray();
@@ -124,8 +126,8 @@ public class WeightVector extends DenseVector {
 		}
 		w.close();
 	}
-	public static WeightVector readFromFile(Lexiconer lm, String filepath) throws FileNotFoundException {
-		List<String> lines = LineIO.read(filepath);
+	public static WeightVector readFromFile(Lexiconer lm, String filepath) throws IOException {
+		List<String> lines = Files.readAllLines(Paths.get(filepath), Charset.defaultCharset());
 		float[] input = new float[lines.size()];
 		for(String line:lines)
 		{

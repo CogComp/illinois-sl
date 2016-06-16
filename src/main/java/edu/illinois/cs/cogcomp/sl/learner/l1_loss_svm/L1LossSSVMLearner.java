@@ -15,7 +15,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
  *     
  *******************************************************************************/
-package edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm;
+package edu.illinois.cs.cogcomp.sl.learner.l1_loss_svm;
 
 import java.util.List;
 
@@ -37,59 +37,41 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
  * 
  */
 // the delegator
-public class L2LossSSVMLearner extends Learner {
-	interface IL2LossSSVMSolver{ 
+public class L1LossSSVMLearner extends Learner {
+	interface IL1LossSSVMSolver{ 
 		public WeightVector train(SLProblem sp, SLParameters parameters) throws Exception;
 		public WeightVector train(SLProblem sp, SLParameters parameters, WeightVector init) throws Exception;
 		public void runWhenReportingProgress(ProgressReportFunction f);
 	}
 	
-	public static enum SolverType {DCDSolver, ParallelDCDSolver, DEMIParallelDCDSolver, SGDSolver};
+	public static enum SolverType {SGDSolver};
 	SolverType solverType = null;
-	IL2LossSSVMSolver solver = null;
+	IL1LossSSVMSolver solver = null;
 	
 	@Override
 	public void runWhenReportingProgress(ProgressReportFunction f) {
 		solver.runWhenReportingProgress(f); 
 	}
 	
-	public L2LossSSVMLearner(AbstractInferenceSolver infSolver, AbstractFeatureGenerator fg, SLParameters parameters){
-		this(SolverType.DCDSolver, infSolver, fg, parameters);
+	public L1LossSSVMLearner(AbstractInferenceSolver infSolver, AbstractFeatureGenerator fg, SLParameters parameters){
+		this(SolverType.SGDSolver, infSolver, fg, parameters);
 	}
-	public L2LossSSVMLearner(SolverType type, AbstractInferenceSolver infSolver, AbstractFeatureGenerator fg, SLParameters parameters){
+	public L1LossSSVMLearner(SolverType type, AbstractInferenceSolver infSolver, AbstractFeatureGenerator fg, SLParameters parameters){
 		super(infSolver, fg, parameters);
 		solverType = type;
 		switch(solverType){
-			case DCDSolver:
-				solver = new L2LossSSVMDCDSolver(infSolver,fg);
-				break;
-			case ParallelDCDSolver:
-				solver = new L2LossSSVMParalleDCDSolver(infSolver, fg, parameters.NUMBER_OF_THREADS);
-				break;
-			case DEMIParallelDCDSolver:
-				solver = new L2LossSSVMDEMIDCDSolver(infSolver, fg, parameters.NUMBER_OF_THREADS);
-				break;
 			case SGDSolver:
-				solver = new L2LossSSVMSGDSolver(infSolver,fg);
+				solver = new L1LossSSVMSGDSolver(infSolver,fg);
 				break;
 		}
 	}
 	
-	public L2LossSSVMLearner(SolverType type, AbstractInferenceSolver[] infSolvers, AbstractFeatureGenerator fg, SLParameters parameters){
+	public L1LossSSVMLearner(SolverType type, AbstractInferenceSolver[] infSolvers, AbstractFeatureGenerator fg, SLParameters parameters){
 		super(infSolvers[0], fg, parameters);
 		solverType = type;
 		switch(solverType){
-			case DCDSolver:
-				solver = new L2LossSSVMDCDSolver(infSolvers[0], fg);
-				break;
-			case ParallelDCDSolver:
-				solver = new L2LossSSVMParalleDCDSolver(infSolvers, fg, parameters.NUMBER_OF_THREADS);
-				break;
-			case DEMIParallelDCDSolver:
-				solver = new L2LossSSVMDEMIDCDSolver(infSolvers, fg, parameters.NUMBER_OF_THREADS);
-				break;
 			case SGDSolver:
-				solver = new L2LossSSVMSGDSolver(infSolver,fg);
+				solver = new L1LossSSVMSGDSolver(infSolver,fg);
 				break;	
 		}
 	}
@@ -120,7 +102,7 @@ public class L2LossSSVMLearner extends Learner {
 			float loss = infSolver.getLoss(ins, gold_struct, h)
 					+ this.featureGenerator.decisionValue(wv, ins, h)
 					- this.featureGenerator.decisionValue(wv, ins, gold_struct);
-			obj += sC * loss * loss;
+			obj += sC * loss ;
 		}
 		return obj;
 	}

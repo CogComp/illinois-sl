@@ -15,53 +15,53 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
  *     
  *******************************************************************************/
-package edu.illinois.cs.cogcomp.sl.learner;
-
-import java.security.InvalidParameterException;
+package edu.illinois.cs.cogcomp.sl.solverTest;
 
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
-import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
-import edu.illinois.cs.cogcomp.sl.core.SLParameters;
-import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
-import edu.illinois.cs.cogcomp.sl.learner.l1_loss_svm.L1LossSSVMLearner;
-import edu.illinois.cs.cogcomp.sl.learner.structured_perceptron.StructuredPerceptronIPM;
-import edu.illinois.cs.cogcomp.sl.learner.structured_perceptron.StructuredPerceptron;
+import edu.illinois.cs.cogcomp.sl.core.IInstance;
+import edu.illinois.cs.cogcomp.sl.core.IStructure;
+import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
+import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
+import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
-/**
- * This class generate a learner from {@link SLParameters}.
- * 
- * @author Kai-Wei Chang
- *
- */
-public class LearnerFactory {
-	protected AbstractInferenceSolver infSolver = null;
-	protected SLParameters parameters = null;
-
+public class POSManager extends AbstractFeatureGenerator {
 	/**
-	 * generate a learner using an inference solver and parameters.
 	 * 
-	 * @param infSolver
-	 * @param parameters
 	 */
-	public static Learner getLearner(AbstractInferenceSolver infSolver,
-			AbstractFeatureGenerator fg, SLParameters parameters) {
-
-		if (parameters.LEARNING_MODEL == SLParameters.LearningModelType.L2LossSSVM)
-			return new L2LossSSVMLearner(parameters.L2_LOSS_SSVM_SOLVER_TYPE,
-					infSolver, fg, parameters);
-		if (parameters.LEARNING_MODEL == SLParameters.LearningModelType.L1LossSSVM)
-			return new L1LossSSVMLearner(parameters.L1_LOSS_SSVM_SOLVER_TYPE,
-					infSolver, fg, parameters);
-		else if (parameters.LEARNING_MODEL == SLParameters.LearningModelType.StructuredPerceptron)
-			return new StructuredPerceptron(infSolver, fg, parameters);
-		else if (parameters.LEARNING_MODEL == SLParameters.LearningModelType.StructuredPerceptronIPM) {
-			System.out.println("Using IPM Perceptron ....");
-			return new StructuredPerceptronIPM(infSolver, fg, parameters,
-					parameters.NUMBER_OF_THREADS);
-		} else
-			throw new InvalidParameterException(
-					"parameters.LEARNING_MODEL does not support"
-							+ parameters.LEARNING_MODEL.name());
-
+	private static final long serialVersionUID = 1L;
+	/**
+	 * This function returns a feature vector \Phi(x,y) based on an instance-structure pair.
+	 * 
+	 * @return Feature Vector \Phi(x,y), where x is the input instance and y is the
+	 *         output structure
+	 */
+	protected Lexiconer lm = null;	
+   
+	public POSManager(Lexiconer lm) {		
+		this.lm = lm;
 	}
+
+	
+	@Override
+	public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
+		FeatureVectorBuffer fv = new FeatureVectorBuffer();
+		Sentence ins = (Sentence) x;
+		int[] tags = ((POSTag) y).tags;
+		
+		// add emission features
+		for (int i = 0; i < ins.tokens.length; i++)
+			fv.addFeature(ins.tokens[i] +  lm.getNumOfFeature() * tags[i], 1.0f);
+
+		// add prior features 
+		fv.addFeature(lm.getNumOfFeature() * lm.getNumOfLabels() + tags[0], 1.0f);			
+
+		// add transition features
+		int priorEmissionOffset = lm.getNumOfFeature() * lm.getNumOfLabels() + lm.getNumOfLabels();
+		// calculate transition features
+		for (int i = 1; i < ins.tokens.length; i++)
+			fv.addFeature(priorEmissionOffset + tags[i - 1] * lm.getNumOfLabels() + tags[i], 1.0f);					
+		
+		return fv.toFeatureVector(); 		
+	}
+
 }

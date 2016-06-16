@@ -22,10 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.illinois.cs.cogcomp.sl.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
@@ -80,14 +80,10 @@ public class L2LossSSVMDCDSolver implements IL2LossSSVMSolver{
 	/**
 	 * The function for the users to call for the structured SVM
 	 * 
-	 * @param infSolver
-	 *            The inference solver (dynamic programming, ILP,...). Given an
-	 *            input (IInstance) and a Weight vector (WeightVector), return
-	 *            the best structure (AbstractStructures)
 	 * @param sp
 	 *            Structured Labeled Dataset
-	 * @param parameters
-	 *            parameters for JLIS
+	 * @param params
+	 *            parameters
 	 * @return
 	 * @throws Exception
 	 */

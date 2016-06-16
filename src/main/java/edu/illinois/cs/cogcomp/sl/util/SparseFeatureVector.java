@@ -188,7 +188,7 @@ public class SparseFeatureVector implements IFeatureVector {
 		for (int i = 0; i < indices.length; i++) {
 			values[i] *= c;
 		}
-		squareL2Norm *= c;
+		squareL2Norm *= (c*c);
 	}
 
 	/**

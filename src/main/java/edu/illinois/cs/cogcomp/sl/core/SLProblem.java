@@ -17,13 +17,13 @@
  *******************************************************************************/
 package edu.illinois.cs.cogcomp.sl.core;
 
+import edu.illinois.cs.cogcomp.sl.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 
 /**
  * This class represents a structured problem. A structured problem is a
