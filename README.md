@@ -16,7 +16,7 @@ Maven Coordinates
 -----------------
 To use Illinois-SL in your project add the following to your pom,
 
-```
+```xml
   <dependencies>
   ...  
     <dependency>
