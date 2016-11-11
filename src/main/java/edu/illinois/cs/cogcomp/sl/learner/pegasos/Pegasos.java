@@ -9,6 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
+/***
+ * Implementation of the Pegasos SVM Solver.
+ *
+ * Shalev-Shwartz, Shai, et al. "Pegasos: Primal Estimated sub-GrAdient SOlver for SVM."
+ *
+ * @author Bhargav Mangipudi
+ *
+ */
 public final class Pegasos extends Learner {
 
     private static Logger log = LoggerFactory.getLogger(Pegasos.class);
@@ -67,6 +75,10 @@ public final class Pegasos extends Learner {
         return new WeightVector(w);
     }
 
+    /**
+     * Project the weight-vector to a ball of radius square-root of C parameter.
+     * @param w
+     */
     protected void projectWeightVector(WeightVector w) {
         double l2Norm = w.getSquareL2Norm();
 
@@ -93,6 +105,14 @@ public final class Pegasos extends Learner {
         return epoch < parameters.MAX_NUM_ITER;
     }
 
+    /**
+     * Perform a single iteration of the update step on all training instances.
+     *
+     * @param w
+     * @param problem
+     * @param epoch
+     * @throws Exception
+     */
     protected void doOneInteration(WeightVector w, SLProblem problem, int epoch) throws Exception
     {
         int numExamples = problem.size();
@@ -114,9 +134,11 @@ public final class Pegasos extends Learner {
             assert prediction != null;
 
             //NOTE: this is loss augmented, so that you can train loss augmented variants too.
-            // if you want the usual behavior, where inference returns best structure, just write your loss augmented inference to ignore the loss.
+            // if you want the usual behavior, where inference returns best structure,
+            // just write your loss augmented inference to ignore the loss.
             // this was done to support general behavior.
-            shouldUpdate = this.infSolver.getLoss(example, gold, prediction) > 0;	// we will update if the loss is non-zero for this example
+            // we will update if the loss is non-zero for this example
+            shouldUpdate = this.infSolver.getLoss(example, gold, prediction) > 0;
 
             if (shouldUpdate) {
                 update(example, gold, prediction, w, epoch, numExamples);
@@ -131,7 +153,8 @@ public final class Pegasos extends Learner {
     }
 
     /**
-     * Performs the update of the weight vector
+     * Performs the update of the weight vector for a single data instance.
+     *
      * @param gold
      * @param prediction
      * @param w
@@ -150,6 +173,7 @@ public final class Pegasos extends Learner {
     }
 
     /**
+     * Get the effective learning rate for each training round.
      *
      * @param epoch
      * @return

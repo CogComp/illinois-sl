@@ -101,7 +101,7 @@ public class SolverTest {
 		para.MAX_NUM_ITER = 50;
 		para.PEGASOS_PERFORM_WEIGHT_VECTOR_PROJECTION = true;
 		para.LEARNING_MODEL = LearningModelType.Pegasos;
-		testModel(para, 1.0f, 0.0f );
+		testModel(para, 1.0f, 0.0f);
 	}
 
 	@Test
@@ -116,6 +116,7 @@ public class SolverTest {
 		para.loadConfigFile("config/StructuredPerceptron.config");
         assertEquals( 10, para.MAX_NUM_ITER);
 	}
+
 	public void testModel(SLParameters para, float ref_acc, float ref_obj)	throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
