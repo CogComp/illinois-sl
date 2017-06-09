@@ -24,6 +24,7 @@ import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.learner.l1_loss_svm.L1LossSSVMLearner;
+import edu.illinois.cs.cogcomp.sl.learner.pegasos.Pegasos;
 import edu.illinois.cs.cogcomp.sl.learner.structured_perceptron.StructuredPerceptronIPM;
 import edu.illinois.cs.cogcomp.sl.learner.structured_perceptron.StructuredPerceptron;
 
@@ -58,6 +59,8 @@ public class LearnerFactory {
 			System.out.println("Using IPM Perceptron ....");
 			return new StructuredPerceptronIPM(infSolver, fg, parameters,
 					parameters.NUMBER_OF_THREADS);
+		} else if (parameters.LEARNING_MODEL == SLParameters.LearningModelType.Pegasos) {
+			return new Pegasos(infSolver, fg, parameters);
 		} else
 			throw new InvalidParameterException(
 					"parameters.LEARNING_MODEL does not support"

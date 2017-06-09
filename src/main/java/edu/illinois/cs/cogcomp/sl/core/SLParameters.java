@@ -42,7 +42,7 @@ public class SLParameters implements Serializable {
 	private static final long serialVersionUID = 3630883016928318230L;
 
 	public static enum LearningModelType {
-		L1LossSSVM, L2LossSSVM, StructuredPerceptron, StructuredPerceptronIPM
+		L1LossSSVM, L2LossSSVM, StructuredPerceptron, StructuredPerceptronIPM, Pegasos
 	};
 
 	public LearningModelType LEARNING_MODEL = LearningModelType.L2LossSSVM;
@@ -168,6 +168,9 @@ public class SLParameters implements Serializable {
 
 	public boolean DECAY_LEARNING_RATE = false;
 
+	// Parameters that are only used by Pegasos
+	public boolean PEGASOS_PERFORM_WEIGHT_VECTOR_PROJECTION = false;
+
 	/*
 	 * 32 bit mask for doing feature hashing. Turn off bits to cause collisions in feature hashing.
 	 * When loading a config file, we use 30bits for feature hashing by default.
@@ -236,6 +239,8 @@ public class SLParameters implements Serializable {
 				"0.01"));
 		DECAY_LEARNING_RATE = Boolean.parseBoolean(props.getProperty(
 				"DECAY_LEARNING_RATE", "false"));
+		PEGASOS_PERFORM_WEIGHT_VECTOR_PROJECTION = Boolean.parseBoolean(props.getProperty(
+				"PEGASOS_PERFORM_WEIGHT_VECTOR_PROJECTION", "false"));
 		
 		int b = Integer.parseInt(props.getProperty("NUMBER_OF_FEATURE_BITS","30"));
 		HASHING_MASK = (1<<b)-1;

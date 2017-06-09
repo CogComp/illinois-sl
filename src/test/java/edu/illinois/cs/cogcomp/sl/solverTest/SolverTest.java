@@ -91,6 +91,20 @@ public class SolverTest {
 	}
 
 	@Test
+	public void testPegasosModel() throws Exception {
+		SLParameters para = new SLParameters();
+		para.LEARNING_MODEL = LearningModelType.Pegasos;
+		para.MAX_NUM_ITER = 50;
+		para.C_FOR_STRUCTURE = 0.01f;
+		testModel(para, 1.0f, 0.0f);
+
+		para.MAX_NUM_ITER = 50;
+		para.PEGASOS_PERFORM_WEIGHT_VECTOR_PROJECTION = true;
+		para.LEARNING_MODEL = LearningModelType.Pegasos;
+		testModel(para, 1.0f, 0.0f);
+	}
+
+	@Test
 	public void testSplit() throws Exception {
 		SLModel model = new SLModel();
 		SLParameters para = new SLParameters();
@@ -102,6 +116,7 @@ public class SolverTest {
 		para.loadConfigFile("config/StructuredPerceptron.config");
         assertEquals( 10, para.MAX_NUM_ITER);
 	}
+
 	public void testModel(SLParameters para, float ref_acc, float ref_obj)	throws Exception {
 		SLModel model = new SLModel();
 		model.lm = new Lexiconer();
